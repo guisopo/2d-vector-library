@@ -2,6 +2,13 @@ var vector = {
   _x: 1,
   _y: 0,
 
+  create: function() {
+    var obj = Object.create(this);
+    obj.setX(x);
+    obj.setY(y);
+    return obj;
+  },
+
   setX: function(value) {
     this._x = value;
   },
