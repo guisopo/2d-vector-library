@@ -2,7 +2,7 @@ var vector = {
   _x: 1,
   _y: 0,
 
-  create: function() {
+  create: function(x, y) {
     var obj = Object.create(this);
     obj.setX(x);
     obj.setY(y);
