@@ -42,7 +42,43 @@ var vector = {
   },
 
   getLength: function() {
-    return Math.sqrt( this._x * this._x + this._y * this._y);
+    return Math.sqrt(this._x * this._x + this._y * this._y);
+  },
+
+  add: function(v2) {
+    return vector.create(this._x + v2.getX(), this._y + v2.getY());
+  },
+
+  subtract: function(v2) {
+    return vector.create(this._x - v2.getX(), this._y - v2.getY());
+  },
+
+  multiply: function(val) {
+    return vector.create(this._x * val, this._y * val);
+  },
+
+  divide: function(val) {
+    return vector.create(this._x / val, this._y / val);
+  },
+
+  addTo: function(v2) {
+    this._x += v2.getX();
+    this._y += v2.getY();
+  },
+
+  subtractTo: function(v2) {
+    this._x -= v2.getX();
+    this._y -= v2.getY();
+  },
+
+  multiplyBy: function(val) {
+    this._x *= val;
+    this._y *= val;
+  },
+
+  divideBy: function(val) {
+    this._x /= val;
+    this._y /= val;
   }
 
 }
