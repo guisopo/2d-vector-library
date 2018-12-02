@@ -15,6 +15,14 @@ var utils = {
     return Math.min(Math.max(value, Math.min(min, max)), Math.max(min, max));
   },
 
+  randomRange: function(min, max) {
+    return min + Math.random() * (max - min);
+  },
+
+  randomInt: function(min, max) {
+    return Math.floor(min + Math.random() * (max - min + 1));
+  },
+
   distance: function(p0, p1) {
 		var dx = p1.x - p0.x,
 			  dy = p1.y - p0.y;
