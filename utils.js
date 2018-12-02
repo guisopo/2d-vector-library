@@ -11,7 +11,7 @@ var utils = {
     return utils.lerp(utils.norm(value, sourceMin, sourceMax), destMin, destMax);
   },
 
-  clamp: function() {
+  clamp: function(value, min, max) {
     return Math.min(Math.max(value, Math.min(min, max)), Math.max(min, max));
   },
 
@@ -23,7 +23,7 @@ var utils = {
   
   distanceXY: function(x0, y0, x1, y1) {
 		var dx = x1 - x0,
-			dy = y1 - y0;
+			  dy = y1 - y0;
 		return Math.sqrt(dx * dx + dy * dy);
   },
   
