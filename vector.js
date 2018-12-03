@@ -66,7 +66,7 @@ var vector = {
     this._y += v2.getY();
   },
 
-  subtractTo: function(v2) {
+  subtractFrom: function(v2) {
     this._x -= v2.getX();
     this._y -= v2.getY();
   },
