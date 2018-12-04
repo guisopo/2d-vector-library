@@ -72,18 +72,18 @@ var particle = {
 
   setSpeed: function(speed) {
     var direction = this.getDirection();
-    this.vx = cos(direction) * speed;
-    this.vy = sin(direction) * speed;
+    this.vx = Math.cos(direction) * speed;
+    this.vy = Math.sin(direction) * speed;
   },
 
-  getAngle: function() {
+  getDirection: function() {
     return Math.atan2(this.vy, this.vx);
   },
 
-  setAngle: function(direction) {
+  setDirection: function(direction) {
     var speed = this.getSpeed();
-    this.vx = cos(direction) * speed;
-    this.vy = sin(direction) * speed;
+    this.vx = Math.cos(direction) * speed;
+    this.vy = Math.sin(direction) * speed;
   },
 
   accelerate: function(ax, ay) {
@@ -106,16 +106,18 @@ var particle = {
 
   angleTo:  function(p2) {
     return Math.atan2(p2.y - this.y, p2.x - this.x);
-  },
+  },  
 
   distanceTo: function(p2) {
-    var dx = p2.x - this.x;
-    var dy = p2.y - this.y;
+    var dx = p2.x - this.x,
+        dy = p2.y - this.y;
     return Math.sqrt(dx * dx + dy * dy);
   },
 
   gravitateTo: function(p2) {
-    var dist = this.distanceTo(p2)
+    var dx = p2.x - this.x,
+        dy = p2.y - this.y,
+        dist = this.distanceTo(p2)
         force = p2.mass / dist * dist,
     //  angle = this.angleTo(p2);
     //  ax = Math.cos(angle) * force;
