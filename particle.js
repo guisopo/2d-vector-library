@@ -76,6 +76,15 @@ var particle = {
 
     this.vx += ax;
     this.vy += ay;
+  },
+
+  springTo: function(springPoint, k, springLength) {
+    var dx = springPoint.x - this.x,
+        dy = springPoint.y - this.y,
+        distance = Math.sqrt( dx * dx + dy * dy),
+        springForce = (distance - springLength || 0) * k;
+    this.vx = dx / distance * springForce,
+    this.vy = dy / distance * springForce;
   }
 
 }
