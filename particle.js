@@ -18,7 +18,28 @@ var particle = {
     obj.vy = Math.sin(direction) * speed;
     obj.gravity = grav || 0;
     obj.springs= [];
+    obj.gravitations = [];
     return obj;
+  },
+
+  addGravitation: function(p) {
+    this.removeGravitation(p);
+    this.gravitations.push(p);
+  },
+
+  removeGravitation: function(p) {
+    this.gravitations.forEach(gravitation => {
+      if(p === gravitation.p) {
+        this.gravitations.splice(this.gravitations.indexOf(p), 1);
+        return;
+      }
+    });
+  },
+
+  handleGravitations: function() {
+    this.gravitations.forEach(gravitation => {
+      this.gravitateTo(gravitation);
+    });
   },
 
   addSpring: function(point, k, length) {
@@ -72,6 +93,7 @@ var particle = {
 
   update: function() {
     this.handleSprings();
+    this.handleGravitations();
 
     this.vx *= this.friction;
     this.vy *= this.friction;
