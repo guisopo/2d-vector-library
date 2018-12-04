@@ -9,6 +9,7 @@ var particle = {
   friction: 1,
   gravity: 0,
   springs: null,
+	gravitations: null,
 
   create: function(x, y, speed, direction, grav) {
     var obj = Object.create(this);
@@ -17,7 +18,7 @@ var particle = {
     obj.vx = Math.cos(direction) * speed;
     obj.vy = Math.sin(direction) * speed;
     obj.gravity = grav || 0;
-    obj.springs= [];
+    obj.springs = [];
     obj.gravitations = [];
     return obj;
   },
@@ -114,17 +115,17 @@ var particle = {
     return Math.sqrt(dx * dx + dy * dy);
   },
 
-  gravitateTo: function(p2) {
+  gravitateTo: function(p2) {    
     var dx = p2.x - this.x,
         dy = p2.y - this.y,
-        dist = this.distanceTo(p2)
-        force = p2.mass / dist * dist,
+        dist = this.distanceTo(p2),
+        force = p2.mass / (dist * dist),
+        ax = dx / dist * force,
+        ay = dy / dist * force;
+    //  Same as:
     //  angle = this.angleTo(p2);
     //  ax = Math.cos(angle) * force;
     //  ay = Math.sin(angle) * force;
-    //  Same as:
-        ax = dx / dist * force;
-        ay = dy / dist * force;
 
     this.vx += ax;
     this.vy += ay;
