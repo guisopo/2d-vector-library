@@ -105,12 +105,12 @@ var particle = {
   },
 
   angleTo:  function(p2) {
-    return Math.atan2(p2.y() - this.y(), p2.x() - this.x());
+    return Math.atan2(p2.y - this.y, p2.x - this.x);
   },
 
   distanceTo: function(p2) {
-    var dx = p2.x() - this.x();
-    var dy = p2.y() - this.y();
+    var dx = p2.x - this.x;
+    var dy = p2.y - this.y;
     return Math.sqrt(dx * dx + dy * dy);
   },
 
