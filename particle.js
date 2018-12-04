@@ -34,9 +34,9 @@ var particle = {
   },
 
   setAngle: function(direction) {
-    var angle = this.getAngle();
-    this.vx = cos(angle) * direction;
-    this.vy = sin(angle) * direction;
+    var speed = this.getSpeed();
+    this.vx = cos(direction) * speed;
+    this.vy = sin(direction) * speed;
   },
 
   accelerate: function(ax, ay) {
