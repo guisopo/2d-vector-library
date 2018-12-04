@@ -19,6 +19,26 @@ var particle = {
     return obj;
   },
 
+  getSpeed: function() {
+    return Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+  },
+
+  setSpeed: function(speed, direction) {
+    var direction = this.getDirection();
+    this.vx = cos(direction) * speed;
+    this.vy = sin(direction) * speed;
+  },
+
+  getAngle: function() {
+    return Math.atan2(this.vy, this.vx);
+  },
+
+  setAngle: function(speed, direction) {
+    var angle = this.getAngle();
+    this.vx = cos(direction) * speed;
+    this.vy = sin(direction) * speed;
+  },
+
   accelerate: function(ax, ay) {
     this.vx += ax;
     this.vy += ay;
