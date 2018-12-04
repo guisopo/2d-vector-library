@@ -8,6 +8,7 @@ var particle = {
   bounce: -1,
   friction: 1,
   gravity: 0,
+  springs: null,
 
   create: function(x, y, speed, direction, grav) {
     var obj = Object.create(this);
@@ -16,7 +17,32 @@ var particle = {
     obj.vx = Math.cos(direction) * speed;
     obj.vy = Math.sin(direction) * speed;
     obj.gravity = grav || 0;
+    obj.springs= [];
     return obj;
+  },
+
+  addSpring: function(point, k, length) {
+    this.removeSpring(point);
+    this.springs.push({
+      point: point,
+      k: k,
+      length: length || 0,
+    })
+  },
+
+  removeSpring: function(point) {
+    this.springs.forEach(spring => {
+      if(point === spring.point) {
+        this.springs.splice(this.springs.indexOf(point), 1);
+        return;
+      }
+    });
+  },
+
+  handleSprings: function() {
+    this.springs.forEach(spring => {
+      this.springTo(spring.point, spring.k, spring.length);
+    });
   },
 
   getSpeed: function() {
@@ -45,6 +71,8 @@ var particle = {
   },
 
   update: function() {
+    this.handleSprings();
+
     this.vx *= this.friction;
     this.vy *= this.friction;
 
@@ -83,8 +111,8 @@ var particle = {
         dy = springPoint.y - this.y,
         distance = Math.sqrt( dx * dx + dy * dy),
         springForce = (distance - springLength || 0) * k;
-    this.vx = dx / distance * springForce,
-    this.vy = dy / distance * springForce;
+    this.vx += dx / distance * springForce,
+    this.vy += dy / distance * springForce;
   }
 
 }
