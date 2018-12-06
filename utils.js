@@ -84,6 +84,24 @@ var utils = {
               (1 - t) * 3 * t * t * p2.y +
               t * t * t * p3.y;
     return pFinal;
+  },
+
+  multiCurve: function(points, context) {
+    var p0, p1, midX, midY;
+
+    context.moveTo(points[0].x, points[0].y);
+    
+    for(var i = 1; i < points.length -2; i+=1) {
+      p0 = points[i];
+      p1 = points[i + 1];
+      midX =(p0.x + p1.x) / 2;
+      midY =(p0.y + p1.y) / 2;
+      context.quadraticCurveTo(p0x, p0.y, midX, midY);
+    }
+
+    p0 = points[points.lenght - 2];
+    p1 = points[points.lenght - 1];
+    context.context.quadraticCurveTo(p0.x, p0.y, p1.x, p1.y);
   }
 
 }
