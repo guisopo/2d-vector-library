@@ -3,3 +3,4 @@ main.js
 main.css
 *.jpg
 *.png
+.DS_Store
