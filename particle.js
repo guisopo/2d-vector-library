@@ -1,17 +1,19 @@
-var particle = {
-  x: 0,
-  y: 0,
-  vx: 0,
-  vy: 0,
-  mass: 1,
-  radius: 0,
-  bounce: -1,
-  friction: 1,
-  gravity: 0,
-  springs: null,
-	gravitations: null,
+class Particle {
+  constructor() {
+    this.x = 0,
+    this.y = 0,
+    this.vx = 0,
+    this.vy = 0,
+    this.mass = 1,
+    this.radius = 0,
+    this.bounce = 1,
+    this.friction = 1,
+    this.gravity = 0,
+    this.springs = null,
+    this.gravitations = null
+  }
 
-  create: function(x, y, speed, direction, grav) {
+  create(x, y, speed, direction, grav) {
     var obj = Object.create(this);
     obj.x = x;
     obj.y = y;
@@ -21,78 +23,78 @@ var particle = {
     obj.springs = [];
     obj.gravitations = [];
     return obj;
-  },
+  }
 
-  addGravitation: function(p) {
+  addGravitation(p) {
     this.removeGravitation(p);
     this.gravitations.push(p);
-  },
+  }
 
-  removeGravitation: function(p) {
+  removeGravitation(p) {
     this.gravitations.forEach(gravitation => {
       if(p === gravitation.p) {
         this.gravitations.splice(this.gravitations.indexOf(p), 1);
         return;
       }
     });
-  },
+  }
 
-  handleGravitations: function() {
+  handleGravitations() {
     this.gravitations.forEach(gravitation => {
       this.gravitateTo(gravitation);
     });
-  },
+  }
 
-  addSpring: function(point, k, length) {
+  addSpring(point, k, length) {
     this.removeSpring(point);
     this.springs.push({
       point: point,
       k: k,
       length: length || 0,
     })
-  },
+  }
 
-  removeSpring: function(point) {
+  removeSpring(point) {
     this.springs.forEach(spring => {
       if(point === spring.point) {
         this.springs.splice(this.springs.indexOf(point), 1);
         return;
       }
     });
-  },
+  }
 
-  handleSprings: function() {
+  handleSprings() {
     this.springs.forEach(spring => {
       this.springTo(spring.point, spring.k, spring.length);
     });
-  },
+  }
 
-  getSpeed: function() {
+  getSpeed() {
     return Math.sqrt(this.vx * this.vx + this.vy * this.vy);
-  },
+  }
 
-  setSpeed: function(speed) {
+  setSpeed(speed) {
     var direction = this.getDirection();
     this.vx = Math.cos(direction) * speed;
     this.vy = Math.sin(direction) * speed;
-  },
+  }
 
-  getDirection: function() {
+  getDirection() {
     return Math.atan2(this.vy, this.vx);
-  },
+  }
 
-  setDirection: function(direction) {
+  setDirection(direction) {
     var speed = this.getSpeed();
     this.vx = Math.cos(direction) * speed;
     this.vy = Math.sin(direction) * speed;
-  },
+  }
 
-  accelerate: function(ax, ay) {
+  accelerate(ax, ay) {
     this.vx += ax;
     this.vy += ay;
-  },
+  }
 
-  update: function() {
+  update() {
     this.handleSprings();
     this.handleGravitations();
 
@@ -103,19 +105,19 @@ var particle = {
 
     this.x += this.vx;
     this.y += this.vy;
-  },
+  }
 
-  angleTo:  function(p2) {
+  angleTo(p2) {
     return Math.atan2(p2.y - this.y, p2.x - this.x);
-  },  
+  }
 
-  distanceTo: function(p2) {
+  distanceTo(p2) {
     var dx = p2.x - this.x,
         dy = p2.y - this.y;
     return Math.sqrt(dx * dx + dy * dy);
-  },
+  }
 
-  gravitateTo: function(p2) {    
+  gravitateTo(p2) {    
     var dx = p2.x - this.x,
         dy = p2.y - this.y,
         dist = this.distanceTo(p2),
@@ -129,9 +131,9 @@ var particle = {
 
     this.vx += ax;
     this.vy += ay;
-  },
+  }
 
-  springTo: function(springPoint, k, springLength) {
+  springTo(springPoint, k, springLength) {
     var dx = springPoint.x - this.x,
         dy = springPoint.y - this.y,
         distance = Math.sqrt( dx * dx + dy * dy),
