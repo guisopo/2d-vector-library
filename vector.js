@@ -5,7 +5,7 @@ class Vector {
   }
 
   create(x, y) {
-    var obj = Object.create(this);
+    let obj = Object.create(this);
     obj.setX(x);
     obj.setY(y);
     return obj;
@@ -28,7 +28,7 @@ class Vector {
   }
 
   setAngle(angle) {
-    var length = this.getLength();
+    let length = this.getLength();
     this._x = Math.cos(angle) * length;
     this._y = Math.sin(angle) * length;
   }
@@ -38,7 +38,7 @@ class Vector {
   }
 
   setLength(length) {
-    var angle = this.getAngle();
+    let angle = this.getAngle();
     this._x = Math.cos(angle) * length;
     this._y = Math.sin(angle) * length;
   }

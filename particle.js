@@ -14,7 +14,7 @@ class Particle {
   }
 
   create(x, y, speed, direction, grav) {
-    var obj = Object.create(this);
+    let obj = Object.create(this);
     obj.x = x;
     obj.y = y;
     obj.vx = Math.cos(direction) * speed;
@@ -74,7 +74,7 @@ class Particle {
   }
 
   setSpeed(speed) {
-    var direction = this.getDirection();
+    let direction = this.getDirection();
     this.vx = Math.cos(direction) * speed;
     this.vy = Math.sin(direction) * speed;
   }
@@ -84,7 +84,7 @@ class Particle {
   }
 
   setDirection(direction) {
-    var speed = this.getSpeed();
+    let speed = this.getSpeed();
     this.vx = Math.cos(direction) * speed;
     this.vy = Math.sin(direction) * speed;
   }
@@ -112,13 +112,13 @@ class Particle {
   }
 
   distanceTo(p2) {
-    var dx = p2.x - this.x,
+    let dx = p2.x - this.x,
         dy = p2.y - this.y;
     return Math.sqrt(dx * dx + dy * dy);
   }
 
   gravitateTo(p2) {    
-    var dx = p2.x - this.x,
+    let dx = p2.x - this.x,
         dy = p2.y - this.y,
         dist = this.distanceTo(p2),
         force = p2.mass / (dist * dist),
@@ -134,7 +134,7 @@ class Particle {
   }
 
   springTo(springPoint, k, springLength) {
-    var dx = springPoint.x - this.x,
+    let dx = springPoint.x - this.x,
         dy = springPoint.y - this.y,
         distance = Math.sqrt( dx * dx + dy * dy),
         springForce = (distance - springLength || 0) * k;
