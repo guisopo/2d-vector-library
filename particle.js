@@ -1,15 +1,15 @@
 class Particle {
   constructor() {
-    this.x = 0,
-    this.y = 0,
-    this.vx = 0,
-    this.vy = 0,
-    this.mass = 1,
-    this.radius = 0,
-    this.bounce = 1,
-    this.friction = 1,
-    this.gravity = 0,
-    this.springs = null,
+    this.x = 0;
+    this.y = 0;
+    this.vx = 0;
+    this.vy = 0;
+    this.mass = 1;
+    this.radius = 0;
+    this.bounce = 1;
+    this.friction = 1;
+    this.gravity = 0;
+    this.springs = null;
     this.gravitations = null
   }
 
