@@ -1,82 +1,84 @@
-var vector = {
-  _x: 1,
-  _y: 0,
+class Vector {
+  constructor() {
+    this._x = 1;
+    this._y = 0;
+  }
 
-  create: function(x, y) {
+  create(x, y) {
     var obj = Object.create(this);
     obj.setX(x);
     obj.setY(y);
     return obj;
-  },
+  }
 
-  setX: function(value) {
+  setX(value) {
     this._x = value;
-  },
+  }
 
-  getX: function() {
+  getX() {
     return this._x;
-  },
+  }
 
-  setY: function(value) {
+  setY(value) {
     this._y = value;
-  },
+  }
 
-  getY: function() {
+  getY() {
     return this._y;
-  },
+  }
 
-  setAngle: function(angle) {
+  setAngle(angle) {
     var length = this.getLength();
     this._x = Math.cos(angle) * length;
     this._y = Math.sin(angle) * length;
-  },
+  }
 
-  getAngle: function() {
+  getAngle() {
     return Math.atan2(this._y, this._x);
-  },
+  }
 
-  setLength: function(length) {
+  setLength(length) {
     var angle = this.getAngle();
     this._x = Math.cos(angle) * length;
     this._y = Math.sin(angle) * length;
-  },
+  }
 
-  getLength: function() {
+  getLength() {
     return Math.sqrt(this._x * this._x + this._y * this._y);
-  },
+  }
 
-  add: function(v2) {
+  add(v2) {
     return vector.create(this._x + v2.getX(), this._y + v2.getY());
-  },
+  }
 
-  subtract: function(v2) {
+  subtract(v2) {
     return vector.create(this._x - v2.getX(), this._y - v2.getY());
-  },
+  }
 
-  multiply: function(val) {
+  multiply(val) {
     return vector.create(this._x * val, this._y * val);
-  },
+  }
 
-  divide: function(val) {
+  divide(val) {
     return vector.create(this._x / val, this._y / val);
-  },
+  }
 
-  addTo: function(v2) {
+  addTo(v2) {
     this._x += v2.getX();
     this._y += v2.getY();
-  },
+  }
 
-  subtractFrom: function(v2) {
+  subtractFrom(v2) {
     this._x -= v2.getX();
     this._y -= v2.getY();
-  },
+  }
 
-  multiplyBy: function(val) {
+  multiplyBy(val) {
     this._x *= val;
     this._y *= val;
-  },
+  }
 
-  divideBy: function(val) {
+  divideBy(val) {
     this._x /= val;
     this._y /= val;
   }
