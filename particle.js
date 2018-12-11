@@ -1,28 +1,16 @@
 class Particle {
-  constructor() {
-    this.x = 0;
-    this.y = 0;
-    this.vx = 0;
-    this.vy = 0;
+  constructor(x, y, speed, direction, grav) {
+    this.x = x || 0;
+    this.y = y || 0;
+    this.vx = Math.cos(direction) * speed;
+    this.vy = Math.sin(direction) * speed;
     this.mass = 1;
     this.radius = 0;
     this.bounce = 1;
     this.friction = 1;
-    this.gravity = 0;
-    this.springs = null;
-    this.gravitations = null
-  }
-
-  create(x, y, speed, direction, grav) {
-    let obj = Object.create(this);
-    obj.x = x;
-    obj.y = y;
-    obj.vx = Math.cos(direction) * speed;
-    obj.vy = Math.sin(direction) * speed;
-    obj.gravity = grav || 0;
-    obj.springs = [];
-    obj.gravitations = [];
-    return obj;
+    this.gravity = grav || 0;
+    this.springs = [];
+    this.gravitations = [];
   }
 
   addGravitation(p) {
