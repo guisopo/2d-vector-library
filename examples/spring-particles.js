@@ -7,19 +7,23 @@ window.onload = function() {
       particleA = new Particle(utils.randomRange(0, width), 
                                   utils.randomRange(0, height), 
                                   utils.randomRange(0, 50),
-                                  utils.randomRange(0, Math.PI * 2)),
+                                  utils.randomRange(0, Math.PI * 2),
+                                  0.4),
       particleB = new Particle(utils.randomRange(0, width), 
                                   utils.randomRange(0, height), 
                                   utils.randomRange(0, 50),
-                                  utils.randomRange(0, Math.PI * 2)),
+                                  utils.randomRange(0, Math.PI * 2),
+                                  0.4),
       particleC = new Particle(utils.randomRange(0, width), 
                                   utils.randomRange(0, height), 
                                   utils.randomRange(0, 50),
-                                  utils.randomRange(0, Math.PI * 2)),
+                                  utils.randomRange(0, Math.PI * 2),
+                                  0.4),
       particleD = new Particle(utils.randomRange(0, width), 
                                   utils.randomRange(0, height), 
                                   utils.randomRange(0, 50),
-                                  utils.randomRange(0, Math.PI * 2)),
+                                  utils.randomRange(0, Math.PI * 2),
+                                  0.4),
       k = 0.01,
       separation = 100;
   
@@ -37,23 +41,26 @@ window.onload = function() {
   
   update();
   
-
   function update() {
     context.clearRect(0, 0, width, height);
 
-    // spring(particleA, particleB, separation);
-    // spring(particleB, particleC, separation);
-    // spring(particleC, particleD, separation);
-    // spring(particleD, particleA, separation);
-    // spring(particleD, particleB, separation);
-    // spring(particleA, particleC, separation);
     particleA.springTo(particleB, k, separation);
-    particleB.springTo(particleC, k, separation);
-    particleC.springTo(particleD, k, separation);
-    particleD.springTo(particleA, k, separation);
-
-    particleD.springTo(particleB, k, separation);
     particleA.springTo(particleC, k, separation);
+    particleA.springTo(particleD, k, separation);
+    
+    particleB.springTo(particleA, k, separation);
+    particleB.springTo(particleC, k, separation);
+    particleB.springTo(particleD, k, separation);
+
+    particleC.springTo(particleA, k, separation);
+    particleC.springTo(particleB, k, separation);
+    particleC.springTo(particleD, k, separation);
+    
+    particleD.springTo(particleA, k, separation);
+    particleD.springTo(particleB, k, separation);
+    particleD.springTo(particleC, k, separation);
+
+    
 
     particleA.update();
     particleB.update();
@@ -80,24 +87,16 @@ window.onload = function() {
     context.arc(particleD.x, particleD.y, particleD.radius, 0, Math.PI * 2, false);
     context.fill();
 
-    // context.beginPath();
-    // context.moveTo(particleA.x, particleA.y);
-    // context.lineTo(particleB.x, particleB.y);
-    // context.lineTo(particleC.x, particleC.y);
-    // context.lineTo(particleD.x, particleD.y);
-    // context.lineTo(particleA.x, particleA.y);
-    // context.stroke();
+    context.beginPath();
+    context.moveTo(particleA.x, particleA.y);
+    context.lineTo(particleB.x, particleB.y);
+    context.lineTo(particleC.x, particleC.y);
+    context.lineTo(particleD.x, particleD.y);
+    context.lineTo(particleA.x, particleA.y);
+    context.stroke();
     requestAnimationFrame(update);
   }
 
-  function spring(p0, p1, separation) {
-    var distance = p0.position.subtract(p1.position);
-    distance.setLength(distance.getLength() - separation);
 
-    var springForce = distance.multiply(k);
-
-    p1.velocity.addTo(springForce);
-    p0.velocity.subtractFrom(springForce);
-  }
 
 };
