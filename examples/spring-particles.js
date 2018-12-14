@@ -67,6 +67,11 @@ window.onload = function() {
     particleC.update();
     particleD.update();
 
+    checkEdges(particleA);
+    checkEdges(particleB);
+    checkEdges(particleC);
+    checkEdges(particleD);
+
     context.beginPath();
     context.fillStyle = 'yellow';
     context.arc(particleA.x, particleA.y, particleA.radius, 0, Math.PI * 2, false);
@@ -97,6 +102,12 @@ window.onload = function() {
     requestAnimationFrame(update);
   }
 
+  function checkEdges(p) {
+		if(p.y + p.radius > height) {
+			p.y = (height - p.radius);
+			p.vy = (p.vy * -0.95);
+		}
+	}
 
 
 };
