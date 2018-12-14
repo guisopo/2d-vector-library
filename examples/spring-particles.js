@@ -4,19 +4,19 @@ window.onload = function() {
       width = canvas.width = window.innerWidth,
       height = canvas.height = window.innerHeight,
 
-      particleA = particle.create(utils.randomRange(0, width), 
+      particleA = new Particle(utils.randomRange(0, width), 
                                   utils.randomRange(0, height), 
                                   utils.randomRange(0, 50),
                                   utils.randomRange(0, Math.PI * 2)),
-      particleB = particle.create(utils.randomRange(0, width), 
+      particleB = new Particle(utils.randomRange(0, width), 
                                   utils.randomRange(0, height), 
                                   utils.randomRange(0, 50),
                                   utils.randomRange(0, Math.PI * 2)),
-      particleC = particle.create(utils.randomRange(0, width), 
+      particleC = new Particle(utils.randomRange(0, width), 
                                   utils.randomRange(0, height), 
                                   utils.randomRange(0, 50),
                                   utils.randomRange(0, Math.PI * 2)),
-      particleD = particle.create(utils.randomRange(0, width), 
+      particleD = new Particle(utils.randomRange(0, width), 
                                   utils.randomRange(0, height), 
                                   utils.randomRange(0, 50),
                                   utils.randomRange(0, Math.PI * 2)),
@@ -41,12 +41,19 @@ window.onload = function() {
   function update() {
     context.clearRect(0, 0, width, height);
 
-    spring(particleA, particleB, separation);
-    spring(particleB, particleC, separation);
-    spring(particleC, particleD, separation);
-    spring(particleD, particleA, separation);
-    spring(particleD, particleB, separation);
-    spring(particleA, particleC, separation);
+    // spring(particleA, particleB, separation);
+    // spring(particleB, particleC, separation);
+    // spring(particleC, particleD, separation);
+    // spring(particleD, particleA, separation);
+    // spring(particleD, particleB, separation);
+    // spring(particleA, particleC, separation);
+    particleA.springTo(particleB, k, separation);
+    particleB.springTo(particleC, k, separation);
+    particleC.springTo(particleD, k, separation);
+    particleD.springTo(particleA, k, separation);
+
+    particleD.springTo(particleB, k, separation);
+    particleA.springTo(particleC, k, separation);
 
     particleA.update();
     particleB.update();
@@ -55,30 +62,30 @@ window.onload = function() {
 
     context.beginPath();
     context.fillStyle = 'yellow';
-    context.arc(particleA.position.getX(), particleA.position.getY(), particleA.radius, 0, Math.PI * 2, false);
+    context.arc(particleA.x, particleA.y, particleA.radius, 0, Math.PI * 2, false);
     context.fill();
     
     context.beginPath();
     context.fillStyle = 'green';
-    context.arc(particleB.position.getX(), particleB.position.getY(), particleB.radius, 0, Math.PI * 2, false);
+    context.arc(particleB.x, particleB.y, particleB.radius, 0, Math.PI * 2, false);
     context.fill();
 
     context.beginPath();
     context.fillStyle = 'red';
-    context.arc(particleC.position.getX(), particleC.position.getY(), particleB.radius, 0, Math.PI * 2, false);
+    context.arc(particleC.x, particleC.y, particleB.radius, 0, Math.PI * 2, false);
     context.fill();
 
     context.beginPath();
     context.fillStyle = 'blue';
-    context.arc(particleD.position.getX(), particleD.position.getY(), particleD.radius, 0, Math.PI * 2, false);
+    context.arc(particleD.x, particleD.y, particleD.radius, 0, Math.PI * 2, false);
     context.fill();
 
     // context.beginPath();
-    // context.moveTo(particleA.position.getX(), particleA.position.getY());
-    // context.lineTo(particleB.position.getX(), particleB.position.getY());
-    // context.lineTo(particleC.position.getX(), particleC.position.getY());
-    // context.lineTo(particleD.position.getX(), particleD.position.getY());
-    // context.lineTo(particleA.position.getX(), particleA.position.getY());
+    // context.moveTo(particleA.x, particleA.y);
+    // context.lineTo(particleB.x, particleB.y);
+    // context.lineTo(particleC.x, particleC.y);
+    // context.lineTo(particleD.x, particleD.y);
+    // context.lineTo(particleA.x, particleA.y);
     // context.stroke();
     requestAnimationFrame(update);
   }
