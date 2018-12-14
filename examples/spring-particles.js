@@ -14,7 +14,7 @@ window.onload = function() {
 
   // CREATE PARTICLES
   for(let p = 0; p < numberOfParticles; p++) {
-    particle = new Particle(utils.randomRange(0, width), 
+    particle = new Particle(utils.randomRange(width * 0.4, width * 0.6), 
                             utils.randomRange(0, height), 
                             utils.randomRange(0, 50),
                             utils.randomRange(0, Math.PI * 2),
@@ -39,6 +39,14 @@ window.onload = function() {
     particles.push(newParticle);
     newParticle.index = particles.indexOf(newParticle);
   });
+
+  // let cursor = new Particle(100, 100, 0, 0, 0);
+  // cursor.friction = friction;
+  // cursor.radius = 4;
+  // document.addEventListener('mousemove', function(event) {
+  //   cursor.x = event.x;
+  //   cursor.y =  event.y;
+  // });
   
   update();
 
@@ -51,6 +59,7 @@ window.onload = function() {
         if( particle.index !== i){
           particle.springTo(particles[i], k, separation);
         }
+        // particle.springTo(cursor, k, 10);
       }
     });
     
@@ -58,6 +67,11 @@ window.onload = function() {
      
       particle.update();
       drawParticle(particle.x, particle.y, particle.radius);
+
+      // cursor
+      // context.beginPath();
+      // context.arc(cursor.x, cursor.y, cursor.radius, 0, Math.PI * 2, false);
+      // context.fill();
 
       checkEdges(particle);
       
@@ -78,7 +92,7 @@ window.onload = function() {
 		if(particle.y + particle.radius > height) {
 			particle.y = (height - particle.radius);
 			particle.vy = (particle.vy * -0.95);
-		}
+    }
 	}
 
 
