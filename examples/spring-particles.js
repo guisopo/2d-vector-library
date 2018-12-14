@@ -4,108 +4,80 @@ window.onload = function() {
       width = canvas.width = window.innerWidth,
       height = canvas.height = window.innerHeight,
 
-      particleA = new Particle(utils.randomRange(0, width), 
-                                  utils.randomRange(0, height), 
-                                  utils.randomRange(0, 50),
-                                  utils.randomRange(0, Math.PI * 2),
-                                  0.4),
-      particleB = new Particle(utils.randomRange(0, width), 
-                                  utils.randomRange(0, height), 
-                                  utils.randomRange(0, 50),
-                                  utils.randomRange(0, Math.PI * 2),
-                                  0.4),
-      particleC = new Particle(utils.randomRange(0, width), 
-                                  utils.randomRange(0, height), 
-                                  utils.randomRange(0, 50),
-                                  utils.randomRange(0, Math.PI * 2),
-                                  0.4),
-      particleD = new Particle(utils.randomRange(0, width), 
-                                  utils.randomRange(0, height), 
-                                  utils.randomRange(0, 50),
-                                  utils.randomRange(0, Math.PI * 2),
-                                  0.4),
+      numberOfParticles = 3;
+      particles = [],
+
+      radius = 5,
+      friction = 0.9,
       k = 0.01,
-      separation = 100;
-  
-  particleA.friction = 0.9;
-  particleA.radius = 20;
+      separation = 250;
 
-  particleB.friction = 0.9;
-  particleB.radius = 20;
+  // CREATE PARTICLES
+  for(let p = 0; p < numberOfParticles; p++) {
+    particle = new Particle(utils.randomRange(0, width), 
+                            utils.randomRange(0, height), 
+                            utils.randomRange(0, 50),
+                            utils.randomRange(0, Math.PI * 2),
+                            0
+                          );
+    particle.friction = friction;
+    particle.radius = radius;
+    particles.push(particle);
+    particle.index = particles.indexOf(particle);
+  };
 
-  particleC.friction = 0.9;
-  particleC.radius = 20;
-
-  particleD.friction = 0.9;
-  particleD.radius = 20;
+  // ADD PARTICLES
+  document.addEventListener('click', function(event) {
+    newParticle = new Particle(event.x, 
+                              event.y, 
+                              utils.randomRange(0, 50),
+                              utils.randomRange(0, Math.PI * 2),
+                              0
+                          );
+    newParticle.friction = friction;
+    newParticle.radius = radius;
+    particles.push(newParticle);
+    newParticle.index = particles.indexOf(newParticle);
+  });
   
   update();
-  
+
+  // ANIMATE AND UPDATE THEM
   function update() {
     context.clearRect(0, 0, width, height);
-
-    particleA.springTo(particleB, k, separation);
-    particleA.springTo(particleC, k, separation);
-    particleA.springTo(particleD, k, separation);
     
-    particleB.springTo(particleA, k, separation);
-    particleB.springTo(particleC, k, separation);
-    particleB.springTo(particleD, k, separation);
-
-    particleC.springTo(particleA, k, separation);
-    particleC.springTo(particleB, k, separation);
-    particleC.springTo(particleD, k, separation);
+    particles.forEach(particle => {
+      for(let i = 0; i < particles.length; i++) {
+        if( particle.index !== i){
+          particle.springTo(particles[i], k, separation);
+        }
+      }
+    });
     
-    particleD.springTo(particleA, k, separation);
-    particleD.springTo(particleB, k, separation);
-    particleD.springTo(particleC, k, separation);
+    particles.forEach(particle => {
+     
+      particle.update();
+      drawParticle(particle.x, particle.y, particle.radius);
 
-    
+      checkEdges(particle);
+      
+    });
 
-    particleA.update();
-    particleB.update();
-    particleC.update();
-    particleD.update();
-
-    checkEdges(particleA);
-    checkEdges(particleB);
-    checkEdges(particleC);
-    checkEdges(particleD);
-
-    context.beginPath();
-    context.fillStyle = 'yellow';
-    context.arc(particleA.x, particleA.y, particleA.radius, 0, Math.PI * 2, false);
-    context.fill();
-    
-    context.beginPath();
-    context.fillStyle = 'green';
-    context.arc(particleB.x, particleB.y, particleB.radius, 0, Math.PI * 2, false);
-    context.fill();
-
-    context.beginPath();
-    context.fillStyle = 'red';
-    context.arc(particleC.x, particleC.y, particleB.radius, 0, Math.PI * 2, false);
-    context.fill();
-
-    context.beginPath();
-    context.fillStyle = 'blue';
-    context.arc(particleD.x, particleD.y, particleD.radius, 0, Math.PI * 2, false);
-    context.fill();
-
-    context.beginPath();
-    context.moveTo(particleA.x, particleA.y);
-    context.lineTo(particleB.x, particleB.y);
-    context.lineTo(particleC.x, particleC.y);
-    context.lineTo(particleD.x, particleD.y);
-    context.lineTo(particleA.x, particleA.y);
-    context.stroke();
     requestAnimationFrame(update);
   }
 
-  function checkEdges(p) {
-		if(p.y + p.radius > height) {
-			p.y = (height - p.radius);
-			p.vy = (p.vy * -0.95);
+  // DRAW PARTICLES
+  function drawParticle(positionX, positionY, particleRadius) {
+    context.beginPath();
+    context.arc(positionX, positionY, particleRadius, 0, Math.PI * 2, false);
+    context.fill();
+  }
+
+  // CHECK FLOOR
+  function checkEdges(particle) {
+		if(particle.y + particle.radius > height) {
+			particle.y = (height - particle.radius);
+			particle.vy = (particle.vy * -0.95);
 		}
 	}
 

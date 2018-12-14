@@ -128,17 +128,6 @@ class Particle {
         springForce = (distance - springLength) * k;
     this.vx += dx / distance * springForce,
     this.vy += dy / distance * springForce;
-    
   }
-
-  // function spring(p0, p1, separation) {
-  //   var distance = p0.position.subtract(p1.position);
-  //   distance.setLength(distance.getLength() - separation);
-
-  //   var springForce = distance.multiply(k);
-
-  //   p1.velocity.addTo(springForce);
-  //   p0.velocity.subtractFrom(springForce);
-  // }
 
 }
