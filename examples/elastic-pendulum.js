@@ -3,47 +3,44 @@ window.onload = function() {
       context = canvas.getContext('2d'),
       width = canvas.width = window.innerWidth,
       height = canvas.height = window.innerHeight,
-      springPoint = vector.create(width/2, height/2),
-      weight = particle.create(Math.random() * width, Math.random() * height, 50, Math.random() * Math.PI * 2, 0.75 ),
+
+      springPoint = new Particle(width/2, height/2),
+      weight = new Particle(Math.random() * width, Math.random() * height, 50, Math.random() * Math.PI * 2, 0.75 ),
+
       k = 0.1,
       springLength = 100;
 
   weight.radius = 20;
   weight.friction = 0.95;
+  
   update();
 
   document.addEventListener('mousemove', function(event) {
-    springPoint.setX(event.clientX);
-    springPoint.setY(event.clientY);
+    springPoint.x = event.clientX;
+    springPoint.y = event.clientY;
   });
 
   function update() {
     context.clearRect(0, 0, width, height);
 
-    var distance = springPoint.subtract(weight.position);
-
-    distance.setLength(distance.getLength() - springLength); 
-
-    var springForce = distance.multiply(k);
-
-    weight.velocity.addTo(springForce);
+    weight.springTo(springPoint, k, springLength);
     weight.update();
     
     // context.globalCompositeOperation = 'xor';
     context.beginPath();
     context.fillStyle = 'black';
-    context.arc(weight.position.getX(), weight.position.getY(), weight.radius, 0, Math.PI * 2, false);
+    context.arc(weight.x, weight.y, weight.radius, 0, Math.PI * 2, false);
     context.fill();
     
     context.beginPath();
     context.fillStyle = 'black';
-    context.arc(springPoint.getX(), springPoint.getY(), 6, 0, Math.PI * 2, false);
+    context.arc(springPoint.x, springPoint.y, 6, 0, Math.PI * 2, false);
     context.fill();
     
     context.beginPath();
     context.lineWidth = 1;
-    context.moveTo(weight.position.getX(), weight.position.getY());
-    context.lineTo(springPoint.getX(), springPoint.getY());
+    context.moveTo(weight.x, weight.y);
+    context.lineTo(springPoint.x, springPoint.y);
     context.stroke();
 
     requestAnimationFrame(update);
