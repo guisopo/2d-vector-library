@@ -14,7 +14,7 @@ window.onload = function() {
         y: utils.randomRange(0, height),
       },
 
-      weight = particle.create(Math.random() * width, Math.random() * height, 0, 0),
+      weight = new Particle(Math.random() * width, Math.random() * height, 0, 0),
       
       k = 0.1,
       springRadius = 6
@@ -46,7 +46,7 @@ window.onload = function() {
     context.arc(springPoint.x, springPoint.y, springRadius, 0, Math.PI * 2, false);
     context.fill();
 
-    // Spring2 (Follower)
+    // Spring2
     context.beginPath();
     context.fillStyle = 'black';
     context.arc(springPoint2.x, springPoint2.y, springRadius, 0, Math.PI * 2, false);
