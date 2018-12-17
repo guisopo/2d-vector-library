@@ -3,14 +3,14 @@ window.onload = function() {
 		context = canvas.getContext("2d"),
 		width = canvas.width = window.innerWidth,
 		height = canvas.height = window.innerHeight,
-		sun1 = particle.create(300, 200, 0, 0),
-		sun2 = particle.create(800, 600, 0, 0),
+		sun1 = new Particle(300, 200, 0, 0),
+		sun2 = new Particle(800, 600, 0, 0),
 		emitter = {
 			x: 100,
 			y: 0
 		},
 		particles = [],
-		numParticles = 1000;
+		numParticles = 500;
 
 
 	sun1.mass = 10000;
@@ -19,7 +19,7 @@ window.onload = function() {
 	sun2.radius = 20;
 	
 	for(var i = 0; i < numParticles; i += 1) {
-		var p = particle.create(emitter.x, emitter.y, utils.randomRange(7, 8), Math.PI / 2 + utils.randomRange(-0.1, 0.1));
+		var p = new Particle(emitter.x, emitter.y, utils.randomRange(7, 8), Math.PI / 2 + utils.randomRange(-0.1, 0.1));
 		p.addGravitation(sun1);
 		p.addGravitation(sun2);
 		p.radius = 3;
@@ -44,14 +44,14 @@ window.onload = function() {
 			var p = particles[i];
 			p.update();
 			draw(p, "black");
-			if(p.x > width ||
-				p.x < 0 ||
-				p.y > height ||
-				p.y < 0) {
-				p.x = emitter.x;
-				p.y = emitter.y;
-				p.setSpeed(utils.randomRange(7, 8));
-				p.setDirection(Math.PI / 2 + utils.randomRange(-.1, .1));
+			if(	p.x > width ||
+					p.x < 0 ||
+					p.y > height ||
+					p.y < 0) {
+					p.x = emitter.x;
+					p.y = emitter.y;
+					p.setSpeed(utils.randomRange(7, 8));
+					p.setDirection(Math.PI / 2 + utils.randomRange(-.1, .1));
 			}
 		}
 
