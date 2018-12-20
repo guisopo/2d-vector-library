@@ -11,6 +11,7 @@ class Particle {
     this.gravity = grav || 0;
     this.springs = [];
     this.gravitations = [];
+    this.hasSpringTarget = false;
   }
 
   addGravitation(p) {
@@ -86,6 +87,11 @@ class Particle {
     this.handleSprings();
     this.handleGravitations();
 
+    // if (this.hasSpringTarget) {
+    //     this.vx += (this.springTargetX - this.x) * this.springTargetK;
+    //     this.vy += (this.springTargetY - this.y) * this.springTargetK;
+    // }
+
     this.vx *= this.friction;
     this.vy *= this.friction;
 
@@ -128,6 +134,17 @@ class Particle {
         springForce = (distance - springLength) * k;
     this.vx += dx / distance * springForce,
     this.vy += dy / distance * springForce;
+  }
+
+  springFrom(springPoint, k, springLength) {
+    let dx = this.x - springPoint.x,
+        dy = this.y - springPoint.y,
+        distance = Math.sqrt(dx * dx + dy * dy),
+        springForce = (distance - springLength) * k;
+    if(distance < springLength) {
+      this.vx += dx / distance * springForce,
+      this.vy += dy / distance * springForce;
+    }
   }
 
 }
