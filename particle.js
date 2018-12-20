@@ -10,7 +10,11 @@ class Particle {
     this.friction = 1;
     this.gravity = grav || 0;
     this.springs = [];
-    this.gravitations = [];
+    this.gravitations = [],
+
+    this.springTargetX = null,
+    this.springTargetY = null,
+    this.springTargetK = null,
     this.hasSpringTarget = false;
   }
 
@@ -32,6 +36,13 @@ class Particle {
     this.gravitations.forEach(gravitation => {
       this.gravitateTo(gravitation);
     });
+  }
+
+  setSpringTarget(x, y, k) {
+    this.springTargetX = x;
+    this.springTargetY = y;
+    this.springTargetK = k || 0.02;
+    this.hasSpringTarget = true;
   }
 
   addSpring(point, k, length) {
@@ -87,18 +98,18 @@ class Particle {
     this.handleSprings();
     this.handleGravitations();
 
-    // if (this.hasSpringTarget) {
-    //     this.vx += (this.springTargetX - this.x) * this.springTargetK;
-    //     this.vy += (this.springTargetY - this.y) * this.springTargetK;
-    // }
+    if (this.hasSpringTarget) {
+        this.vx += (this.springTargetX - this.x) * this.springTargetK;
+        this.vy += (this.springTargetY - this.y) * this.springTargetK;
+    }
+
+    this.x += this.vx;
+    this.y += this.vy;
 
     this.vx *= this.friction;
     this.vy *= this.friction;
 
     this.vy += this.gravity;
-
-    this.x += this.vx;
-    this.y += this.vy;
   }
 
   angleTo(p2) {

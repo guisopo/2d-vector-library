@@ -5,8 +5,8 @@ window.onload = function() {
       height = canvas.height = window.innerHeight,
 
     // Number of particles
-      particlesH = 5,
-      particlesV = 5,
+      particlesH = 100,
+      particlesV = 100,
 
     // Margin between particles
       marginH = width / particlesH,
@@ -14,6 +14,8 @@ window.onload = function() {
 
       particles = [],
       target = new Particle(0, 0, 0, 0);
+    let   targetK = -0.4,
+          springDistance = 60;
 
   // Create grid
   for (let i = 0; i < particlesH; i++) {
@@ -21,7 +23,7 @@ window.onload = function() {
       p = new Particle (i * marginH + marginH/2, j * marginV + marginV/2, 0, 0);
 
       p.friction = 0.9;
-      p.hasSpringTarget = true;
+      p.setSpringTarget(p.x, p.y, 0.02);
       
       particles.push(p);
       
@@ -32,6 +34,14 @@ window.onload = function() {
     target.x = event.clientX;
     target.y = event.clientY;
   });
+  document.body.addEventListener('mousedown', function() {
+    // targetK = -15;
+    springDistance = 300;
+  });
+  document.body.addEventListener('mouseup', function() {
+    // targetK = -0.4;
+    springDistance = 60;
+  });
 
 	update();
 
@@ -39,12 +49,12 @@ window.onload = function() {
     context.clearRect(0, 0, width, height);
 
     particles.forEach(particle => {
-      particle.springFrom(particle, 0.02);
-      particle.springFrom(target, 0.04, 20);
+      // particle.springFrom(particle, 0.02);
+      particle.springFrom(target, targetK, springDistance);
       
       particle.update();
       context.beginPath();
-      context.arc(particle.x, particle.y, 5, 0, Math.PI * 2, false);
+      context.arc(particle.x, particle.y, 1, 0, Math.PI * 2, false);
       context.fill();
     })
     
