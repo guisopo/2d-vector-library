@@ -7,28 +7,30 @@ window.onload = function() {
 			context = canvas.getContext("2d"),
 			width = canvas.width = window.innerWidth,
       height = canvas.height = window.innerHeight,
-      particlesH = 5,
-      particlesV = 5,
+      particlesH = 40,
+      particlesV = 40,
+      marginH = width / particlesH,
+      marginV = height / particlesV,
       particles = [];
 
-  for (let i = 0; i <= particlesH; i++) {
-    for (let j = 0; j <= particlesV; j++) {
-      p = new Particle (width/ i, height/ j, 0, 0);
+  for (let i = 0; i < particlesH; i++) {
+    for (let j = 0; j < particlesV; j++) {
+      p = new Particle (i * marginH + marginH/2, j * marginV + marginV/2, 0, 0);
       particles.push(p);
     }
   }
 
-
+  console.log(particles);
 	update();
 
 	function update() {
     context.clearRect(0, 0, width, height);
 
-    context.beginPath();
     particles.forEach(particle => {
-      context.arc(particle.x, particle.y, 5, 0, Math.PI * 2, false);
+      context.beginPath();
+      context.arc(particle.x, particle.y, 2, 0, Math.PI * 2, false);
+      context.fill();
     })
-    context.fill();
     
     requestAnimationFrame(update);
 	}
