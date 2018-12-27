@@ -87,11 +87,11 @@ const utils = {
   },
 
   multiCurve: function(points, context) {
-    const p0, p1, midX, midY;
+    let p0, p1, midX, midY;
 
     context.moveTo(points[0].x, points[0].y);
     
-    for(const i = 1; i < points.length -2; i+=1) {
+    for(let i = 1; i < points.length -2; i+=1) {
       p0 = points[i];
       p1 = points[i + 1];
       midX =(p0.x + p1.x) / 2;
