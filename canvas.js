@@ -18,4 +18,11 @@ class Canvas {
     this.canvas.width = this.width;
     this.canvas.height = this.height;
   }
+
+  update() {
+    this.context.clearRect(0, 0, this.width, this.height);
+
+
+    requestAnimationFrame(this.updateBound);
+  }
 }
