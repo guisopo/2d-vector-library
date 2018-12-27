@@ -1,4 +1,4 @@
-var utils = {
+const utils = {
   norm: function(value, min, max) {
     return (value - min) / (max - min);
   },
@@ -24,13 +24,13 @@ var utils = {
   },
 
   distance: function(p0, p1) {
-		var dx = p1.x - p0.x,
+		const dx = p1.x - p0.x,
 			  dy = p1.y - p0.y;
 		return Math.sqrt(dx * dx + dy * dy);
   },
   
   distanceXY: function(x0, y0, x1, y1) {
-		var dx = x1 - x0,
+		const dx = x1 - x0,
 			  dy = y1 - y0;
 		return Math.sqrt(dx * dx + dy * dy);
   },
@@ -87,11 +87,11 @@ var utils = {
   },
 
   multiCurve: function(points, context) {
-    var p0, p1, midX, midY;
+    const p0, p1, midX, midY;
 
     context.moveTo(points[0].x, points[0].y);
     
-    for(var i = 1; i < points.length -2; i+=1) {
+    for(const i = 1; i < points.length -2; i+=1) {
       p0 = points[i];
       p1 = points[i + 1];
       midX =(p0.x + p1.x) / 2;
