@@ -1,14 +1,7 @@
 class Vector {
-  constructor() {
-    this._x = 1;
-    this._y = 0;
-  }
-
-  create(x, y) {
-    let obj = Object.create(this);
-    obj.setX(x);
-    obj.setY(y);
-    return obj;
+  constructor(x, y) {
+    this._x = x;
+    this._y = y;
   }
 
   setX(value) {
@@ -55,12 +48,12 @@ class Vector {
     return vector.create(this._x - v2.getX(), this._y - v2.getY());
   }
 
-  multiply(val) {
-    return vector.create(this._x * val, this._y * val);
+  multiply(value) {
+    return vector.create(this._x * value, this._y * value);
   }
 
-  divide(val) {
-    return vector.create(this._x / val, this._y / val);
+  divide(value) {
+    return vector.create(this._x / value, this._y / value);
   }
 
   addTo(v2) {
@@ -73,14 +66,14 @@ class Vector {
     this._y -= v2.getY();
   }
 
-  multiplyBy(val) {
-    this._x *= val;
-    this._y *= val;
+  multiplyBy(value) {
+    this._x *= value;
+    this._y *= value;
   }
 
-  divideBy(val) {
-    this._x /= val;
-    this._y /= val;
+  divideBy(value) {
+    this._x /= value;
+    this._y /= value;
   }
 
 }
