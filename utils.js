@@ -1,4 +1,20 @@
 const utils = {
+  // Angle unit conversion
+  degreesToRad: function(degrees) {
+    return degrees / 180 * Math.PI;
+  },
+  radToDegrees: function(radians) {
+    return radians * 180 / Math.PI;
+  },
+  // Round value
+  roundToPlaces: function(value, places) {
+    const mult = Math.pow(10, places);
+    return Math.round(value * mult) / mult;
+  },
+  roundNearest: function(value, nearest) {
+    return Math.round(value / nearest) * nearest;
+  },
+  
   // Normalization
   // Takes a value within a range (min to max) a returns an equivalent value within a range from 0 to 1.
   norm: function(value, min, max) {
@@ -60,16 +76,16 @@ const utils = {
 		        utils.inRange(y, rect.y, rect.y + rect.height);
 	},
   // Checks if a value is in a specified range (min to max)
-  // returns a boolean
+  // Returns a boolean
 	inRange: function(value, min, max) {
 		return  value >= Math.min(min, max) && value <= Math.max(min, max);
   },
-  
+  // Checks if there is an intersection between two ranges
   rangeIntersect: function(min0, max0, min1, max1) {
 		return  Math.max(min0, max0) >= Math.min(min1, max1) && 
 			      Math.min(min0, max0) <= Math.max(min1, max1);
 	},
-  // Checks if two lines intersect
+  // Checks if two straight lines intersect
 	rectIntersect: function(r0, r1) {
 		return  utils.rangeIntersect(r0.x, r0.x + r0.width, r1.x, r1.x + r1.width) &&
 			      utils.rangeIntersect(r0.y, r0.y + r0.height, r1.y, r1.y + r1.height);
