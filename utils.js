@@ -1,65 +1,78 @@
 const utils = {
+  // Normalization
+  // Takes a value within a range (min to max) a returns an equivalent value within a range from 0 to 1.
   norm: function(value, min, max) {
-    return (value - min) / (max - min);
+    return  (value - min) / (max - min);
   },
-  
-  lerp: function(norm, min, max) {
-    return (max - min) * norm + min;
+  // Lintear Interpolation
+  // Takes a normalized value and returns the equivalent within the specified range (min to max)
+  lerp: function(value, min, max) {
+    return  (max - min) * value + min;
   },
-
+  // Map
+  // Takes a value from one range (sourceMin to sourceMax) and returns the equivalent from another range (destMin to destMax)
   map: function(value, sourceMin, sourceMax, destMin, destMax) {
-    return utils.lerp(utils.norm(value, sourceMin, sourceMax), destMin, destMax);
+    return  utils.lerp(utils.norm(value, sourceMin, sourceMax), destMin, destMax);
   },
-
+  // Clamp
+  // Limits a value to ensure it stays within a range
   clamp: function(value, min, max) {
-    return Math.min(Math.max(value, Math.min(min, max)), Math.max(min, max));
+    return  Math.min(Math.max(value, Math.min(min, max)), Math.max(min, max));
   },
-
+  // Random Range
+  // Returns a random value within a range
   randomRange: function(min, max) {
-    return min + Math.random() * (max - min);
+    return  min + Math.random() * (max - min);
   },
-
+  // Random Integer
+  // Returns a random integer value within a range
   randomInt: function(min, max) {
-    return Math.floor(min + Math.random() * (max - min + 1));
+    return  Math.floor(min + Math.random() * (max - min + 1));
   },
-
+  // Distance 
+  // Returns the distance between two points
   distance: function(p0, p1) {
 		const dx = p1.x - p0.x,
-			  dy = p1.y - p0.y;
-		return Math.sqrt(dx * dx + dy * dy);
+			    dy = p1.y - p0.y;
+		return  Math.sqrt(dx * dx + dy * dy);
   },
-  
+  // Distance RAW
+  // Returns the distance between two points with raw x and y values
   distanceXY: function(x0, y0, x1, y1) {
 		const dx = x1 - x0,
-			  dy = y1 - y0;
-		return Math.sqrt(dx * dx + dy * dy);
+			    dy = y1 - y0;
+		return  Math.sqrt(dx * dx + dy * dy);
   },
-  
+  // Collision between two cirlces
+  // Returns a boolean
   circleCollision: function(c0, c1) {
-		return utils.distance(c0, c1) <= c0.radius + c1.radius;
+		return  utils.distance(c0, c1) <= c0.radius + c1.radius;
   },
-  
+  // Collision between a cirlce and a point
+  // Returns a boolean
   circlePointCollision: function(x, y, circle) {
-		return utils.distanceXY(x, y, circle.x, circle.y) < circle.radius;
+		return  utils.distanceXY(x, y, circle.x, circle.y) < circle.radius;
   },
-  
+  // Point in a line
+  // Returns a boolean
   pointInRect: function(x, y, rect) {
-		return utils.inRange(x, rect.x, rect.x + rect.width) &&
-		       utils.inRange(y, rect.y, rect.y + rect.height);
+		return  utils.inRange(x, rect.x, rect.x + rect.width) &&
+		        utils.inRange(y, rect.y, rect.y + rect.height);
 	},
-
+  // Checks if a value is in a specified range (min to max)
+  // returns a boolean
 	inRange: function(value, min, max) {
-		return value >= Math.min(min, max) && value <= Math.max(min, max);
+		return  value >= Math.min(min, max) && value <= Math.max(min, max);
   },
   
   rangeIntersect: function(min0, max0, min1, max1) {
-		return Math.max(min0, max0) >= Math.min(min1, max1) && 
-			   Math.min(min0, max0) <= Math.max(min1, max1);
+		return  Math.max(min0, max0) >= Math.min(min1, max1) && 
+			      Math.min(min0, max0) <= Math.max(min1, max1);
 	},
-
+  // Checks if two lines intersect
 	rectIntersect: function(r0, r1) {
-		return utils.rangeIntersect(r0.x, r0.x + r0.width, r1.x, r1.x + r1.width) &&
-			   utils.rangeIntersect(r0.y, r0.y + r0.height, r1.y, r1.y + r1.height);
+		return  utils.rangeIntersect(r0.x, r0.x + r0.width, r1.x, r1.x + r1.width) &&
+			      utils.rangeIntersect(r0.y, r0.y + r0.height, r1.y, r1.y + r1.height);
   },
   
   quadraticBezier: function(p0, p1, p2, t, pFinal) {
@@ -70,20 +83,20 @@ const utils = {
     pFinal.y = Math.pow(1 - t, 2) * p0.y +
               (1 - t) * 2 * t * p1.y +
               t * t * p2.y;
-    return pFinal;
+    return  pFinal;
   },
 
   cubicBezier: function(p0, p1, p2, p3, t, pFinal) {
-    pFinal = pFinal || {};
-    pFinal.x = Math.pow(1 - t, 3) * p0.x +
-              Math.pow(1 - t, 2) * 3 * t * p1.x +
-              (1 - t) * 3 * t * t * p2.x +
-              t * t * t * p3.x;
-    pFinal.y = Math.pow(1 - t, 3) * p0.y +
-              Math.pow(1 - t, 2) * 3 * t * p1.y +
-              (1 - t) * 3 * t * t * p2.y +
-              t * t * t * p3.y;
-    return pFinal;
+    pFinal =  pFinal || {};
+    pFinal.x =  Math.pow(1 - t, 3) * p0.x +
+                Math.pow(1 - t, 2) * 3 * t * p1.x +
+                (1 - t) * 3 * t * t * p2.x +
+                t * t * t * p3.x;
+    pFinal.y =  Math.pow(1 - t, 3) * p0.y +
+                Math.pow(1 - t, 2) * 3 * t * p1.y +
+                (1 - t) * 3 * t * t * p2.y +
+                t * t * t * p3.y;
+    return  pFinal;
   },
 
   multiCurve: function(points, context) {
