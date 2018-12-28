@@ -12,7 +12,7 @@ window.onload = function() {
       weight = new Particle(Math.random() * width, Math.random() * height, 0, 0),
       // weight2 = new Particle(Math.random() * width, Math.random() * height, 0, 0),
 
-      k = 1,
+      k = 0.09,
       springLength = 0,
       minRadius = 25,
       maxRadius = 60;
@@ -20,7 +20,8 @@ window.onload = function() {
   weight.radius = minRadius;
   weight.friction = 0.1;
   // weight2.friction = 0.06;
-  weight.addSpring(springPoint, k, springLength);
+  weight.addSpring( springPoint, k, springLength);
+
   // weight2.addSpring(weight, k, springLength);
 
   
