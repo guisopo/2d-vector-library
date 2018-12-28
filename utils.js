@@ -14,7 +14,6 @@ const utils = {
   roundNearest: function(value, nearest) {
     return Math.round(value / nearest) * nearest;
   },
-  
   // Normalization
   // Takes a value within a range (min to max) a returns an equivalent value within a range from 0 to 1.
   norm: function(value, min, max) {
@@ -44,6 +43,15 @@ const utils = {
   // Returns a random integer value within a range
   randomInt: function(min, max) {
     return  Math.floor(min + Math.random() * (max - min + 1));
+  },
+  //Random Distribution
+  // Returns a weighted random number based on the number of iterations
+  randomDist: function(min, max, iterations) {
+    let total = 0;
+    for(let i = 0; i < iterations; i++) {
+      total += utils.randomRange(min, max);
+    }
+    return total / iterations;
   },
   // Distance 
   // Returns the distance between two points
