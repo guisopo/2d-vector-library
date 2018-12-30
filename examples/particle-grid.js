@@ -1,13 +1,13 @@
 window.onload = function() {
 	const canvas = document.getElementById("canvas"),
-			context = canvas.getContext("2d"),
-			width = canvas.width = window.innerWidth,
-      height = canvas.height = window.innerHeight,
-      
-      canvas2 = document.getElementById("canvas2"),
-			context2 = canvas2.getContext("2d");
-			canvas2.width = width;
-      canvas2.height = height;
+        context = canvas.getContext("2d"),
+        width = canvas.width = window.innerWidth,
+        height = canvas.height = window.innerHeight,
+        
+        canvas2 = document.getElementById("canvas2"),
+        context2 = canvas2.getContext("2d");
+        canvas2.width = width;
+        canvas2.height = height;
 
 
     // Number of particles
@@ -62,7 +62,13 @@ window.onload = function() {
     springDistance = 60;
   });
 
-	update();
+  update();
+  
+  function drawParticle(context, x, y, radius) {
+      context.beginPath();
+      context.arc(x, y, radius, 0, Math.PI * 2, false);
+      context.fill();
+  }
 
 	function update() {
     context.clearRect(0, 0, width, height);
@@ -71,9 +77,7 @@ window.onload = function() {
       particle.update();
       particle.springFrom(target, targetK, springDistance);
       
-      context.beginPath();
-      context.arc(particle.x, particle.y, 1.5, 0, Math.PI * 2, false);
-      context.fill();
+      drawParticle(context, particle.x, particle.y, 1.5);
     })
     
     context2.clearRect(0, 0, width, height);
@@ -82,9 +86,7 @@ window.onload = function() {
       particle.update();
       particle.springFrom(target, targetK, springDistance);
 
-      context2.beginPath();
-      context2.arc(particle.x, particle.y, 1.5, 0, Math.PI * 2, false);
-      context2.fill();
+      drawParticle(context2, particle.x, particle.y, 1.5);
     })
     
     requestAnimationFrame(update);
