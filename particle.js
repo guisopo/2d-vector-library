@@ -125,7 +125,7 @@ class Particle {
   gravitateTo(p2) {    
     let dx = p2.x - this.x,
         dy = p2.y - this.y,
-        dist = this.distanceTo(p2),
+        dist = Math.sqrt(dx * dx + dy * dy),
         force = p2.mass / (dist * dist),
         ax = dx / dist * force,
         ay = dy / dist * force;
@@ -142,7 +142,7 @@ class Particle {
     let dx = springPoint.x - this.x,
         dy = springPoint.y - this.y,
         distance = Math.sqrt( dx * dx + dy * dy),
-        springForce = (distance - springLength) * k;
+        springForce = (distance - springLength || 0) * k;
     this.vx += dx / distance * springForce,
     this.vy += dy / distance * springForce;
   }
@@ -156,6 +156,12 @@ class Particle {
       this.vx += dx / distance * springForce,
       this.vy += dy / distance * springForce;
     }
+  }
+
+  drawParticle(context) {
+    context.beginPath();
+    context.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+    context.fill();
   }
 
 }

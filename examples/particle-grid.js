@@ -29,7 +29,7 @@ window.onload = function() {
   for (let i = 0; i < particlesH; i++) {
     for (let j = 0; j < particlesV; j++) {
       p = new Particle (i * marginH + marginH/2, j * marginV + marginV/2, 0, 0);
-
+      p.radius = 1.5;
       p.friction = 0.9;
       p.setSpringTarget(p.x, p.y, 0.02);
       
@@ -41,7 +41,7 @@ window.onload = function() {
   for (let i = 0; i < particlesH; i++) {
     for (let j = 0; j < particlesV; j++) {
       p = new Particle (i * marginH , j * marginV , 0, 0);
-
+      p.radius = 1.5; 
       p.friction = 0.9;
       p.setSpringTarget(p.x, p.y, 0.02);
       
@@ -63,12 +63,6 @@ window.onload = function() {
   });
 
   update();
-  
-  function drawParticle(context, x, y, radius) {
-      context.beginPath();
-      context.arc(x, y, radius, 0, Math.PI * 2, false);
-      context.fill();
-  }
 
 	function update() {
     context.clearRect(0, 0, width, height);
@@ -76,18 +70,16 @@ window.onload = function() {
     particles.forEach(particle => {
       particle.update();
       particle.springFrom(target, targetK, springDistance);
-      
-      drawParticle(context, particle.x, particle.y, 1.5);
-    })
+      particle.drawParticle(context);
+    });
     
     context2.clearRect(0, 0, width, height);
 
     particles2.forEach(particle => {
       particle.update();
       particle.springFrom(target, targetK, springDistance);
-
-      drawParticle(context2, particle.x, particle.y, 1.5);
-    })
+      particle.drawParticle(context2);
+    });
     
     requestAnimationFrame(update);
 	}
