@@ -158,6 +158,19 @@ class Particle {
     }
   }
 
+  think(p2, dp2) {
+    let dx = this.x - p2.x,
+        dy = this.y - p2.y,
+        distance = Math.sqrt(dx * dx + dy * dy);
+
+    if(distance < dp2) {
+      let tx = p2.x + dx / distance * dp2,
+          ty = p2.y + dy / distance * dp2;
+      this.vx += tx - this.x;
+      this.vy += ty - this.y;
+    }
+  }
+
   drawParticle(context) {
     context.beginPath();
     context.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
