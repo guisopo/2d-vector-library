@@ -22,7 +22,7 @@ window.onload = function() {
       particles2 = [],
       target = new Particle(0, 0, 0, 0);
 
-    let   targetK = -0.4,
+    let   targetK = 0.4,
           springDistance = 60;
 
   // Create grid
