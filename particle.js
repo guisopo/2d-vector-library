@@ -2,6 +2,10 @@ class Particle {
   constructor(x, y, speed, direction, grav) {
     this.x = x || 0;
     this.y = y || 0;
+
+    this.originalX = x || 0;
+    this.originalY = y || 0;
+
     this.vx = Math.cos(direction) * speed;
     this.vy = Math.sin(direction) * speed;
     this.mass = 1;
@@ -156,6 +160,13 @@ class Particle {
       this.vx += dx / distance * springForce,
       this.vy += dy / distance * springForce;
     }
+  }
+
+  springBack(k) {
+    let dx = -(this.x - this.originalX),
+        dy = -(this.y - this.originalY);
+    this.vx += dx * k,
+    this.vy += dy * k;
   }
 
   think(p2, dp2) {
