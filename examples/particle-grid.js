@@ -2,28 +2,19 @@ window.onload = function() {
 	const canvas = document.getElementById("canvas"),
         context = canvas.getContext("2d"),
         width = canvas.width = window.innerWidth,
-        height = canvas.height = window.innerHeight,
-        
-        canvas2 = document.getElementById("canvas2"),
-        context2 = canvas2.getContext("2d");
-        canvas2.width = width;
-        canvas2.height = height;
-
+        height = canvas.height = window.innerHeight;
 
     // Number of particles
-    const  particlesH = 30,
-           particlesV = 30,
+    const  particlesH = 75,
+           particlesV = 75,
 
     // Margin between particles
       marginH = width / particlesH,
       marginV = height / particlesV,
 
       particles = [],
-      particles2 = [],
       target = new Particle(0, 0, 0, 0);
-
-    let   targetK = 0.4,
-          springDistance = 60;
+      target.radius = 100;
 
   // Create grid
   for (let i = 0; i < particlesH; i++) {
@@ -38,28 +29,17 @@ window.onload = function() {
     }
   }
 
-  for (let i = 0; i < particlesH; i++) {
-    for (let j = 0; j < particlesV; j++) {
-      p = new Particle (i * marginH , j * marginV , 0, 0);
-      p.radius = 1.5; 
-      p.friction = 0.9;
-      p.setSpringTarget(p.x, p.y, 0.02);
-      
-      particles2.push(p);
-      
-    }
-  }
   document.body.addEventListener('mousemove', function(event) {
     target.x = event.clientX;
     target.y = event.clientY;
   });
+
   document.body.addEventListener('mousedown', function() {
-    // targetK = -15;
-    springDistance = 300;
+    target.radius = 300;
   });
+
   document.body.addEventListener('mouseup', function() {
-    // targetK = -0.4;
-    springDistance = 60;
+    target.radius = 100;
   });
 
   update();
@@ -68,17 +48,9 @@ window.onload = function() {
     context.clearRect(0, 0, width, height);
 
     particles.forEach(particle => {
+      particle.think(target, target.radius);
       particle.update();
-      particle.springFrom(target, targetK, springDistance);
       particle.drawParticle(context);
-    });
-    
-    context2.clearRect(0, 0, width, height);
-
-    particles2.forEach(particle => {
-      particle.update();
-      particle.springFrom(target, targetK, springDistance);
-      particle.drawParticle(context2);
     });
     
     requestAnimationFrame(update);
