@@ -1,18 +1,18 @@
 window.onload = function() {
-	var canvas = document.getElementById("canvas"),
-		context = canvas.getContext("2d"),
-		width = canvas.width = window.innerWidth,
-		height = canvas.height = window.innerHeight;
-		focalLength = 300,
-		particles = [],
-		numberOfParticles = 200,
-		centerZ = 2000,
-		radius = 1000,
-		baseAngle = 0,
-		rotationSpeed = 0.01;
+	const canvas = document.getElementById("canvas"),
+				context = canvas.getContext("2d"),
+				width = canvas.width = window.innerWidth,
+				height = canvas.height = window.innerHeight;
+				focalLength = 300,
+				particles = [],
+				numberOfParticles = 200,
+				centerZ = 2000,
+				radius = 1000,
+				baseAngle = 0,
+				rotationSpeed = 0.01;
 
-	for(var i = 0; i < numberOfParticles; i++) {
-		var particle = {
+	for(let i = 0; i < numberOfParticles; i++) {
+		const particle = {
 			angle: 0.2 * i,
 			y: 2000 - 4000 / numberOfParticles * i
 		};
@@ -34,7 +34,7 @@ window.onload = function() {
 		context.clearRect(-width/2, -height/2, width, height);
 
 		particles.forEach(particle => {
-			var perspective = focalLength / (focalLength + particle.z);
+			const perspective = focalLength / (focalLength + particle.z);
 			context.save();
 			context.scale(perspective, perspective);
 			context.translate(particle.x, particle.y);
