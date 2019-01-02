@@ -29,6 +29,7 @@ window.onload = function() {
 	});
 
 	update();
+	
 	function update() {
 		baseAngle += rotationSpeed;
 		context.clearRect(-width/2, -height/2, width, height);
@@ -52,10 +53,5 @@ window.onload = function() {
 		
 		requestAnimationFrame(update);
 	}
-
-	function zSort(cardA, cardB) {
-		return cardB.z - cardA.z;
-	}
-
 	
 };
