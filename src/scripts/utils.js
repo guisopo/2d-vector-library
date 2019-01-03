@@ -1,4 +1,4 @@
-const utils = {
+export const utils = {
   // Angle unit conversion
   degreesToRad: function(degrees) {
     return degrees / 180 * Math.PI;
