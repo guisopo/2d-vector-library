@@ -98,24 +98,6 @@ class Particle {
     this.vy += ay;
   }
 
-  update() {
-    this.handleSprings();
-    this.handleGravitations();
-
-    if (this.hasSpringTarget) {
-        this.vx += (this.springTargetX - this.x) * this.springTargetK;
-        this.vy += (this.springTargetY - this.y) * this.springTargetK;
-    }
-
-    this.x += this.vx;
-    this.y += this.vy;
-
-    this.vx *= this.friction;
-    this.vy *= this.friction;
-
-    this.vy += this.gravity;
-  }
-
   angleTo(p2) {
     return Math.atan2(p2.y - this.y, p2.x - this.x);
   }
@@ -180,6 +162,24 @@ class Particle {
       this.vx += tx - this.x;
       this.vy += ty - this.y;
     }
+  }
+
+  update() {
+    this.handleSprings();
+    this.handleGravitations();
+
+    if (this.hasSpringTarget) {
+        this.vx += (this.springTargetX - this.x) * this.springTargetK;
+        this.vy += (this.springTargetY - this.y) * this.springTargetK;
+    }
+
+    this.x += this.vx;
+    this.y += this.vy;
+
+    this.vx *= this.friction;
+    this.vy *= this.friction;
+
+    this.vy += this.gravity;
   }
 
   drawParticle(context) {

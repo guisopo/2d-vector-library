@@ -14,19 +14,6 @@ window.onload = function() {
         target = new Particle(0, 0, 0, 0);
         target.radius = 100;
 
-  // Create grid
-  for (let i = 0; i < numberParticles; i++) {
-    for (let j = 0; j < numberParticles; j++) {
-      p = new Particle (i * marginH + marginH/2, j * marginV + marginV/2, 0, 0);
-      p.radius = 1.5;
-      p.friction = 0.9;
-      
-      p.setSpringTarget(p.x, p.y, 0.02);
-      
-      particles.push(p);  
-    }
-  }
-
   document.body.addEventListener('mousemove', function(event) {
     target.x = event.clientX;
     target.y = event.clientY;
@@ -39,6 +26,22 @@ window.onload = function() {
   document.body.addEventListener('mouseup', function() {
     target.radius = 100;
   });
+  
+  // Initialize and create grid
+  function init() {
+    for (let i = 0; i < numberParticles; i++) {
+      for (let j = 0; j < numberParticles; j++) {
+        p = new Particle (i * marginH + marginH/2, j * marginV + marginV/2, 0, 0);
+        p.radius = 1.5;
+        p.friction = 0.9;
+        
+        p.setSpringTarget(p.x, p.y, 0.02);
+        
+        particles.push(p);  
+      }
+    }
+  }
+
 
 	function update() {
     context.clearRect(0, 0, width, height);
@@ -50,8 +53,8 @@ window.onload = function() {
     });
     
     requestAnimationFrame(update);
-	}
+  }
   
+  init();
   requestAnimationFrame(update);
-
 };
