@@ -4,28 +4,26 @@ window.onload = function() {
         width = canvas.width = window.innerWidth,
         height = canvas.height = window.innerHeight;
 
-    // Number of particles
-    const  particlesH = 75,
-           particlesV = 75,
+  // Number of particles
+  const  numberParticles = 50,
+        // Margin between particles
+        marginH = width / numberParticles,
+        marginV = height / numberParticles,
 
-    // Margin between particles
-      marginH = width / particlesH,
-      marginV = height / particlesV,
-
-      particles = [],
-      target = new Particle(0, 0, 0, 0);
-      target.radius = 100;
+        particles = [],
+        target = new Particle(0, 0, 0, 0);
+        target.radius = 100;
 
   // Create grid
-  for (let i = 0; i < particlesH; i++) {
-    for (let j = 0; j < particlesV; j++) {
+  for (let i = 0; i < numberParticles; i++) {
+    for (let j = 0; j < numberParticles; j++) {
       p = new Particle (i * marginH + marginH/2, j * marginV + marginV/2, 0, 0);
       p.radius = 1.5;
       p.friction = 0.9;
+      
       p.setSpringTarget(p.x, p.y, 0.02);
       
-      particles.push(p);
-      
+      particles.push(p);  
     }
   }
 
@@ -42,8 +40,6 @@ window.onload = function() {
     target.radius = 100;
   });
 
-  update();
-
 	function update() {
     context.clearRect(0, 0, width, height);
 
@@ -55,6 +51,7 @@ window.onload = function() {
     
     requestAnimationFrame(update);
 	}
-
+  
+  requestAnimationFrame(update);
 
 };
