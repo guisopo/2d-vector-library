@@ -7,7 +7,7 @@ export const radToDegrees = function(radians) {
 }
 // Round value
 export const roundToPlaces = function(value, places) {
-  export const mult = Math.pow(10, places);
+  const mult = Math.pow(10, places);
   return Math.round(value * mult) / mult;
 }
 export const roundNearest = function(value, nearest) {
@@ -55,14 +55,14 @@ export const randomDist = function(min, max, iterations) {
 // Distance 
 // Returns the distance between two points
 export const distance = function(p0, p1) {
-  export const dx = p1.x - p0.x,
+  const dx = p1.x - p0.x,
         dy = p1.y - p0.y;
   return  Math.sqrt(dx * dx + dy * dy);
 }
 // Distance RAW
 // Returns the distance between two points with raw x and y values
 export const distanceXY = function(x0, y0, x1, y1) {
-  export const dx = x1 - x0,
+  const dx = x1 - x0,
         dy = y1 - y0;
   return  Math.sqrt(dx * dx + dy * dy);
 }
