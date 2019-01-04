@@ -1,4 +1,4 @@
-class Canvas {
+export class Canvas {
   constructor() {
     this.canvas = document.createElement('canvas');
     this.context = this.canvas.getContext('2d');
@@ -8,8 +8,8 @@ class Canvas {
     window.addEventListener('resize', () => this.onResize());
     this.onResize();
 
-    this.updateBound = this.update.bind(this);
-    requestAnimationFrame(this.updateBound);
+    // this.updateBound = this.update.bind(this);
+    // requestAnimationFrame(this.updateBound);
   }
 
   onResize() {
@@ -19,9 +19,9 @@ class Canvas {
     this.canvas.height = this.height;
   }
 
-  update() {
-    this.context.clearRect(0, 0, this.width, this.height);
+  // update() {
+  //   this.context.clearRect(0, 0, this.width, this.height);
 
-    requestAnimationFrame(this.updateBound);
-  }
+  //   requestAnimationFrame(this.updateBound);
+  // }
 }
