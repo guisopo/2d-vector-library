@@ -1,62 +1,70 @@
-import { Particle } from './particle.js';
+import { Particle } from '../scripts/particle.js';
+import { Canvas } from '../scripts/canvas.js';
 
-window.onload = function() {
-	const canvas = document.getElementById("canvas"),
-        context = canvas.getContext("2d"),
-        width = canvas.width = window.innerWidth,
-        height = canvas.height = window.innerHeight;
 
-  // Number of particles
-  const  numberParticles = 50,
-        // Margin between particles
-        marginH = width / numberParticles,
-        marginV = height / numberParticles,
+export class ParticlesGrid extends Canvas {
+  constructor(numberParticles, particlesRadius, particlesRadiusFriction, k, targetRadius) {
+    super();
+    this.numberParticles = numberParticles;
+    this.marginH = this.width / this.numberParticles;
+    this.marginV = this.height / this.numberParticles;
+    this.particles = [];
+    this.target = new Particle(0, 0, 0, 0);
+    this.target.radius = targetRadius;
+    
+    this.createParticles(particlesRadius, particlesRadiusFriction, k);
+    
+    this.updateBound = this.update.bind(this);
+    requestAnimationFrame(this.updateBound);
 
-        particles = [],
-        target = new Particle(0, 0, 0, 0);
-        target.radius = 100;
+    this.onMouseMove(this.target);
+    this.onMouseDown(this.target);
+    this.onMouseUp(this.target);
+  }
 
-  document.body.addEventListener('mousemove', function(event) {
-    target.x = event.clientX;
-    target.y = event.clientY;
-  });
+  onMouseMove(target) {
+    document.body.addEventListener('mousemove', function(event) {
+      target.x = event.clientX;
+      target.y = event.clientY;
+    });
+  }
 
-  document.body.addEventListener('mousedown', function() {
-    target.radius = 300;
-  });
+  onMouseDown(target) {
+    document.body.addEventListener('mousedown', function() {
+      target.radius = target.radius * 3;
+    });
+  }
 
-  document.body.addEventListener('mouseup', function() {
-    target.radius = 100;
-  });
-  
-  // Initialize and create grid
-  function init() {
-    for (let i = 0; i < numberParticles; i++) {
-      for (let j = 0; j < numberParticles; j++) {
-        p = new Particle (i * marginH + marginH/2, j * marginV + marginV/2, 0, 0);
-        p.radius = 1.5;
-        p.friction = 0.9;
+  onMouseUp(target) {
+    document.body.addEventListener('mouseup', function() {
+      target.radius = target.radius / 3;
+    });
+  }
+
+  createParticles(radius, friction, k) {
+    for (let i = 0; i < this.numberParticles; i++) {
+      for (let j = 0; j < this.numberParticles; j++) {
+        let p = new Particle (i * this.marginH + this.marginH/2, j * this.marginV + this.marginV/2, 0, 0);
+        p.radius = radius;
+        p.friction = friction;
         
-        p.setSpringTarget(p.x, p.y, 0.02);
+        p.setSpringTarget(p.x, p.y, k);
         
-        particles.push(p);  
+        this.particles.push(p);  
       }
     }
   }
 
+  update() {
+    this.context.clearRect(0, 0, this.width, this.height);
 
-	function update() {
-    context.clearRect(0, 0, width, height);
-
-    particles.forEach(particle => {
-      particle.think(target, target.radius);
+    this.particles.forEach(particle => {
+      particle.think(this.target, this.target.radius);
       particle.update();
-      particle.drawParticle(context);
+      particle.drawParticle(this.context);
     });
-    
-    requestAnimationFrame(update);
+
+    requestAnimationFrame(this.updateBound);
   }
-  
-  init();
-  requestAnimationFrame(update);
-};
+
+}
