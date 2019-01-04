@@ -3,16 +3,18 @@ import { Canvas } from '../scripts/canvas.js';
 
 
 export class ParticlesGrid extends Canvas {
-  constructor(numberParticles, particlesRadius, particlesRadiusFriction, k, targetRadius) {
+  constructor(numberParticles, particlesRadius, particlesFriction, k, targetRadius) {
     super();
+    
     this.numberParticles = numberParticles;
     this.marginH = this.width / this.numberParticles;
     this.marginV = this.height / this.numberParticles;
     this.particles = [];
+
     this.target = new Particle(0, 0, 0, 0);
     this.target.radius = targetRadius;
     
-    this.createParticles(particlesRadius, particlesRadiusFriction, k);
+    this.createParticles(particlesRadius, particlesFriction, k);
     
     this.updateBound = this.update.bind(this);
     requestAnimationFrame(this.updateBound);
