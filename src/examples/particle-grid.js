@@ -5,6 +5,9 @@ import { Canvas } from '../scripts/canvas.js';
 export class ParticlesGrid extends Canvas {
   constructor(numberParticles, particlesRadius, particlesFriction, k, targetRadius) {
     super();
+
+    this.dx = 0;
+    this.dy = 0;
     
     this.numberParticles = numberParticles;
     this.marginH = this.width / this.numberParticles;
@@ -49,8 +52,8 @@ export class ParticlesGrid extends Canvas {
         let p = new Particle (i * this.marginH + this.marginH/2, j * this.marginV + this.marginV/2, 0, 0);
         p.radius = radius;
         p.friction = friction;
-        
-        p.setSpringTarget(p.x, p.y, k);
+        p.i = i + j;
+        // p.setSpringTarget(p.x, p.y, k);
         
         this.particles.push(p);  
       }
@@ -61,7 +64,10 @@ export class ParticlesGrid extends Canvas {
     this.context.clearRect(0, 0, this.width, this.height);
 
     this.particles.forEach(particle => {
+      particle.i += 0.05;
       particle.think(this.target, this.target.radius);
+      particle.x = particle.x + Math.cos(particle.i) ;
+      particle.y = particle.y + Math.sin(particle.i) ;
       particle.update();
       particle.drawParticle(this.context);
     });
