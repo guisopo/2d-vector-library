@@ -2,9 +2,8 @@
 // This is a port of Ken Perlin's Java code. The
 // original Java code is at http://cs.nyu.edu/%7Eperlin/noise/.
 // Note that in this version, a number from 0 to 1 is returned.
-export const perlinNoise = function() {
 
-  this.noise = function(x, y, z) {
+export function noise(x, y, z) {
   
     const p = new Array(512)
     const permutation = [ 151,160,137,91,90,15,
@@ -49,16 +48,20 @@ export const perlinNoise = function() {
                                       grad(p[BA+1], x-1, y  , z-1 )), // OF CUBE
                               lerp(u, grad(p[AB+1], x  , y-1, z-1 ),
                                       grad(p[BB+1], x-1, y-1, z-1 )))));
-     }
-     function fade(t) { return t * t * t * (t * (t * 6 - 15) + 10); }
-     function lerp( t, a, b) { return a + t * (b - a); }
-     function grad(hash, x, y, z) {
+}
+
+function fade(t) { return t * t * t * (t * (t * 6 - 15) + 10); }
+
+function lerp( t, a, b) { return a + t * (b - a); }
+
+function grad(hash, x, y, z) {
         const h = hash & 15;                      // CONVERT LO 4 BITS OF HASH CODE
         const u = h<8 ? x : y,                 // INTO 12 GRADIENT DIRECTIONS.
-               v = h<4 ? y : h==12||h==14 ? x : z;
+                v = h<4 ? y : h==12||h==14 ? x : z;
         return ((h&1) == 0 ? u : -u) + ((h&2) == 0 ? v : -v);
-     } 
-     function scale(n) { return (1 + n)/2; }
-  }
+} 
+
+function scale(n) { return (1 + n)/2; }
+  
   
   
