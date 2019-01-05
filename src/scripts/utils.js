@@ -26,7 +26,10 @@ export const lerp = function(value, min, max) {
 // Map
 // Takes a value from one range (sourceMin to sourceMax) and returns the equivalent from another range (destMin to destMax)
 export const map = function(value, sourceMin, sourceMax, destMin, destMax) {
-  return  utils.lerp(utils.norm(value, sourceMin, sourceMax), destMin, destMax);
+  // utils.lerp(utils.norm(value, sourceMin, sourceMax), destMin, destMax);
+  const norm = (value - sourceMin) / (sourceMax - sourceMin);
+  const lerp = (destMax - destMin) * norm + destMin;
+  return  lerp;
 }
 // Clamp
 // Limits a value to ensure it stays within a range
@@ -48,7 +51,8 @@ export const randomInt = function(min, max) {
 export const randomDist = function(min, max, iterations) {
   let total = 0;
   for(let i = 0; i < iterations; i++) {
-    total += utils.randomRange(min, max);
+    // total += randomRange
+    total += (min + Math.random() * (max - min));
   }
   return total / iterations;
 }
