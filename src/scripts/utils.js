@@ -21,6 +21,7 @@ export const norm = function(value, min, max) {
 // Lintear Interpolation
 // Takes a normalized value and returns the equivalent within the specified range (min to max)
 export const lerp = function(value, min, max) {
+  // Try with return (1 - value) * min + value * max;
   return  (max - min) * value + min;
 }
 // Map
