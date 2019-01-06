@@ -19,8 +19,8 @@ export class ParticlesGrid extends Canvas {
     
     this.createParticles(particlesRadius, particlesFriction, k);
     
-    this.updateBound = this.update.bind(this);
-    requestAnimationFrame(this.updateBound);
+    this.updateRender = this.render.bind(this);
+    requestAnimationFrame(this.updateRender);
 
     this.onMouseMove(this.target);
     this.onMouseDown(this.target);
@@ -60,9 +60,9 @@ export class ParticlesGrid extends Canvas {
     }
   }
 
-  update() {
+  draw() {
     this.context.clearRect(0, 0, this.width, this.height);
-
+  
     this.particles.forEach(particle => {
       particle.i += 0.05;
       particle.think(this.target, this.target.radius);
@@ -71,8 +71,11 @@ export class ParticlesGrid extends Canvas {
       particle.update();
       particle.drawParticle(this.context);
     });
+  }
 
-    requestAnimationFrame(this.updateBound);
+  render() {
+    this.draw();
+    requestAnimationFrame(this.updateRender);
   }
 
 }
