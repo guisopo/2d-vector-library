@@ -50,7 +50,7 @@ export class Particle {
   }
 
   addSpring(point, k, length) {
-    this.removeSpring(point);
+    // this.removeSpring(point);
     this.springs.push({
       point: point,
       k: k,

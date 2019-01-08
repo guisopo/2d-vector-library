@@ -19,12 +19,12 @@ export class springParticles extends Canvas {
     this.updateRender = this.render.bind(this);
     requestAnimationFrame(this.updateRender);
 
-    this.onMouseClick(this.particles, this.friction, this.radius);
+    this.onMouseClick(this.particles, this.friction, this.radius, this.springTo);
   }
 
-  onMouseClick(particles, friction, radius) {
+  onMouseClick(particles, friction, radius, callback) {
     document.addEventListener('click', function(event) {
-      let newParticle = new Particle(event.x, 
+      const newParticle = new Particle(event.x, 
                                 event.y, 
                                 utils.randomRange(0, 50),
                                 utils.randomRange(0, Math.PI * 2),
@@ -35,6 +35,7 @@ export class springParticles extends Canvas {
 
       particles.push(newParticle);
       newParticle.index = particles.indexOf(newParticle);
+      callback(particles);
     });
   }
 
@@ -58,18 +59,22 @@ export class springParticles extends Canvas {
       this.particles.push(particle);
       particle.index = this.particles.indexOf(particle);
     };
+    this.springTo(this.particles);
+  }
+
+  springTo(particles) {
+    particles.forEach(particle => {
+      for(let i = 0; i < particles.length; i++) {
+        if( particle.index !== i){
+          particle.addSpring(particles[i], 0.01, 250);
+        }
+      }
+      console.log(particle.springs);
+    });
   }
 
   draw() {
     this.context.clearRect(0, 0, this.width, this.height);
-    
-    this.particles.forEach(particle => {
-      for(let i = 0; i < this.particles.length; i++) {
-        if( particle.index !== i){
-          particle.springTo(this.particles[i],this.k, this.separation);
-        }
-      }
-    });
     
     this.particles.forEach(particle => {
      
