@@ -68,15 +68,17 @@ export class springParticles extends Canvas {
         if( particle.index !== i){
           particle.springTo(this.particles[i],this.k, this.separation);
         }
-        // particle.springTo(cursor, k, 10);
       }
     });
-
+    
     this.particles.forEach(particle => {
      
       particle.update();
       particle.drawParticle(this.context);
-      this.checkEdges(particle);
+
+      if (particle.gravity !== 0) {
+        this.checkEdges(particle);
+      }
       
     });
 
