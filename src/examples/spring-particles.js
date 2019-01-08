@@ -1,27 +1,28 @@
-import { Canvas } from './canvas.js';
-import { Particle } from './particle.js';
-import * as utils from './utils.js';
+import { Canvas } from '../scripts/canvas.js';
+import { Particle } from '../scripts/particle.js';
+import * as utils from '../scripts/utils.js';
 
-class springParticles extends Canvas {
-  constructor() {
+export class springParticles extends Canvas {
+  constructor(numberOfParticles, radius, separation) {
     super();
 
-    this.numberOfParticles = 3;
+    this.numberOfParticles = numberOfParticles;
     this.particles = [];
-    this.radius = 5,
+    this.radius = radius,
+    this.separation = separation;
+    
     this.friction = 0.9,
     this.k = 0.01,
-    this.separation = 250;
 
     this.createParticles(this.radius, this.friction);
 
     this.updateRender = this.render.bind(this);
     requestAnimationFrame(this.updateRender);
 
-    this.onMouseClick(this.particles);
+    this.onMouseClick(this.particles, this.friction, this.radius);
   }
 
-  onMouseClick(particles) {
+  onMouseClick(particles, friction, radius) {
     document.addEventListener('click', function(event) {
       let newParticle = new Particle(event.x, 
                                 event.y, 
@@ -29,8 +30,8 @@ class springParticles extends Canvas {
                                 utils.randomRange(0, Math.PI * 2),
                                 0
                             );
-      newParticle.friction = this.friction;
-      newParticle.radius = this.radius;
+      newParticle.friction = friction;
+      newParticle.radius = radius;
 
       particles.push(newParticle);
       newParticle.index = particles.indexOf(newParticle);
@@ -57,7 +58,6 @@ class springParticles extends Canvas {
       this.particles.push(particle);
       particle.index = this.particles.indexOf(particle);
     };
-    console.log(this.particles);
   }
 
   draw() {
@@ -76,12 +76,6 @@ class springParticles extends Canvas {
      
       particle.update();
       particle.drawParticle(this.context);
-
-      // cursor
-      // context.beginPath();
-      // context.arc(cursor.x, cursor.y, cursor.radius, 0, Math.PI * 2, false);
-      // context.fill();
-
       this.checkEdges(particle);
       
     });
@@ -93,4 +87,3 @@ class springParticles extends Canvas {
     requestAnimationFrame(this.updateRender);
   }
 }
-new springParticles();
