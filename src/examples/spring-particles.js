@@ -7,10 +7,10 @@ export class springParticles extends Canvas {
     super();
 
     this.numberOfParticles = numberOfParticles;
-    this.particles = [];
     this.radius = radius,
     this.separation = separation;
     
+    this.particles = [];
     this.friction = 0.9,
     this.k = 0.01,
 
@@ -64,31 +64,29 @@ export class springParticles extends Canvas {
 
   springTo(particles) {
     particles.forEach(particle => {
+      particle.springs = [];
       for(let i = 0; i < particles.length; i++) {
         if( particle.index !== i){
           particle.addSpring(particles[i], 0.01, 250);
         }
       }
-      console.log(particle.springs);
     });
   }
-
+  
   draw() {
     this.context.clearRect(0, 0, this.width, this.height);
-    
     this.particles.forEach(particle => {
-     
       particle.update();
       particle.drawParticle(this.context);
-
+      
       if (particle.gravity !== 0) {
         this.checkEdges(particle);
       }
       
     });
-
+    
   }
-
+  
   render() {
     this.draw();
     requestAnimationFrame(this.updateRender);
