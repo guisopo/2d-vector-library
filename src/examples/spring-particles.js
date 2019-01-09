@@ -14,12 +14,10 @@ export class springParticles extends Canvas {
     this.friction = 0.9,
     this.k = 0.01,
 
-    this.createParticles(this.radius, this.friction);
-
+    this.createParticles(this.radius, this.friction);    
+    this.onMouseClick(this.particles, this.friction, this.radius, this.springTo);  
     this.updateRender = this.render.bind(this);
     requestAnimationFrame(this.updateRender);
-
-    this.onMouseClick(this.particles, this.friction, this.radius, this.springTo);
   }
 
   onMouseClick(particles, friction, radius, callback) {
@@ -75,14 +73,13 @@ export class springParticles extends Canvas {
   
   draw() {
     this.context.clearRect(0, 0, this.width, this.height);
+
     this.particles.forEach(particle => {
       particle.update();
       particle.drawParticle(this.context);
-      
       if (particle.gravity !== 0) {
         this.checkEdges(particle);
-      }
-      
+      } 
     });
     
   }
