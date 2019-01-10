@@ -1,50 +1,52 @@
-window.onload = function() {
-	var canvas = document.getElementById("canvas"),
-			context = canvas.getContext("2d"),
-			width = canvas.width = window.innerWidth,
-			height = canvas.height = window.innerHeight,
+import { Canvas } from '../scripts/canvas.js';
 
-			target = {
-				x: null,
-				y: null
-			},
-
-			points = [],
-			numPoints = 6,
-			ease = 0.65,
-			easing = true;
-	
-	for(var i = 0; i < numPoints; i++) {
-		points.push({
+export class Cursor extends Canvas {
+	constructor() {
+		super();
+		this.target = {
 			x: null,
 			y: null
+		};
+		this.pointsArray = [];
+		this.numPoints = 6;
+		this.ease = 0.65;
+		this.easing = true;
+
+		this.createFollowers();
+		this.onMouseMove(this.target, this.easing);
+		this.updateRender = this.render.bind(this);
+    requestAnimationFrame(this.updateRender);
+	}
+
+	onMouseMove(target, easing) {
+		document.addEventListener('mousemove', function(event) {
+			target.x = event.x;
+			target.y =  event.y;
+	
+			if(!easing) {
+				easing = true;
+				this.render();
+			}
 		})
 	}
 
-	document.addEventListener('mousemove', function(event) {
-		target.x = event.x;
-		target.y =  event.y;
-
-		if(!easing) {
-			easing = true;
-			update();
+	createFollowers() {
+		for(var i = 0; i < this.numPoints; i++) {
+			this.points.push({
+				x: null,
+				y: null
+			})
 		}
-	})
+	}
 
-
-
-	update();
-
-	function update() {
-		context.clearRect(0, 0, width, height);
-		
+	draw() {
+    this.context.clearRect(0, 0, this.width, this.height);
 		var leader = {
 			x: target.x,
 			y: target.y
 		};
-
-		points.forEach(point => {
-			var i = points.indexOf(point) + 1;
+		this.points.forEach(point => {
+			let i = points.indexOf(point) + 1;
 			point.x += (leader.x - point.x) * ease;
 			point.y += (leader.y - point.y) * ease;
 
@@ -60,7 +62,13 @@ window.onload = function() {
 		if(easing) {
 			requestAnimationFrame(update);
 		}
-	}
+  }
+
+  render() {
+    this.draw();
+    requestAnimationFrame(this.updateRender);
+  }
+}
 
 	// function easeTo(position, target, ease) {
 	// 	var dx = target.x - position.x,
@@ -76,5 +84,3 @@ window.onload = function() {
 	// 	}
 	// 	return true;
 	// }
-
-};
