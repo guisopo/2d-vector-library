@@ -32,7 +32,7 @@ export class Cursor extends Canvas {
 
 	createFollowers() {
 		for(var i = 0; i < this.numPoints; i++) {
-			this.points.push({
+			this.pointsArray.push({
 				x: null,
 				y: null
 			})
@@ -42,33 +42,34 @@ export class Cursor extends Canvas {
 	draw() {
     this.context.clearRect(0, 0, this.width, this.height);
 		var leader = {
-			x: target.x,
-			y: target.y
+			x: this.target.x,
+			y: this.target.y
 		};
-		this.points.forEach(point => {
-			let i = points.indexOf(point) + 1;
-			point.x += (leader.x - point.x) * ease;
-			point.y += (leader.y - point.y) * ease;
+		this.pointsArray.forEach(point => {
+			let i = this.pointsArray.indexOf(point) + 1;
+			point.x += (leader.x - point.x) * this.ease;
+			point.y += (leader.y - point.y) * this.ease;
 
-			context.beginPath();
-			context.arc(point.x, point.y, (4 + 1/i), 0, Math.PI * 2, false);
-			context.fill();
+			this.context.beginPath();
+			this.context.arc(point.x, point.y, (4 + 1/i), 0, Math.PI * 2, false);
+			this.context.fill();
 
 			leader.x = point.x;
 			leader.y = point.y;
 			
 		});
 
-		if(easing) {
-			requestAnimationFrame(update);
-		}
   }
-
+  
   render() {
     this.draw();
-    requestAnimationFrame(this.updateRender);
+    if(this.easing) {
+      requestAnimationFrame(this.updateRender);
+    }
   }
 }
+
+new Cursor();
 
 	// function easeTo(position, target, ease) {
 	// 	var dx = target.x - position.x,
