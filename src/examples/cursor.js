@@ -1,6 +1,5 @@
 import { Canvas } from '../scripts/canvas.js';
 import { Particle } from '../scripts/particle.js';
-import * as utils from '../scripts/utils.js';
 
 export class Cursor extends Canvas {
 	constructor() {
@@ -14,6 +13,7 @@ export class Cursor extends Canvas {
     this.minRadius = 25;
     this.maxRadius = 60;
 
+    this.springPoint.radius = 5;
     this.weight.radius = this.minRadius;
     this.weight.friction = 0.1;
 
@@ -37,20 +37,10 @@ export class Cursor extends Canvas {
 
 	draw() {
     this.context.clearRect(0, 0, this.width, this.height);
-    // let speed = this.weight.getSpeed();
-    // this.weight.radius = utils.map(speed, 0, 90, this.minRadius, this.maxRadius);
     this.weight.update();
-
-    this.context.beginPath();  
-    this.context.fillStyle = 'black';
-    this.context.arc(this.weight.x, this.weight.y, this.weight.radius, 0, Math.PI * 2, false);
-    this.context.fill();
-
+    this.weight.drawParticle(this.context);
     this.context.globalCompositeOperation = 'xor';
-    this.context.beginPath();
-    this.context.fillStyle = 'black';
-    this.context.arc(this.springPoint.x, this.springPoint.y, 5, 0, Math.PI * 2, false);
-    this.context.fill();
+    this.springPoint.drawParticle(this.context);
 
   }
   
