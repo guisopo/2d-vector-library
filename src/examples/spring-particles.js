@@ -22,7 +22,6 @@ export class springParticles extends Canvas {
 
   onMouseClick() {
     document.addEventListener('click', () => {
-      this.numberOfParticles = 1;
       this.createParticles(this.radius, this.friction);
     });
   }
@@ -47,6 +46,9 @@ export class springParticles extends Canvas {
       this.particles.push(particle);
       particle.index = this.particles.indexOf(particle);
     };
+    if(this.numberOfParticles != 1) {
+      this.numberOfParticles = 1;
+    }
     this.springTo(this.particles);
   }
 
