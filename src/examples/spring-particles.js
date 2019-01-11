@@ -15,14 +15,15 @@ export class springParticles extends Canvas {
     this.k = 0.01,
 
     this.createParticles(this.radius, this.friction);    
-    this.onMouseClick(this, this.createParticles, this.friction, this.radius);  
+    this.onMouseClick(this.friction, this.radius);  
     this.updateRender = this.render.bind(this);
     requestAnimationFrame(this.updateRender);
   }
 
-  onMouseClick(that, callback, friction, radius) {
-    document.addEventListener('click', function() {
-      callback.call(that, radius, friction);
+  onMouseClick(friction, radius) {
+    document.addEventListener('click', () => {
+      this.numberOfParticles = 1;
+      this.createParticles(radius, friction);
     });
   }
 
