@@ -5,7 +5,7 @@ import * as utils from '../scripts/utils.js';
 export class springParticles extends Canvas {
   constructor(numberOfParticles, radius, separation) {
     super();
-
+    
     this.numberOfParticles = numberOfParticles;
     this.radius = radius,
     this.separation = separation;
@@ -15,25 +15,14 @@ export class springParticles extends Canvas {
     this.k = 0.01,
 
     this.createParticles(this.radius, this.friction);    
-    this.onMouseClick(this.particles, this.friction, this.radius, this.springTo);  
+    this.onMouseClick(this, this.createParticles, this.friction, this.radius);  
     this.updateRender = this.render.bind(this);
     requestAnimationFrame(this.updateRender);
   }
 
-  onMouseClick(particles, friction, radius, callback) {
-    document.addEventListener('click', function(event) {
-      const newParticle = new Particle(event.x, 
-                                event.y, 
-                                utils.randomRange(0, 50),
-                                utils.randomRange(0, Math.PI * 2),
-                                0
-                            );
-      newParticle.friction = friction;
-      newParticle.radius = radius;
-
-      particles.push(newParticle);
-      newParticle.index = particles.indexOf(newParticle);
-      callback(particles);
+  onMouseClick(that, callback, friction, radius) {
+    document.addEventListener('click', function() {
+      callback.call(that, radius, friction);
     });
   }
 
