@@ -1,48 +1,55 @@
-window.onload = function() {
-  var canvas = document.getElementById('canvas'),
-      context = canvas.getContext('2d'),
-      width = canvas.width = window.innerWidth,
-      height = canvas.height = window.innerHeight,
+import { Canvas } from '../scripts/canvas.js';
+import { Particle } from '../scripts/particle.js';
 
-      springPoint = new Particle(width/2, height/2),
-      weight = new Particle(Math.random() * width, Math.random() * height, 50, Math.random() * Math.PI * 2, 0.75 ),
+export class ElasticPendulum extends Canvas {
+  constructor() {
+    super();
 
-      k = 0.1,
-      springLength = 100;
+    this.springPoint = new Particle(this.width/2, this.height/2),
+    this.springPoint.radius = 5;
 
-  weight.radius = 20;
-  weight.friction = 0.95;
-  
-  update();
+    this.weight = new Particle(Math.random() * this.width, Math.random() * this.height, 50, Math.random() * Math.PI * 2, 0.75 ),
+    this.weight.radius = 20;
+    this.weight.friction = 0.95;
 
-  document.addEventListener('mousemove', function(event) {
-    springPoint.x = event.clientX;
-    springPoint.y = event.clientY;
-  });
+    this.k = 0.1,
+    this.springLength = 100;
 
-  function update() {
-    context.clearRect(0, 0, width, height);
-
-    weight.springTo(springPoint, k, springLength);
-    weight.update();
-    
-    // context.globalCompositeOperation = 'xor';
-    context.beginPath();
-    context.fillStyle = 'black';
-    context.arc(weight.x, weight.y, weight.radius, 0, Math.PI * 2, false);
-    context.fill();
-    
-    context.beginPath();
-    context.fillStyle = 'black';
-    context.arc(springPoint.x, springPoint.y, 6, 0, Math.PI * 2, false);
-    context.fill();
-    
-    context.beginPath();
-    context.lineWidth = 1;
-    context.moveTo(weight.x, weight.y);
-    context.lineTo(springPoint.x, springPoint.y);
-    context.stroke();
-
-    requestAnimationFrame(update);
+    this.init();
+    this.onMouseClick();
+    this.updateRender = this.render.bind(this);
+    requestAnimationFrame(this.updateRender);
   }
-};
+
+  init() {
+    this.weight.addSpring(this.springPoint, this.k, this.springLength);
+  }
+
+  onMouseClick() {
+    document.addEventListener('mousemove', (event) => {
+      this.springPoint.x = event.clientX;
+      this.springPoint.y = event.clientY;
+    });
+  }
+
+  draw() {
+    this.context.clearRect(0, 0, this.width, this.height);
+    
+    this.weight.update();
+    this.weight.drawParticle(this.context);
+
+    this.springPoint.drawParticle(this.context);  
+
+    // Line between weight and springPoint
+    this.context.beginPath();
+    this.context.lineWidth = 1;
+    this.context.moveTo(this.weight.x, this.weight.y);
+    this.context.lineTo(this.springPoint.x, this.springPoint.y);
+    this.context.stroke();
+  }
+  
+  render() {
+    this.draw();
+    requestAnimationFrame(this.updateRender);
+  }
+} 
