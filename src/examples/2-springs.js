@@ -33,7 +33,6 @@ class Springs extends Canvas {
   init() {
     this.weight.addSpring(this.springPoint, this.k, this.springLength);
     this.weight.addSpring(this.springPoint2, this.k, this.springLength);
-    console.log(this.weight);
   }
 
 	onMouseMove() {
