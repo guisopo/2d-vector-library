@@ -1,68 +1,73 @@
-window.onload = function() {
-	var canvas = document.getElementById("canvas"),
-		context = canvas.getContext("2d"),
-		width = canvas.width = window.innerWidth,
-		height = canvas.height = window.innerHeight,
-		sun1 = new Particle(300, 200, 0, 0),
-		sun2 = new Particle(800, 600, 0, 0),
-		emitter = {
+import { Particle } from '../scripts/particle.js';
+import { Canvas } from '../scripts/canvas.js';
+import * as utils from '../scripts/utils.js';
+
+class Planets extends Canvas {
+  constructor() {
+    super();
+
+    this.sun1 = new Particle(300, 200, 0, 0);
+    this.sun2 = new Particle(800, 600, 0, 0);
+    this.emitter = {
 			x: 100,
 			y: 0
-		},
-		particles = [],
-		numParticles = 500;
+    };
 
+    this.particles = [],
+		this.numParticles = 500;
 
-	sun1.mass = 10000;
-	sun1.radius = 10;
-	sun2.mass = 20000;
-	sun2.radius = 20;
-	
-	for(var i = 0; i < numParticles; i += 1) {
-		var p = new Particle(emitter.x, emitter.y, utils.randomRange(7, 8), Math.PI / 2 + utils.randomRange(-0.1, 0.1));
-		p.addGravitation(sun1);
-		p.addGravitation(sun2);
-		p.radius = 3;
-		particles.push(p);
+    this.sun1.mass = 10000;
+    this.sun1.radius = 10;
+    this.sun2.mass = 20000;
+    this.sun2.radius = 20;
+    
+
+    this.init();
+		this.onMouseMove(this.springPoint);
+		this.updateRender = this.render.bind(this);
+    requestAnimationFrame(this.updateRender);
   }
-  
-  document.addEventListener('mousemove', function(event) {
-    sun2.x = event.x;
-    sun2.y =  event.y;
-  });
 
+  init() {
+    for(let i = 0; i < this.numParticles; i += 1) {
+      let p = new Particle(this.emitter.x, this.emitter.y, utils.randomRange(7, 8), Math.PI / 2 + utils.randomRange(-0.1, 0.1));
+      p.addGravitation(this.sun1);
+      p.addGravitation(this.sun2);
+      p.radius = 3;
+      this.particles.push(p);
+    }
+  }
 
-	update();
+	onMouseMove() {
+		document.addEventListener('mousemove', (event) => {
+      this.sun2.x = event.x;
+      this.sun2.y =  event.y;
+    });
+	}
 
-	function update() {
-		context.clearRect(0, 0, width, height);
-
-		draw(sun1, "yellow");
-		draw(sun2, "yellow");
-
-		for(var i = 0; i < numParticles; i += 1) {
-			var p = particles[i];
-			p.update();
-			draw(p, "black");
-			if(	p.x > width ||
+	draw() {
+    this.context.clearRect(0, 0, this.width, this.height);
+    this.sun1.drawParticle(this.context);
+    this.sun2.drawParticle(this.context);
+    this.particles.forEach( p => {
+      p.update();
+			p.drawParticle(this.context);
+			if(	p.x > this.width ||
 					p.x < 0 ||
-					p.y > height ||
+					p.y > this.height ||
 					p.y < 0) {
-					p.x = emitter.x;
-					p.y = emitter.y;
+					p.x = this.emitter.x;
+					p.y = this.emitter.y;
 					p.setSpeed(utils.randomRange(7, 8));
 					p.setDirection(Math.PI / 2 + utils.randomRange(-.1, .1));
 			}
-		}
+    })
+  }
+  
+  render() {
+    this.draw();
+    requestAnimationFrame(this.updateRender);
+  }
+}
 
-		requestAnimationFrame(update);
-	}
-
-	function draw(p, color) {
-		context.fillStyle = color;
-		context.beginPath();
-		context.arc(p.x, p.y, p.radius, 0, Math.PI * 2, false);
-		context.fill();
-	}
-
-};
+new Planets();
