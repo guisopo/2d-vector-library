@@ -1,71 +1,80 @@
-window.onload = function() {
-  var canvas = document.getElementById('canvas'),
-      context = canvas.getContext('2d'),
-      width = canvas.width = window.innerWidth,
-      height = canvas.height = window.innerHeight,
+import { Particle } from '../scripts/particle.js';
+import { Canvas } from '../scripts/canvas.js';
+import * as utils from '../scripts/utils.js';
 
-      springPoint = {
-        x: width / 2,
-        y: height / 2 
-      },
-
-      springPoint2 = {
-        x: utils.randomRange(0, width),
-        y: utils.randomRange(0, height),
-      },
-
-      weight = new Particle(Math.random() * width, Math.random() * height, 0, 0),
-      
-      k = 0.1,
-      springRadius = 6
-      springLength = 6;
-
-  weight.radius = 20;
-  weight.friction = 0.75;
-  weight.addSpring(springPoint, k, springLength);
-  weight.addSpring(springPoint2, k, springLength);
-  
-  document.addEventListener('mousemove', function(event) {
-    springPoint.x = event.clientX;
-    springPoint.y = event.clientY;
-  });
-  
-  update();
-
-  function update() {
-    context.clearRect(0, 0, width, height);
+class Springs extends Canvas {
+  constructor() {
+    super();
     
-    context.globalCompositeOperation = 'xor';
+    this.springPoint = {
+      x: this.width / 2,
+      y: this.height / 2 
+    };
 
-    weight.update();
+    this.springPoint2 = {
+      x: utils.randomRange(0, this.width),
+      y: utils.randomRange(0, this.height),
+    };
 
+    this.weight = new Particle(Math.random() * this.width, Math.random() * this.height, 0, 0, 0);
+    this.weight.radius = 20;
+    this.weight.friction = 0.75;
+    
+    this.k = 0.1;
+    this.springRadius = 6;
+    this.springLength = 6;
+
+    this.init();
+		this.onMouseMove(this.springPoint);
+		this.updateRender = this.render.bind(this);
+    requestAnimationFrame(this.updateRender);
+  }
+
+  init() {
+    this.weight.addSpring(this.springPoint, this.k, this.springLength);
+    this.weight.addSpring(this.springPoint2, this.k, this.springLength);
+    console.log(this.weight);
+  }
+
+	onMouseMove() {
+		document.addEventListener('mousemove', (event) => {
+      this.springPoint.x = event.clientX;
+      this.springPoint.y = event.clientY;
+    });
+	}
+
+	draw() {
+    this.context.clearRect(0, 0, this.width, this.height);
+    
+    this.context.globalCompositeOperation = 'xor';
+
+    this.weight.update();
 
     // Spring1 Point
-    context.beginPath();
-    context.fillStyle = 'black';
-    context.arc(springPoint.x, springPoint.y, springRadius, 0, Math.PI * 2, false);
-    context.fill();
+    this.context.beginPath();
+    this.context.fillStyle = 'black';
+    this.context.arc(this.springPoint.x, this.springPoint.y, this.springRadius, 0, Math.PI * 2, false);
+    this.context.fill();
 
     // Spring2
-    context.beginPath();
-    context.fillStyle = 'black';
-    context.arc(springPoint2.x, springPoint2.y, springRadius, 0, Math.PI * 2, false);
-    context.fill();
+    this.context.beginPath();
+    this.context.fillStyle = 'black';
+    this.context.arc(this.springPoint2.x, this.springPoint2.y, this.springRadius, 0, Math.PI * 2, false);
+    this.context.fill();
 
     // Weight
-    context.beginPath();
-    context.fillStyle = 'black';
-    context.arc(weight.x, weight.y, weight.radius, 0, Math.PI * 2, false);
-    context.fill();
-
+    this.weight.drawParticle(this.context);
     
     // Line between Springs and Weight
-    context.beginPath();
-    context.moveTo(springPoint2.x, springPoint2.y);
-    context.lineTo(weight.x, weight.y);
-    context.lineTo(springPoint.x, springPoint.y);
-    context.stroke();
-
-    requestAnimationFrame(update);
+    this.context.beginPath();
+    this.context.moveTo(this.springPoint2.x, this.springPoint2.y);
+    this.context.lineTo(this.weight.x, this.weight.y);
+    this.context.lineTo(this.springPoint.x, this.springPoint.y);
+    this.context.stroke();
   }
-};
+  
+  render() {
+    this.draw();
+    requestAnimationFrame(this.updateRender);
+  }
+}
