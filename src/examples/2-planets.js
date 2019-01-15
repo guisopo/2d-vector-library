@@ -29,6 +29,7 @@ class Planets extends Canvas {
   }
 
   init() {
+		// Create particles
     for(let i = 0; i < this.numParticles; i += 1) {
       let p = new Particle(this.emitter.x, this.emitter.y, utils.randomRange(7, 8), Math.PI / 2 + utils.randomRange(-0.1, 0.1));
       p.addGravitation(this.sun1);
@@ -46,12 +47,15 @@ class Planets extends Canvas {
 	}
 
 	draw() {
-    this.context.clearRect(0, 0, this.width, this.height);
+		this.context.clearRect(0, 0, this.width, this.height);
+		
     this.sun1.drawParticle(this.context);
-    this.sun2.drawParticle(this.context);
+		this.sun2.drawParticle(this.context);
+		
     this.particles.forEach( p => {
       p.update();
 			p.drawParticle(this.context);
+			// Reposition particle to the emiter position when goes beyond canvas
 			if(	p.x > this.width ||
 					p.x < 0 ||
 					p.y > this.height ||
@@ -69,5 +73,3 @@ class Planets extends Canvas {
     requestAnimationFrame(this.updateRender);
   }
 }
-
-new Planets();
