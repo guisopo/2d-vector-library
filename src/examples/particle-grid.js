@@ -3,8 +3,16 @@ import { Canvas } from '../scripts/canvas.js';
 
 
 export class ParticlesGrid extends Canvas {
-  constructor(numberParticles, particlesRadius, particlesFriction, k, targetRadius) {
+  constructor(options = {}) {
     super();
+
+    const {
+      numberParticles = 20, 
+      particlesRadius = 3, 
+      particlesFriction = 0.9, 
+      k = 0.02, 
+      targetRadius = 100
+    } = options;
 
     this.dx = 0;
     this.dy = 0;
@@ -14,7 +22,7 @@ export class ParticlesGrid extends Canvas {
     this.marginV = this.height / this.numberParticles;
     this.particles = [];
 
-    this.target = new Particle(0, 0, 0, 0);
+    this.target = new Particle();
     this.target.radius = targetRadius;
     
     this.createParticles(particlesRadius, particlesFriction, k);
@@ -49,11 +57,16 @@ export class ParticlesGrid extends Canvas {
   createParticles(radius, friction, k) {
     for (let i = 0; i < this.numberParticles; i++) {
       for (let j = 0; j < this.numberParticles; j++) {
-        let p = new Particle (i * this.marginH + this.marginH/2, j * this.marginV + this.marginV/2, 0, 0);
-        p.radius = radius;
+        let p = new Particle ({
+                                x: i * this.marginH + this.marginH/2, 
+                                y: j * this.marginV + this.marginV/2, 
+                                speed : 0, 
+                                direction: 0,
+                                radius: radius
+                            });
         p.friction = friction;
         p.i = i + j;
-        // p.setSpringTarget(p.x, p.y, k);
+        p.setSpringTarget(p.x, p.y, k);
         
         this.particles.push(p);  
       }
@@ -66,8 +79,6 @@ export class ParticlesGrid extends Canvas {
     this.particles.forEach(particle => {
       particle.i += 0.05;
       particle.think(this.target, this.target.radius);
-      particle.x = particle.x + Math.cos(particle.i) ;
-      particle.y = particle.y + Math.sin(particle.i) ;
       particle.update();
       particle.drawParticle(this.context);
     });
