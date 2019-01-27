@@ -1,30 +1,34 @@
 export class Canvas {
-  constructor() {
-    this.canvas = document.createElement('canvas');
-    this.context = this.canvas.getContext('2d');
+  constructor(options = {}) {
+    const { 
+      height = window.innerHeigh, 
+      width = window.innerWidth 
+    } = options;
+
+    this.canvas;
+    this.context;
+    this.height = height;
+    this.width =  width;
     this.dpr = window.devicePixelRatio;
     
-    document.body.appendChild(this.canvas);
-    
+    this.init();
     window.addEventListener('resize', () => this.onResize());
-    this.onResize();
     
-    // this.updateBound = this.update.bind(this);
-    // requestAnimationFrame(this.updateBound);
+  }
+
+  init() {
+    this.onResize();
+    this.canvas = document.createElement('canvas');
+    this.context = this.canvas.getContext('2d');
+    document.body.appendChild(this.canvas);
   }
   
   onResize() {
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
+    this.width = this.width;
+    this.height = this.height;
     this.canvas.width = this.width * this.dpr;
     this.canvas.height = this.height * this.dpr;
 
     this.context.scale(this.dpr, this.dpr);
   }
-
-  // update() {
-  //   this.context.clearRect(0, 0, this.width, this.height);
-
-  //   requestAnimationFrame(this.updateBound);
-  // }
 }
