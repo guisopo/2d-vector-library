@@ -2,13 +2,14 @@ window.onload = function() {
 	const canvas = document.getElementById("canvas"),
 				context = canvas.getContext("2d"),
 				width = canvas.width = window.innerWidth,
-				height = canvas.height = window.innerHeight;
+				height = canvas.height = window.innerHeight,
 				focalLength = 300,
 				particles = [],
 				numberOfParticles = 200,
 				centerZ = 2000,
-				radius = 1000,
-				baseAngle = 0,
+        radius = 1000;
+        
+  let   baseAngle = 0,
 				rotationSpeed = 0.01;
 
 	for(let i = 0; i < numberOfParticles; i++) {
@@ -25,7 +26,7 @@ window.onload = function() {
 	
 	document.addEventListener('mousemove', function(event) {
 		rotationSpeed = (event.clientX - width/2) * 0.00005;
-		yPos = (event.clientY - height / 2) * 2;
+		let yPos = (event.clientY - height / 2) * 2;
 	});
 	
 	update();
