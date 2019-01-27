@@ -2,8 +2,8 @@ import { Canvas } from '../scripts/canvas.js';
 import { Particle } from '../scripts/particle.js';
 import * as utils from '../scripts/utils.js';
 
-export class springParticles extends Canvas {
-  constructor(numberOfParticles, radius, separation) {
+export class SpringParticles extends Canvas {
+  constructor(numberOfParticles = 10, radius = 4, separation = 10) {
     super();
     
     this.numberOfParticles = numberOfParticles;
@@ -35,14 +35,14 @@ export class springParticles extends Canvas {
 
   createParticles(radius, friction) {
     for(let p = 0; p < this.numberOfParticles; p++) {
-      const particle = new Particle(utils.randomRange(this.width * 0.4, this.width * 0.6), 
-                              utils.randomRange(0, this.height), 
-                              utils.randomRange(0, 50),
-                              utils.randomRange(0, Math.PI * 2),
-                              0
-                            );
+      const particle = new Particle({
+                              x:utils.randomRange(this.width * 0.4, this.width * 0.6), 
+                              y: utils.randomRange(0, this.height), 
+                              speed: utils.randomRange(0, 50),
+                              direction: utils.randomRange(0, Math.PI * 2),
+                              radius: radius
+                            });
       particle.friction = friction;
-      particle.radius = radius;
       this.particles.push(particle);
       particle.index = this.particles.indexOf(particle);
     };
