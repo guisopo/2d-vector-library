@@ -5,8 +5,9 @@ export class Canvas {
       width = window.innerWidth 
     } = options;
 
-    this.canvas;
-    this.context;
+    this.canvas = document.createElement('canvas');
+    this.context = this.canvas.getContext('2d');
+
     this.height = height;
     this.width =  width;
     this.dpr = window.devicePixelRatio;
@@ -18,8 +19,6 @@ export class Canvas {
 
   init() {
     this.onResize();
-    this.canvas = document.createElement('canvas');
-    this.context = this.canvas.getContext('2d');
     document.body.appendChild(this.canvas);
   }
   
