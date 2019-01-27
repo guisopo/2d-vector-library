@@ -1,18 +1,25 @@
 export class Particle {
-  constructor(x, y, speed, direction, grav) {
-    this.x = x || 0;
-    this.y = y || 0;
+  constructor(options = {}) {
+    const {
+      x = 0, 
+      y = 0, 
+      speed = 0, 
+      direction = 0, 
+      radius = 2
+    } = options;
 
-    this.originalX = x || 0;
-    this.originalY = y || 0;
-
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
+    this.originalX = x;
+    this.originalY = y;
     this.vx = Math.cos(direction) * speed;
     this.vy = Math.sin(direction) * speed;
+
     this.mass = 1;
-    this.radius = 0;
     this.bounce = 1;
     this.friction = 1;
-    this.gravity = grav || 0;
+    this.gravity = 0;
     this.springs = [];
     this.gravitations = [],
 
