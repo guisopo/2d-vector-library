@@ -1,7 +1,7 @@
 import { Particle } from '../scripts/particle.js';
 import { Canvas } from '../scripts/canvas.js';
 
-class Jelly extends Canvas {
+export class Jelly extends Canvas {
   constructor() {
     super();
     
