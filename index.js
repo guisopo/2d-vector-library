@@ -1,48 +1,74 @@
-window.onload = function() {
-  const canvas = document.getElementById('canvas'),
-        context = canvas.getContext('2d'),
-        width = window.innerWidth,
-        height = window.innerHeight,
-        numObjects = 10;
+class mouseParticles {
+  constructor(options = {}) {
+    this.options = {
+      canvas: options.canvas || document.getElementById('canvas'),
+      numParticles: options.numParticles || 10,
+      radius: options.radius || 100,
+      speed: options.speed || 0.01,
+    };
+    
+    this.canvasSize = {};
+    
+    this.context = this.options.canvas.getContext('2d');
 
-  canvas.width = width;
-  canvas.height = height;
+    this.slice = Math.PI * 2 / this.options.numParticles;
+    this.centerX;
+    this.centerY;
+    this.angle = 0;
+  }
 
-  const radius = 100,
-        speed = 0.01,
-        slice = Math.PI *2 / numObjects;
-  
-  var x = 0, 
-      y = 0,
-      angle = 0,
-      centerX,
-      centerY;
-  
-  render();
+  bindAll() {
+    ['render', 'updateMouseCoords', 'setBounds', 'addEvents']
+      .forEach( fn => this[fn] = this[fn].bind(this));
+  }
 
-  function render() {
-    context.clearRect(0, 0, width, height);
+  setBounds() {
+    this.canvasSize = {
+      width: window.innerWidth,
+      height: window.innerHeight
+    };
+  }
 
-    angle += speed;
+  render() {
+    this.context.clearRect(0, 0, this.canvasSize.width, this.canvasSize.height);
+    this.angle += this.options.speed;
 
-    for (let i = 0; i < numObjects; i++) {
+    let objAngle;
+
+    for (let i = 0; i < this.options.numObjects; i++) {
       objAngle = i * slice + angle;
-      x = centerX + Math.cos(objAngle) * radius;
-      y = centerY + Math.sin(objAngle) * radius;
+      x = this.centerX + Math.cos(objAngle) * this.options.radius;
+      y = this.centerY + Math.sin(objAngle) * this.options.radius;
   
-      context.beginPath();
-      context.arc(x, y, 10, 0, Math.PI * 2, false);
-      context.fill();
+      this.context.beginPath();
+      this.context.arc(x, y, 2, 0, Math.PI * 2, false);
+      this.context.fill();
     }
-    
-    
-    requestAnimationFrame(render);
+
+    requestAnimationFrame(this.render);
   }
 
-  function updateMouseCoords(e) {
-    centerX = e.clientX;
-    centerY = e.clientY;
+  updateMouseCoords(e) {
+    this.centerX = e.clientX;
+    this.centerY = e.clientY;
   }
 
-  canvas.addEventListener('mousemove', updateMouseCoords);
+  addEvents() {
+    this.options.canvas.addEventListener('mousemove', this.updateMouseCoords, {passive: true});
+    window.addEventListener('resize', this.setBounds);
+  }
+  
+  init() {
+    this.bindAll();
+    this.setBounds();
+    this.addEvents();
+    this.render();
+  }
+}
+
+window.onload = function() {
+
+  const mP = new mouseParticles();
+
+  mP.init();
 }

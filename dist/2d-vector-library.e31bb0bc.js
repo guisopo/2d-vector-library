@@ -118,46 +118,97 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
   return newRequire;
 })({"index.js":[function(require,module,exports) {
-window.onload = function () {
-  var canvas = document.getElementById('canvas'),
-      context = canvas.getContext('2d'),
-      width = window.innerWidth,
-      height = window.innerHeight,
-      numObjects = 10;
-  canvas.width = width;
-  canvas.height = height;
-  var radius = 100,
-      speed = 0.01,
-      slice = Math.PI * 2 / numObjects;
-  var x = 0,
-      y = 0,
-      angle = 0,
-      centerX,
-      centerY;
-  render();
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-  function render() {
-    context.clearRect(0, 0, width, height);
-    angle += speed;
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-    for (var i = 0; i < numObjects; i++) {
-      objAngle = i * slice + angle;
-      x = centerX + Math.cos(objAngle) * radius;
-      y = centerY + Math.sin(objAngle) * radius;
-      context.beginPath();
-      context.arc(x, y, 10, 0, Math.PI * 2, false);
-      context.fill();
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var mouseParticles = /*#__PURE__*/function () {
+  function mouseParticles() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    _classCallCheck(this, mouseParticles);
+
+    this.options = {
+      canvas: options.canvas || document.getElementById('canvas'),
+      numParticles: options.numParticles || 10,
+      radius: options.radius || 100,
+      speed: options.speed || 0.01
+    };
+    this.canvasSize = {};
+    this.context = this.options.canvas.getContext('2d');
+    this.slice = Math.PI * 2 / this.options.numParticles;
+    this.centerX;
+    this.centerY;
+    this.angle = 0;
+  }
+
+  _createClass(mouseParticles, [{
+    key: "bindAll",
+    value: function bindAll() {
+      var _this = this;
+
+      ['render', 'updateMouseCoords', 'setBounds', 'addEvents'].forEach(function (fn) {
+        return _this[fn] = _this[fn].bind(_this);
+      });
     }
+  }, {
+    key: "setBounds",
+    value: function setBounds() {
+      this.canvasSize = {
+        width: window.innerWidth,
+        height: window.innerHeight
+      };
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      this.context.clearRect(0, 0, this.canvasSize.width, this.canvasSize.height);
+      this.angle += this.options.speed;
+      var objAngle;
 
-    requestAnimationFrame(render);
-  }
+      for (var i = 0; i < this.options.numObjects; i++) {
+        objAngle = i * slice + angle;
+        x = this.centerX + Math.cos(objAngle) * this.options.radius;
+        y = this.centerY + Math.sin(objAngle) * this.options.radius;
+        this.context.beginPath();
+        this.context.arc(x, y, 2, 0, Math.PI * 2, false);
+        this.context.fill();
+      }
 
-  function updateMouseCoords(e) {
-    centerX = e.clientX;
-    centerY = e.clientY;
-  }
+      requestAnimationFrame(this.render);
+    }
+  }, {
+    key: "updateMouseCoords",
+    value: function updateMouseCoords(e) {
+      this.centerX = e.clientX;
+      this.centerY = e.clientY;
+    }
+  }, {
+    key: "addEvents",
+    value: function addEvents() {
+      this.options.canvas.addEventListener('mousemove', this.updateMouseCoords, {
+        passive: true
+      });
+      window.addEventListener('resize', this.setBounds);
+    }
+  }, {
+    key: "init",
+    value: function init() {
+      this.bindAll();
+      this.setBounds();
+      this.addEvents();
+      this.render();
+    }
+  }]);
 
-  canvas.addEventListener('mousemove', updateMouseCoords);
+  return mouseParticles;
+}();
+
+window.onload = function () {
+  var mP = new mouseParticles();
+  mP.init();
 };
 },{}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
@@ -187,7 +238,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63375" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60056" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
