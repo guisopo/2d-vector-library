@@ -10,6 +10,7 @@ class mouseParticles {
     this.canvasSize = {};
     
     this.context = this.options.canvas.getContext('2d');
+    this.dpr = window.devicePixelRatio;
 
     this.slice = Math.PI * 2 / this.options.numParticles;
     this.centerX;
@@ -24,9 +25,12 @@ class mouseParticles {
 
   setBounds() {
     this.canvasSize = {
-      width: window.innerWidth,
-      height: window.innerHeight
+      width: window.innerWidth * this.dpr,
+      height: window.innerHeight * this.dpr
     };
+
+    this.options.canvas.width = this.canvasSize.width;
+    this.options.canvas.height = this.canvasSize.height;  
   }
 
   render() {
