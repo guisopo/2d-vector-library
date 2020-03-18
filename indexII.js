@@ -2,15 +2,13 @@ window.onload = function() {
   const canvas = document.getElementById('canvas'),
         context = canvas.getContext('2d'),
         width = window.innerWidth,
-        height = window.innerHeight,
-        numObjects = 10;
+        height = window.innerHeight;
 
   canvas.width = width;
   canvas.height = height;
 
   const radius = 100,
-        speed = 0.01,
-        slice = Math.PI *2 / numObjects;
+        speed = 0.05;
   
   var x = 0, 
       y = 0,
@@ -23,18 +21,14 @@ window.onload = function() {
   function render() {
     context.clearRect(0, 0, width, height);
 
-    angle += speed;
+    x = centerX + Math.cos(angle) * radius;
+    y = centerY + Math.sin(angle) * radius;
 
-    for (let i = 0; i < numObjects; i++) {
-      objAngle = i * slice + angle;
-      x = centerX + Math.cos(objAngle) * radius;
-      y = centerY + Math.sin(objAngle) * radius;
-  
-      context.beginPath();
-      context.arc(x, y, 10, 0, Math.PI * 2, false);
-      context.fill();
-    }
-    
+    context.beginPath();
+    context.arc(x, y, 10, 0, Math.PI * 2, false);
+    context.fill();
+
+    angle += speed;
     
     requestAnimationFrame(render);
   }
