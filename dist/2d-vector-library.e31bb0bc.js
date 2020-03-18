@@ -138,6 +138,7 @@ var mouseParticles = /*#__PURE__*/function () {
     };
     this.canvasSize = {};
     this.context = this.options.canvas.getContext('2d');
+    this.dpr = window.devicePixelRatio;
     this.slice = Math.PI * 2 / this.options.numParticles;
     this.centerX;
     this.centerY;
@@ -156,20 +157,18 @@ var mouseParticles = /*#__PURE__*/function () {
   }, {
     key: "setBounds",
     value: function setBounds() {
-      this.canvasSize = {
-        width: window.innerWidth,
-        height: window.innerHeight
-      };
+      this.options.canvas.width = window.innerWidth * this.dpr;
+      this.options.canvas.height = window.innerHeight * this.dpr;
     }
   }, {
     key: "render",
     value: function render() {
-      this.context.clearRect(0, 0, this.canvasSize.width, this.canvasSize.height);
+      this.context.clearRect(0, 0, this.options.canvas.width, this.options.canvas.height);
       this.angle += this.options.speed;
       var objAngle;
 
-      for (var i = 0; i < this.options.numObjects; i++) {
-        objAngle = i * slice + angle;
+      for (var i = 0; i < this.options.numParticles; i++) {
+        objAngle = i * this.slice + this.angle;
         x = this.centerX + Math.cos(objAngle) * this.options.radius;
         y = this.centerY + Math.sin(objAngle) * this.options.radius;
         this.context.beginPath();
@@ -238,7 +237,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60056" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61884" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

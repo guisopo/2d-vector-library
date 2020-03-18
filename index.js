@@ -24,26 +24,22 @@ class mouseParticles {
   }
 
   setBounds() {
-    this.canvasSize = {
-      width: window.innerWidth * this.dpr,
-      height: window.innerHeight * this.dpr
-    };
-
-    this.options.canvas.width = this.canvasSize.width;
-    this.options.canvas.height = this.canvasSize.height;  
+    this.options.canvas.width = window.innerWidth * this.dpr;
+    this.options.canvas.height = window.innerHeight * this.dpr;  
   }
 
   render() {
-    this.context.clearRect(0, 0, this.canvasSize.width, this.canvasSize.height);
+    this.context.clearRect(0, 0, this.options.canvas.width, this.options.canvas.height);
     this.angle += this.options.speed;
 
     let objAngle;
 
-    for (let i = 0; i < this.options.numObjects; i++) {
-      objAngle = i * slice + angle;
+    for (let i = 0; i < this.options.numParticles; i++) {
+
+      objAngle = i * this.slice + this.angle;
       x = this.centerX + Math.cos(objAngle) * this.options.radius;
       y = this.centerY + Math.sin(objAngle) * this.options.radius;
-  
+
       this.context.beginPath();
       this.context.arc(x, y, 2, 0, Math.PI * 2, false);
       this.context.fill();
