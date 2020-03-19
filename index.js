@@ -2,20 +2,12 @@ class mouseParticles {
   constructor(options = {}) {
     this.options = {
       canvas: options.canvas || document.getElementById('canvas'),
-      numParticles: options.numParticles || 10,
-      radius: options.radius || 100,
-      speed: options.speed || 0.01,
     };
     
     this.canvasSize = {};
     
     this.context = this.options.canvas.getContext('2d');
     this.dpr = window.devicePixelRatio;
-
-    this.slice = Math.PI * 2 / this.options.numParticles;
-    this.centerX;
-    this.centerY;
-    this.angle = 0;
   }
 
   bindAll() {
@@ -30,20 +22,8 @@ class mouseParticles {
 
   render() {
     this.context.clearRect(0, 0, this.options.canvas.width, this.options.canvas.height);
-    this.angle += this.options.speed;
-
-    let objAngle;
-
-    for (let i = 0; i < this.options.numParticles; i++) {
-
-      objAngle = i * this.slice + this.angle;
-      x = this.centerX + Math.cos(objAngle) * this.options.radius;
-      y = this.centerY + Math.sin(objAngle) * this.options.radius;
-
-      this.context.beginPath();
-      this.context.arc(x, y, 2, 0, Math.PI * 2, false);
-      this.context.fill();
-    }
+    
+    this.context.fill();
 
     requestAnimationFrame(this.render);
   }
@@ -68,7 +48,5 @@ class mouseParticles {
 
 window.onload = function() {
 
-  const mP = new mouseParticles();
-
-  mP.init();
+  
 }

@@ -131,18 +131,11 @@ var mouseParticles = /*#__PURE__*/function () {
     _classCallCheck(this, mouseParticles);
 
     this.options = {
-      canvas: options.canvas || document.getElementById('canvas'),
-      numParticles: options.numParticles || 10,
-      radius: options.radius || 100,
-      speed: options.speed || 0.01
+      canvas: options.canvas || document.getElementById('canvas')
     };
     this.canvasSize = {};
     this.context = this.options.canvas.getContext('2d');
     this.dpr = window.devicePixelRatio;
-    this.slice = Math.PI * 2 / this.options.numParticles;
-    this.centerX;
-    this.centerY;
-    this.angle = 0;
   }
 
   _createClass(mouseParticles, [{
@@ -164,18 +157,7 @@ var mouseParticles = /*#__PURE__*/function () {
     key: "render",
     value: function render() {
       this.context.clearRect(0, 0, this.options.canvas.width, this.options.canvas.height);
-      this.angle += this.options.speed;
-      var objAngle;
-
-      for (var i = 0; i < this.options.numParticles; i++) {
-        objAngle = i * this.slice + this.angle;
-        x = this.centerX + Math.cos(objAngle) * this.options.radius;
-        y = this.centerY + Math.sin(objAngle) * this.options.radius;
-        this.context.beginPath();
-        this.context.arc(x, y, 2, 0, Math.PI * 2, false);
-        this.context.fill();
-      }
-
+      this.context.fill();
       requestAnimationFrame(this.render);
     }
   }, {
@@ -205,10 +187,7 @@ var mouseParticles = /*#__PURE__*/function () {
   return mouseParticles;
 }();
 
-window.onload = function () {
-  var mP = new mouseParticles();
-  mP.init();
-};
+window.onload = function () {};
 },{}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -237,7 +216,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61884" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59591" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
