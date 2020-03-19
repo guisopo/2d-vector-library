@@ -117,106 +117,130 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"index.js":[function(require,module,exports) {
+})({"vector.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Vector = void 0;
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var Arrow = /*#__PURE__*/function () {
-  function Arrow() {
-    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+var Vector = /*#__PURE__*/function () {
+  function Vector(x, y) {
+    _classCallCheck(this, Vector);
 
-    _classCallCheck(this, Arrow);
-
-    this.options = {
-      canvas: options.canvas || document.getElementById('canvas')
-    };
-    this.context = this.options.canvas.getContext('2d'); // this.dpr = window.devicePixelRatio || 1;
-
-    this.dpr = 1;
+    this.x = x;
+    this.y = y;
   }
 
-  _createClass(Arrow, [{
-    key: "bindAll",
-    value: function bindAll() {
-      var _this = this;
-
-      ['render', 'calculateAngle', 'setCanvas', 'addEvents'].forEach(function (fn) {
-        return _this[fn] = _this[fn].bind(_this);
-      });
+  _createClass(Vector, [{
+    key: "setAngle",
+    value: function setAngle(angle) {
+      var length = this.getLength();
+      this._x = Math.cos(angle) * length;
+      this._y = Math.sin(angle) * length;
     }
   }, {
-    key: "setCanvas",
-    value: function setCanvas() {
-      this.options.canvas.width = window.innerWidth * this.dpr;
-      this.options.canvas.height = window.innerHeight * this.dpr;
-      this.context.scale(this.dpr, this.dpr);
+    key: "getAngle",
+    value: function getAngle() {
+      return Math.atan2(this._y, this._x);
     }
   }, {
-    key: "setArrowPosition",
-    value: function setArrowPosition() {
-      this.arrowX = this.options.canvas.width / 2;
-      this.arrowY = this.options.canvas.height / 2;
+    key: "setLength",
+    value: function setLength(length) {
+      var angle = this.getAngle();
+      this._x = Math.cos(angle) * length;
+      this._y = Math.sin(angle) * length;
     }
   }, {
-    key: "drawArrow",
-    value: function drawArrow() {
-      this.context.beginPath();
-      this.context.moveTo(20, 0);
-      this.context.lineTo(-20, 0);
-      this.context.moveTo(20, 0);
-      this.context.lineTo(10, -10);
-      this.context.moveTo(20, 0);
-      this.context.lineTo(10, 10);
-      this.context.stroke();
+    key: "getLength",
+    value: function getLength() {
+      return Math.sqrt(this._x * this._x + this._y * this._y);
     }
   }, {
-    key: "render",
-    value: function render() {
-      this.context.clearRect(0, 0, this.options.canvas.width, this.options.canvas.height);
-      this.context.save();
-      this.context.translate(this.arrowX, this.arrowY);
-      this.context.rotate(this.angle);
-      this.drawArrow();
-      this.context.restore();
-      requestAnimationFrame(this.render);
+    key: "add",
+    value: function add(v2) {
+      return new Vector(this._x + v2.x, this._y + v2.y);
     }
   }, {
-    key: "calculateAngle",
-    value: function calculateAngle(e) {
-      this.centerX = e.clientX - this.arrowX;
-      this.centerY = e.clientY - this.arrowY;
-      this.angle = Math.atan2(this.centerY, this.centerX);
+    key: "substract",
+    value: function substract(v2) {
+      return new Vector(this._x - v2.x, this._y - v2.y);
     }
   }, {
-    key: "addEvents",
-    value: function addEvents() {
-      this.options.canvas.addEventListener('mousemove', this.calculateAngle, {
-        passive: true
-      });
-      window.addEventListener('resize', this.setBounds);
+    key: "multiply",
+    value: function multiply(value) {
+      return new Vector(this._x * value, this._y * value);
     }
   }, {
-    key: "init",
-    value: function init() {
-      this.bindAll();
-      this.setCanvas();
-      this.setArrowPosition();
-      this.addEvents();
-      this.render();
+    key: "divide",
+    value: function divide(value) {
+      return new Vector(this._x / value, this._y / value);
+    }
+  }, {
+    key: "addTo",
+    value: function addTo(v2) {
+      this._x += v2.x;
+      this._y += v2.y;
+    }
+  }, {
+    key: "substractFrom",
+    value: function substractFrom(v2) {
+      this._x -= v2.x;
+      this._y -= v2.y;
+    }
+  }, {
+    key: "multiplyBy",
+    value: function multiplyBy(value) {
+      this._x *= value;
+      this._y *= value;
+    }
+  }, {
+    key: "dividedBy",
+    value: function dividedBy(value) {
+      this._x /= value;
+      this._y /= value;
+    }
+  }, {
+    key: "x",
+    get: function get() {
+      return this._x;
+    },
+    set: function set(value) {
+      this._x = value;
+    }
+  }, {
+    key: "y",
+    get: function get() {
+      return this._y;
+    },
+    set: function set(value) {
+      this._y = value;
     }
   }]);
 
-  return Arrow;
+  return Vector;
 }();
 
-window.onload = function () {
-  var arrow = new Arrow();
-  arrow.init();
-};
-},{}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+exports.Vector = Vector;
+},{}],"index.js":[function(require,module,exports) {
+"use strict";
+
+var _vector = require("./vector");
+
+var v1 = new _vector.Vector(10, 5);
+var v2 = v1.multiply(2);
+console.log(v1);
+v1.addTo(v2);
+console.log(v2);
+console.log(v1);
+},{"./vector":"vector.js"}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
