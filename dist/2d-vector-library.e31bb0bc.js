@@ -124,52 +124,76 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var mouseParticles = /*#__PURE__*/function () {
-  function mouseParticles() {
+var Arrow = /*#__PURE__*/function () {
+  function Arrow() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-    _classCallCheck(this, mouseParticles);
+    _classCallCheck(this, Arrow);
 
     this.options = {
       canvas: options.canvas || document.getElementById('canvas')
     };
-    this.canvasSize = {};
-    this.context = this.options.canvas.getContext('2d');
-    this.dpr = window.devicePixelRatio;
+    this.context = this.options.canvas.getContext('2d'); // this.dpr = window.devicePixelRatio || 1;
+
+    this.dpr = 1;
   }
 
-  _createClass(mouseParticles, [{
+  _createClass(Arrow, [{
     key: "bindAll",
     value: function bindAll() {
       var _this = this;
 
-      ['render', 'updateMouseCoords', 'setBounds', 'addEvents'].forEach(function (fn) {
+      ['render', 'calculateAngle', 'setCanvas', 'addEvents'].forEach(function (fn) {
         return _this[fn] = _this[fn].bind(_this);
       });
     }
   }, {
-    key: "setBounds",
-    value: function setBounds() {
+    key: "setCanvas",
+    value: function setCanvas() {
       this.options.canvas.width = window.innerWidth * this.dpr;
       this.options.canvas.height = window.innerHeight * this.dpr;
+      this.context.scale(this.dpr, this.dpr);
+    }
+  }, {
+    key: "setArrowPosition",
+    value: function setArrowPosition() {
+      this.arrowX = this.options.canvas.width / 2;
+      this.arrowY = this.options.canvas.height / 2;
+    }
+  }, {
+    key: "drawArrow",
+    value: function drawArrow() {
+      this.context.beginPath();
+      this.context.moveTo(20, 0);
+      this.context.lineTo(-20, 0);
+      this.context.moveTo(20, 0);
+      this.context.lineTo(10, -10);
+      this.context.moveTo(20, 0);
+      this.context.lineTo(10, 10);
+      this.context.stroke();
     }
   }, {
     key: "render",
     value: function render() {
       this.context.clearRect(0, 0, this.options.canvas.width, this.options.canvas.height);
-      this.context.fill();
+      this.context.save();
+      this.context.translate(this.arrowX, this.arrowY);
+      this.context.rotate(this.angle);
+      this.drawArrow();
+      this.context.restore();
       requestAnimationFrame(this.render);
     }
   }, {
-    key: "updateMouseCoords",
-    value: function updateMouseCoords(e) {
-      this.centerX = e.clientX;
-      this.centerY = e.clientY;
+    key: "calculateAngle",
+    value: function calculateAngle(e) {
+      this.centerX = e.clientX - this.arrowX;
+      this.centerY = e.clientY - this.arrowY;
+      this.angle = Math.atan2(this.centerY, this.centerX);
     }
   }, {
     key: "addEvents",
     value: function addEvents() {
-      this.options.canvas.addEventListener('mousemove', this.updateMouseCoords, {
+      this.options.canvas.addEventListener('mousemove', this.calculateAngle, {
         passive: true
       });
       window.addEventListener('resize', this.setBounds);
@@ -178,16 +202,20 @@ var mouseParticles = /*#__PURE__*/function () {
     key: "init",
     value: function init() {
       this.bindAll();
-      this.setBounds();
+      this.setCanvas();
+      this.setArrowPosition();
       this.addEvents();
       this.render();
     }
   }]);
 
-  return mouseParticles;
+  return Arrow;
 }();
 
-window.onload = function () {};
+window.onload = function () {
+  var arrow = new Arrow();
+  arrow.init();
+};
 },{}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
