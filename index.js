@@ -1,7 +1,8 @@
 import { Particle } from './particle';
 
 const particleOptions = {
-  speed: 2,
+  // speed: 2,
+  gravity: 0.1,
   size: 5
 }
 

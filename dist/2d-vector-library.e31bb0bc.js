@@ -313,7 +313,8 @@ var Particle = /*#__PURE__*/function (_Canvas) {
         x: 100,
         y: 100
       },
-      speed: options.speed || 1,
+      speed: options.speed || 0,
+      gravity: options.gravity || 0,
       direction: options.direction || 0,
       size: options.size || 10
     };
@@ -324,6 +325,7 @@ var Particle = /*#__PURE__*/function (_Canvas) {
 
     _this.velocity.setAngle(_this.options.direction);
 
+    _this.gravity = new _vector.Vector(0, _this.options.gravity);
     return _this;
   }
 
@@ -347,6 +349,7 @@ var Particle = /*#__PURE__*/function (_Canvas) {
     key: "render",
     value: function render() {
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.velocity.addTo(this.gravity);
       this.position.addTo(this.velocity);
       this.drawParticle();
       requestAnimationFrame(this.render);
@@ -369,7 +372,8 @@ exports.Particle = Particle;
 var _particle = require("./particle");
 
 var particleOptions = {
-  speed: 2,
+  // speed: 2,
+  gravity: 0.1,
   size: 5
 };
 var particle = new _particle.Particle(particleOptions);
@@ -402,7 +406,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51369" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55686" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

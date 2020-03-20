@@ -6,8 +6,9 @@ class Particle extends Canvas {
     super();
 
     this.options = {
-      position: options.position || {x: 100, y:100},
-      speed: options.speed || 1,
+      position: options.position || {x: 100, y: 100},
+      speed: options.speed || 0,
+      gravity: options.gravity || 0,
       direction: options.direction || 0,
       size: options.size || 10
     }
@@ -16,6 +17,7 @@ class Particle extends Canvas {
     this.velocity = new Vector(0, 0);
     this.velocity.setLength(this.options.speed);
     this.velocity.setAngle(this.options.direction);
+    this.gravity = new Vector(0, this.options.gravity)
   }
 
   bindAll() {
@@ -32,6 +34,7 @@ class Particle extends Canvas {
   render() {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
+    this.velocity.addTo(this.gravity);
     this.position.addTo(this.velocity);
     this.drawParticle();
 
