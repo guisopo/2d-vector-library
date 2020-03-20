@@ -305,7 +305,13 @@ var Particle = /*#__PURE__*/function (_Canvas) {
     _classCallCheck(this, Particle);
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Particle).call(this));
-    _this.vector = new _vector.Vector(100, 100);
+    _this.particle = new _vector.Vector(100, 100);
+    _this.velocity = new _vector.Vector(0, 0);
+
+    _this.velocity.setLength(3);
+
+    _this.velocity.setAngle(Math.PI / 6);
+
     return _this;
   }
 
@@ -314,21 +320,23 @@ var Particle = /*#__PURE__*/function (_Canvas) {
     value: function bindAll() {
       var _this2 = this;
 
-      ['render', 'draw', 'init'].forEach(function (fn) {
+      ['render', 'drawParticle', 'init'].forEach(function (fn) {
         return _this2[fn] = _this2[fn].bind(_this2);
       });
     }
   }, {
-    key: "draw",
-    value: function draw() {
-      this.context.clearRect(0, 0, this.options.canvas.width, this.options.canvas.height);
+    key: "drawParticle",
+    value: function drawParticle() {
       this.context.beginPath();
-      this.context.arc(this.vector.x, this.vector.y, 10, 0, Math.PI * 2, false);
+      this.context.arc(this.particle.x, this.particle.y, 10, 0, Math.PI * 2, false);
+      this.context.fill();
     }
   }, {
     key: "render",
     value: function render() {
-      this.draw();
+      this.context.clearRect(0, 0, this.options.canvas.width, this.options.canvas.height);
+      this.particle.addTo(this.velocity);
+      this.drawParticle();
       requestAnimationFrame(this.render);
     }
   }, {
@@ -372,7 +380,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50787" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51369" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

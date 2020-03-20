@@ -5,22 +5,28 @@ class Particle extends Canvas {
   constructor() {
     super();
 
-    this.vector = new Vector(100, 100);
+    this.particle = new Vector(100, 100);
+
+    this.velocity = new Vector(0, 0);
+    this.velocity.setLength(3);
+    this.velocity.setAngle(Math.PI / 6);
   }
 
   bindAll() {
-    ['render', 'draw', 'init']
+    ['render', 'drawParticle', 'init']
       .forEach( fn => this[fn] = this[fn].bind(this));
   }
 
-  draw() {
-    this.context.clearRect(0, 0, this.options.canvas.width, this.options.canvas.height);
+  drawParticle() {
     this.context.beginPath();
-    this.context.arc(this.vector.x, this.vector.y, 10, 0, Math.PI * 2, false);
+    this.context.arc(this.particle.x, this.particle.y, 10, 0, Math.PI * 2, false);
+    this.context.fill();
   }
 
   render() {
-    this.draw();
+    this.context.clearRect(0, 0, this.options.canvas.width, this.options.canvas.height);
+    this.particle.addTo(this.velocity);
+    this.drawParticle();
     requestAnimationFrame(this.render);
   }
 
