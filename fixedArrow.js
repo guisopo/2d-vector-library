@@ -70,10 +70,3 @@ class Arrow {
     this.render();
   }
 }
-
-window.onload = function() {
-
-  const arrow = new Arrow();
-
-  arrow.init();
-}
