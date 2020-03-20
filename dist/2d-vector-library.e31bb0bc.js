@@ -245,14 +245,10 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 var Canvas = /*#__PURE__*/function () {
   function Canvas() {
-    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
     _classCallCheck(this, Canvas);
 
-    this.options = {
-      canvas: options.canvas || document.getElementById('canvas')
-    };
-    this.context = this.options.canvas.getContext('2d'); // this.dpr = window.devicePixelRatio || 1;
+    this.canvas = document.getElementById('canvas');
+    this.context = this.canvas.getContext('2d'); // this.dpr = window.devicePixelRatio || 1;
 
     this.dpr = 1;
     this.setCanvas();
@@ -261,8 +257,8 @@ var Canvas = /*#__PURE__*/function () {
   _createClass(Canvas, [{
     key: "setCanvas",
     value: function setCanvas() {
-      this.options.canvas.width = window.innerWidth * this.dpr;
-      this.options.canvas.height = window.innerHeight * this.dpr;
+      this.canvas.width = window.innerWidth * this.dpr;
+      this.canvas.height = window.innerHeight * this.dpr;
       this.context.scale(this.dpr, this.dpr);
     }
   }]);
@@ -271,8 +267,13 @@ var Canvas = /*#__PURE__*/function () {
 }();
 
 exports.Canvas = Canvas;
-},{}],"index.js":[function(require,module,exports) {
+},{}],"particle.js":[function(require,module,exports) {
 "use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Particle = void 0;
 
 var _vector = require("./vector");
 
@@ -302,15 +303,26 @@ var Particle = /*#__PURE__*/function (_Canvas) {
   function Particle() {
     var _this;
 
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
     _classCallCheck(this, Particle);
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Particle).call(this));
-    _this.particle = new _vector.Vector(100, 100);
+    _this.options = {
+      position: options.position || {
+        x: 100,
+        y: 100
+      },
+      speed: options.speed || 1,
+      direction: options.direction || 0,
+      size: options.size || 10
+    };
+    _this.position = new _vector.Vector(_this.options.position.x, _this.options.position.y);
     _this.velocity = new _vector.Vector(0, 0);
 
-    _this.velocity.setLength(3);
+    _this.velocity.setLength(_this.options.speed);
 
-    _this.velocity.setAngle(Math.PI / 6);
+    _this.velocity.setAngle(_this.options.direction);
 
     return _this;
   }
@@ -328,14 +340,14 @@ var Particle = /*#__PURE__*/function (_Canvas) {
     key: "drawParticle",
     value: function drawParticle() {
       this.context.beginPath();
-      this.context.arc(this.particle.x, this.particle.y, 10, 0, Math.PI * 2, false);
+      this.context.arc(this.position.x, this.position.y, this.options.size, 0, Math.PI * 2, false);
       this.context.fill();
     }
   }, {
     key: "render",
     value: function render() {
-      this.context.clearRect(0, 0, this.options.canvas.width, this.options.canvas.height);
-      this.particle.addTo(this.velocity);
+      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.position.addTo(this.velocity);
       this.drawParticle();
       requestAnimationFrame(this.render);
     }
@@ -350,9 +362,19 @@ var Particle = /*#__PURE__*/function (_Canvas) {
   return Particle;
 }(_canvas.Canvas);
 
-var particle = new Particle();
+exports.Particle = Particle;
+},{"./vector":"vector.js","./canvas":"canvas.js"}],"index.js":[function(require,module,exports) {
+"use strict";
+
+var _particle = require("./particle");
+
+var particleOptions = {
+  speed: 2,
+  size: 5
+};
+var particle = new _particle.Particle(particleOptions);
 particle.init();
-},{"./vector":"vector.js","./canvas":"canvas.js"}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./particle":"particle.js"}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
