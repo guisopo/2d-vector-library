@@ -1,8 +1,16 @@
 import { Vector } from './vector';
+import { Canvas } from './canvas';
 
-let v1 = new Vector(10, 5);
-let v2 = v1.multiply(2);
-console.log(v1);
-v1.addTo(v2)
-console.log(v2);
-console.log(v1);
+const vector = new Vector(100, 100);
+
+function animate() {
+  context.beginPath();
+  context.arc(vector.x, vector.y, 10, 0, Math.PI * 2, false);
+}
+
+const canvasOptions = {
+  animate: animate()
+}
+
+const canvas = new Canvas(canvasOptions);
+canvas.init();

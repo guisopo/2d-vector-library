@@ -229,18 +229,95 @@ var Vector = /*#__PURE__*/function () {
 }();
 
 exports.Vector = Vector;
+},{}],"canvas.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Canvas = void 0;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Canvas = /*#__PURE__*/function () {
+  function Canvas() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    _classCallCheck(this, Canvas);
+
+    this.options = {
+      canvas: options.canvas || document.getElementById('canvas'),
+      animate: options.animate
+    };
+    this.context = this.options.canvas.getContext('2d'); // this.dpr = window.devicePixelRatio || 1;
+
+    this.dpr = 1;
+  }
+
+  _createClass(Canvas, [{
+    key: "bindAll",
+    value: function bindAll() {
+      var _this = this;
+
+      ['render', 'setCanvas', 'addEvents'].forEach(function (fn) {
+        return _this[fn] = _this[fn].bind(_this);
+      });
+    }
+  }, {
+    key: "setCanvas",
+    value: function setCanvas() {
+      this.options.canvas.width = window.innerWidth * this.dpr;
+      this.options.canvas.height = window.innerHeight * this.dpr;
+      this.context.scale(this.dpr, this.dpr);
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      this.context.clearRect(0, 0, this.options.canvas.width, this.options.canvas.height);
+      this.options.animate;
+      requestAnimationFrame(this.render);
+    }
+  }, {
+    key: "addEvents",
+    value: function addEvents() {}
+  }, {
+    key: "init",
+    value: function init() {
+      this.bindAll();
+      this.setCanvas();
+      this.addEvents();
+      this.render();
+    }
+  }]);
+
+  return Canvas;
+}();
+
+exports.Canvas = Canvas;
 },{}],"index.js":[function(require,module,exports) {
 "use strict";
 
 var _vector = require("./vector");
 
-var v1 = new _vector.Vector(10, 5);
-var v2 = v1.multiply(2);
-console.log(v1);
-v1.addTo(v2);
-console.log(v2);
-console.log(v1);
-},{"./vector":"vector.js"}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+var _canvas = require("./canvas");
+
+var vector = new _vector.Vector(100, 100);
+
+function animate() {
+  context.beginPath();
+  context.arc(vector.x, vector.y, 10, 0, Math.PI * 2, false);
+}
+
+var canvasOptions = {
+  animate: animate()
+};
+var canvas = new _canvas.Canvas(canvasOptions);
+canvas.init();
+},{"./vector":"vector.js","./canvas":"canvas.js"}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
