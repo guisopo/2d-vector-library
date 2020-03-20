@@ -1,16 +1,34 @@
 import { Vector } from './vector';
 import { Canvas } from './canvas';
 
-const vector = new Vector(100, 100);
+class Particle extends Canvas {
+  constructor() {
+    super();
 
-function animate() {
-  context.beginPath();
-  context.arc(vector.x, vector.y, 10, 0, Math.PI * 2, false);
+    this.vector = new Vector(100, 100);
+  }
+
+  bindAll() {
+    ['render', 'draw', 'init']
+      .forEach( fn => this[fn] = this[fn].bind(this));
+  }
+
+  draw() {
+    this.context.clearRect(0, 0, this.options.canvas.width, this.options.canvas.height);
+    this.context.beginPath();
+    this.context.arc(this.vector.x, this.vector.y, 10, 0, Math.PI * 2, false);
+  }
+
+  render() {
+    this.draw();
+    requestAnimationFrame(this.render);
+  }
+
+  init() {
+    this.bindAll();
+    this.render();
+  }
 }
 
-const canvasOptions = {
-  animate: animate()
-}
-
-const canvas = new Canvas(canvasOptions);
-canvas.init();
+const particle = new Particle();
+particle.init();
