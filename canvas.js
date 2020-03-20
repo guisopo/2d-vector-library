@@ -40,3 +40,5 @@ class Canvas {
     this.render();
   }
 }
+
+export { Canvas };
