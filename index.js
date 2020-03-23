@@ -1,10 +1,10 @@
 import { Particle } from './particle';
+import { Vector } from './vector';
 
-const particleOptions = {
-  // speed: 2,
-  gravity: 0.1,
+const shipOptions = {
+  thrust: {x: 0, y: 0},
   size: 5
 }
 
-const particle = new Particle(particleOptions);
-particle.init();
+const ship = new Particle(shipOptions);
+ship.init();

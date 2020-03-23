@@ -310,11 +310,15 @@ var Particle = /*#__PURE__*/function (_Canvas) {
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Particle).call(this));
     _this.options = {
       position: options.position || {
-        x: 100,
+        x: 120,
         y: 100
       },
       speed: options.speed || 0,
       gravity: options.gravity || 0,
+      thrust: options.thrust || {
+        x: 0,
+        y: 0
+      },
       direction: options.direction || 0,
       size: options.size || 10
     };
@@ -326,6 +330,7 @@ var Particle = /*#__PURE__*/function (_Canvas) {
     _this.velocity.setAngle(_this.options.direction);
 
     _this.gravity = new _vector.Vector(0, _this.options.gravity);
+    _this.thrust = new _vector.Vector(_this.options.thrust.x, _this.options.thrust.y);
     return _this;
   }
 
@@ -334,7 +339,7 @@ var Particle = /*#__PURE__*/function (_Canvas) {
     value: function bindAll() {
       var _this2 = this;
 
-      ['render', 'drawParticle', 'init'].forEach(function (fn) {
+      ['addEventListeners', 'render', 'drawParticle', 'init'].forEach(function (fn) {
         return _this2[fn] = _this2[fn].bind(_this2);
       });
     }
@@ -346,18 +351,74 @@ var Particle = /*#__PURE__*/function (_Canvas) {
       this.context.fill();
     }
   }, {
+    key: "accelerate",
+    value: function accelerate(acc) {
+      this.velocity.addTo(acc);
+    }
+  }, {
     key: "render",
     value: function render() {
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      this.velocity.addTo(this.gravity);
+      this.accelerate(this.thrust);
       this.position.addTo(this.velocity);
       this.drawParticle();
       requestAnimationFrame(this.render);
     }
   }, {
+    key: "addEventListeners",
+    value: function addEventListeners() {
+      var _this3 = this;
+
+      document.body.addEventListener('keydown', function (e) {
+        switch (e.keyCode) {
+          case 38:
+            _this3.thrust.y = -0.01;
+            break;
+
+          case 40:
+            _this3.thrust.y = .01;
+            break;
+
+          case 37:
+            _this3.thrust.x = -.01;
+            break;
+
+          case 39:
+            _this3.thrust.x = .01;
+            break;
+
+          default:
+            break;
+        }
+      });
+      document.body.addEventListener('keyup', function (e) {
+        switch (e.keyCode) {
+          case 38:
+            _this3.thrust.y = 0;
+            break;
+
+          case 40:
+            _this3.thrust.y = 0;
+            break;
+
+          case 37:
+            _this3.thrust.x = 0;
+            break;
+
+          case 39:
+            _this3.thrust.x = 0;
+            break;
+
+          default:
+            break;
+        }
+      });
+    }
+  }, {
     key: "init",
     value: function init() {
       this.bindAll();
+      this.addEventListeners();
       this.render();
     }
   }]);
@@ -371,14 +432,18 @@ exports.Particle = Particle;
 
 var _particle = require("./particle");
 
-var particleOptions = {
-  // speed: 2,
-  gravity: 0.1,
+var _vector = require("./vector");
+
+var shipOptions = {
+  thrust: {
+    x: 0,
+    y: 0
+  },
   size: 5
 };
-var particle = new _particle.Particle(particleOptions);
-particle.init();
-},{"./particle":"particle.js"}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+var ship = new _particle.Particle(shipOptions);
+ship.init();
+},{"./particle":"particle.js","./vector":"vector.js"}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -406,7 +471,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55686" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52072" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
