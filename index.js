@@ -22,7 +22,7 @@ class Planets extends Canvas {
   }
 
   bindAll() {
-    [ 'draw', 'render', 'init']
+    [ 'draw', 'render', 'addEventListeners', 'init']
       .forEach( fn => this[fn] = this[fn].bind(this));
   }
 
@@ -34,7 +34,6 @@ class Planets extends Canvas {
 
     this.sun.drawParticle(this.context);
     this.planet.drawParticle(this.context);
-    
   }
   
   render() {
@@ -42,8 +41,13 @@ class Planets extends Canvas {
     requestAnimationFrame(this.render);
   }
 
+  addEventListeners() {
+   
+  }
+
   init() {
     this.bindAll();
+    this.addEventListeners();
     this.render();
   }
 }

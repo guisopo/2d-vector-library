@@ -428,7 +428,7 @@ var Planets = /*#__PURE__*/function (_Canvas) {
     value: function bindAll() {
       var _this2 = this;
 
-      ['draw', 'render', 'init'].forEach(function (fn) {
+      ['draw', 'render', 'addEventListeners', 'init'].forEach(function (fn) {
         return _this2[fn] = _this2[fn].bind(_this2);
       });
     }
@@ -448,9 +448,13 @@ var Planets = /*#__PURE__*/function (_Canvas) {
       requestAnimationFrame(this.render);
     }
   }, {
+    key: "addEventListeners",
+    value: function addEventListeners() {}
+  }, {
     key: "init",
     value: function init() {
       this.bindAll();
+      this.addEventListeners();
       this.render();
     }
   }]);
