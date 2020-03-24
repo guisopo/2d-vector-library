@@ -1,26 +1,22 @@
 import { Vector } from './vector';
-import { Canvas } from './canvas';
 
-class Particle extends Canvas {
+class Particle {
   constructor(options = {}) {
-    super();
 
-    this.options = {
-      position: options.position || {x: 120, y: 100},
-      speed: options.speed || 0,
-      gravity: options.gravity || 0,
-      thrust: options.thrust || {x: 0, y: 0},
-      direction: options.direction || 0,
-      size: options.size || 10,
-      mass: options.mass || 1
-    }
+    this.position = options.position || {x: 120, y: 100},
+    this.speed = options.speed || 0,
+    this.gravity = options.gravity || 0,
+    this.thrust = options.thrust || {x: 0, y: 0},
+    this.direction = options.direction || 0,
+    this.size = options.size || 10,
+    this.mass = options.mass || 1
   
-    this.position = new Vector(this.options.position.x, this.options.position.y);
+    this.position = new Vector(this.position.x, this.position.y);
     this.velocity = new Vector(0, 0);
-    this.velocity.setLength(this.options.speed);
-    this.velocity.setAngle(this.options.direction);
-    this.gravity = new Vector(0, this.options.gravity);
-    this.thrust = new Vector(this.options.thrust.x, this.options.thrust.y);
+    this.velocity.setLength(this.speed);
+    this.velocity.setAngle(this.direction);
+    this.gravity = new Vector(0, this.gravity);
+    this.thrust = new Vector(this.thrust.x, this.thrust.y);
   }
 
   bindAll() {
@@ -28,10 +24,10 @@ class Particle extends Canvas {
       .forEach( fn => this[fn] = this[fn].bind(this));
   }
 
-  drawParticle() {
-    this.context.beginPath();
-    this.context.arc(this.position.x, this.position.y, this.options.size, 0, Math.PI * 2, false);
-    this.context.fill();
+  drawParticle(context) {
+    context.beginPath();
+    context.arc(this.position.x, this.position.y, this.size, 0, Math.PI * 2, false);
+    context.fill();
   }
 
   accelerate(acc) {
@@ -45,7 +41,7 @@ class Particle extends Canvas {
   distanceTo(p2) {
     const dx = p2.position.x - this.position.x; 
     const dy = p2.position.y - this.position.y;
-    return Mat.sqrt(dx * dx, dy * dy);
+    return Math.sqrt(dx * dx + dy * dy);
   }
 
   gravitateTo(p2) {
@@ -58,61 +54,13 @@ class Particle extends Canvas {
     this.velocity.addTo(gravity);
   }
 
-  render() {
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-    this.accelerate(this.thrust);
+  update() {
     this.position.addTo(this.velocity);
-    this.drawParticle();
-
-    requestAnimationFrame(this.render);
-  }
-
-  addEventListeners() {
-    document.body.addEventListener('keydown', (e) => {
-      switch (e.keyCode) {
-        case 38:
-          this.thrust.y = -0.01;
-          break;
-        case 40:
-          this.thrust.y = .01;
-          break;
-        case 37:
-          this.thrust.x = -.01;
-          break;
-        case 39:
-          this.thrust.x = .01;
-          break;
-      
-        default:
-          break;
-      }
-    });
-    document.body.addEventListener('keyup', (e) => {
-      switch (e.keyCode) {
-        case 38:
-          this.thrust.y = 0;
-          break;
-        case 40:
-          this.thrust.y = 0;
-          break;
-        case 37:
-          this.thrust.x = 0;
-          break;
-        case 39:
-          this.thrust.x = 0;
-          break;
-      
-        default:
-          break;
-      }
-    });
   }
 
   init() {
     this.bindAll();
     this.addEventListeners();
-    this.render();
   }
 }
 

@@ -6,6 +6,7 @@ class Canvas {
     this.dpr = 1;
     
     this.setCanvas();
+    window.addEventListener('resize', () => this.setCanvas());
   }
 
   setCanvas() {

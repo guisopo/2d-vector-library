@@ -117,7 +117,50 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"vector.js":[function(require,module,exports) {
+})({"canvas.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Canvas = void 0;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Canvas = /*#__PURE__*/function () {
+  function Canvas() {
+    var _this = this;
+
+    _classCallCheck(this, Canvas);
+
+    this.canvas = document.getElementById('canvas');
+    this.context = this.canvas.getContext('2d'); // this.dpr = window.devicePixelRatio || 1;
+
+    this.dpr = 1;
+    this.setCanvas();
+    window.addEventListener('resize', function () {
+      return _this.setCanvas();
+    });
+  }
+
+  _createClass(Canvas, [{
+    key: "setCanvas",
+    value: function setCanvas() {
+      this.canvas.width = window.innerWidth * this.dpr;
+      this.canvas.height = window.innerHeight * this.dpr;
+      this.context.scale(this.dpr, this.dpr);
+    }
+  }]);
+
+  return Canvas;
+}();
+
+exports.Canvas = Canvas;
+},{}],"vector.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -229,44 +272,6 @@ var Vector = /*#__PURE__*/function () {
 }();
 
 exports.Vector = Vector;
-},{}],"canvas.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Canvas = void 0;
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var Canvas = /*#__PURE__*/function () {
-  function Canvas() {
-    _classCallCheck(this, Canvas);
-
-    this.canvas = document.getElementById('canvas');
-    this.context = this.canvas.getContext('2d'); // this.dpr = window.devicePixelRatio || 1;
-
-    this.dpr = 1;
-    this.setCanvas();
-  }
-
-  _createClass(Canvas, [{
-    key: "setCanvas",
-    value: function setCanvas() {
-      this.canvas.width = window.innerWidth * this.dpr;
-      this.canvas.height = window.innerHeight * this.dpr;
-      this.context.scale(this.dpr, this.dpr);
-    }
-  }]);
-
-  return Canvas;
-}();
-
-exports.Canvas = Canvas;
 },{}],"particle.js":[function(require,module,exports) {
 "use strict";
 
@@ -277,7 +282,98 @@ exports.Particle = void 0;
 
 var _vector = require("./vector");
 
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Particle = /*#__PURE__*/function () {
+  function Particle() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    _classCallCheck(this, Particle);
+
+    this.position = options.position || {
+      x: 120,
+      y: 100
+    }, this.speed = options.speed || 0, this.gravity = options.gravity || 0, this.thrust = options.thrust || {
+      x: 0,
+      y: 0
+    }, this.direction = options.direction || 0, this.size = options.size || 10, this.mass = options.mass || 1;
+    this.position = new _vector.Vector(this.position.x, this.position.y);
+    this.velocity = new _vector.Vector(0, 0);
+    this.velocity.setLength(this.speed);
+    this.velocity.setAngle(this.direction);
+    this.gravity = new _vector.Vector(0, this.gravity);
+    this.thrust = new _vector.Vector(this.thrust.x, this.thrust.y);
+  }
+
+  _createClass(Particle, [{
+    key: "bindAll",
+    value: function bindAll() {
+      var _this = this;
+
+      ['addEventListeners', 'render', 'drawParticle', 'init'].forEach(function (fn) {
+        return _this[fn] = _this[fn].bind(_this);
+      });
+    }
+  }, {
+    key: "drawParticle",
+    value: function drawParticle(context) {
+      context.beginPath();
+      context.arc(this.position.x, this.position.y, this.size, 0, Math.PI * 2, false);
+      context.fill();
+    }
+  }, {
+    key: "accelerate",
+    value: function accelerate(acc) {
+      this.velocity.addTo(acc);
+    }
+  }, {
+    key: "angleTo",
+    value: function angleTo(p2) {
+      return Math.atan2(p2.position.y - this.position.y, p2.position.x - this.position.x);
+    }
+  }, {
+    key: "distanceTo",
+    value: function distanceTo(p2) {
+      var dx = p2.position.x - this.position.x;
+      var dy = p2.position.y - this.position.y;
+      return Math.sqrt(dx * dx + dy * dy);
+    }
+  }, {
+    key: "gravitateTo",
+    value: function gravitateTo(p2) {
+      var gravity = new _vector.Vector(0, 0);
+      var distance = this.distanceTo(p2);
+      gravity.setLength(p2.mass / (distance * distance));
+      gravity.setAngle(this.angleTo(p2));
+      this.velocity.addTo(gravity);
+    }
+  }, {
+    key: "update",
+    value: function update() {
+      this.position.addTo(this.velocity);
+    }
+  }, {
+    key: "init",
+    value: function init() {
+      this.bindAll();
+      this.addEventListeners();
+    }
+  }]);
+
+  return Particle;
+}();
+
+exports.Particle = Particle;
+},{"./vector":"vector.js"}],"index.js":[function(require,module,exports) {
+"use strict";
+
 var _canvas = require("./canvas");
+
+var _particle = require("./particle");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -297,183 +393,74 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-var Particle = /*#__PURE__*/function (_Canvas) {
-  _inherits(Particle, _Canvas);
+var Planets = /*#__PURE__*/function (_Canvas) {
+  _inherits(Planets, _Canvas);
 
-  function Particle() {
+  function Planets() {
     var _this;
 
-    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    _classCallCheck(this, Planets);
 
-    _classCallCheck(this, Particle);
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Particle).call(this));
-    _this.options = {
-      position: options.position || {
-        x: 120,
-        y: 100
-      },
-      speed: options.speed || 0,
-      gravity: options.gravity || 0,
-      thrust: options.thrust || {
-        x: 0,
-        y: 0
-      },
-      direction: options.direction || 0,
-      size: options.size || 10,
-      mass: options.mass || 1
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Planets).call(this));
+    var sunOptions = {
+      mass: 20000,
+      size: 20,
+      position: {
+        x: _this.canvas.width / 2,
+        y: _this.canvas.height / 2
+      }
     };
-    _this.position = new _vector.Vector(_this.options.position.x, _this.options.position.y);
-    _this.velocity = new _vector.Vector(0, 0);
-
-    _this.velocity.setLength(_this.options.speed);
-
-    _this.velocity.setAngle(_this.options.direction);
-
-    _this.gravity = new _vector.Vector(0, _this.options.gravity);
-    _this.thrust = new _vector.Vector(_this.options.thrust.x, _this.options.thrust.y);
+    var planetOptions = {
+      position: {
+        x: _this.canvas.width / 2 + 200,
+        y: _this.canvas.height / 2
+      },
+      speed: 10,
+      direction: -Math.PI / 2
+    };
+    _this.sun = new _particle.Particle(sunOptions);
+    _this.planet = new _particle.Particle(planetOptions);
     return _this;
   }
 
-  _createClass(Particle, [{
+  _createClass(Planets, [{
     key: "bindAll",
     value: function bindAll() {
       var _this2 = this;
 
-      ['addEventListeners', 'render', 'drawParticle', 'init'].forEach(function (fn) {
+      ['draw', 'render', 'init'].forEach(function (fn) {
         return _this2[fn] = _this2[fn].bind(_this2);
       });
     }
   }, {
-    key: "drawParticle",
-    value: function drawParticle() {
-      this.context.beginPath();
-      this.context.arc(this.position.x, this.position.y, this.options.size, 0, Math.PI * 2, false);
-      this.context.fill();
-    }
-  }, {
-    key: "accelerate",
-    value: function accelerate(acc) {
-      this.velocity.addTo(acc);
-    }
-  }, {
-    key: "angleTo",
-    value: function angleTo(p2) {
-      return Math.atan2(p2.position.y - this.position.y, p2.position.x - this.position.x);
-    }
-  }, {
-    key: "distanceTo",
-    value: function distanceTo(p2) {
-      var dx = p2.position.x - this.position.x;
-      var dy = p2.position.y - this.position.y;
-      return Mat.sqrt(dx * dx, dy * dy);
-    }
-  }, {
-    key: "gravitateTo",
-    value: function gravitateTo(p2) {
-      var gravity = new _vector.Vector(0, 0);
-      var distance = this.distanceTo(p2);
-      gravity.setLength(p2.mass / (distance * distance));
-      gravity.setAngle(this.angleTo(p2));
-      this.velocity.addTo(gravity);
+    key: "draw",
+    value: function draw() {
+      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.planet.gravitateTo(this.sun);
+      this.planet.update();
+      this.sun.drawParticle(this.context);
+      this.planet.drawParticle(this.context);
     }
   }, {
     key: "render",
     value: function render() {
-      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      this.accelerate(this.thrust);
-      this.position.addTo(this.velocity);
-      this.drawParticle();
+      this.draw();
       requestAnimationFrame(this.render);
-    }
-  }, {
-    key: "addEventListeners",
-    value: function addEventListeners() {
-      var _this3 = this;
-
-      document.body.addEventListener('keydown', function (e) {
-        switch (e.keyCode) {
-          case 38:
-            _this3.thrust.y = -0.01;
-            break;
-
-          case 40:
-            _this3.thrust.y = .01;
-            break;
-
-          case 37:
-            _this3.thrust.x = -.01;
-            break;
-
-          case 39:
-            _this3.thrust.x = .01;
-            break;
-
-          default:
-            break;
-        }
-      });
-      document.body.addEventListener('keyup', function (e) {
-        switch (e.keyCode) {
-          case 38:
-            _this3.thrust.y = 0;
-            break;
-
-          case 40:
-            _this3.thrust.y = 0;
-            break;
-
-          case 37:
-            _this3.thrust.x = 0;
-            break;
-
-          case 39:
-            _this3.thrust.x = 0;
-            break;
-
-          default:
-            break;
-        }
-      });
     }
   }, {
     key: "init",
     value: function init() {
       this.bindAll();
-      this.addEventListeners();
       this.render();
     }
   }]);
 
-  return Particle;
+  return Planets;
 }(_canvas.Canvas);
 
-exports.Particle = Particle;
-},{"./vector":"vector.js","./canvas":"canvas.js"}],"index.js":[function(require,module,exports) {
-"use strict";
-
-var _particle = require("./particle");
-
-var _vector = require("./vector");
-
-var sunOptions = {
-  mass: 20000,
-  positon: {
-    x: width / 2,
-    y: height / 2
-  }
-};
-var planetOptions = {
-  position: {
-    x: width / 2 + 200,
-    y: height / 2
-  },
-  speed: 10,
-  direction: -Math.PI / 2
-};
-var sun = new _particle.Particle(sunOptions);
-var planet = new _particle.Particle(planetOptions);
-},{"./particle":"particle.js","./vector":"vector.js"}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+var a = new Planets();
+a.init();
+},{"./canvas":"canvas.js","./particle":"particle.js"}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -501,7 +488,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61517" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63224" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

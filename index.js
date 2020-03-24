@@ -1,16 +1,53 @@
+import { Canvas } from './canvas';
 import { Particle } from './particle';
-import { Vector } from './vector';
 
-const sunOptions = {
-  mass: 20000,
-  positon: { x: width/2, y:height/2 }
+class Planets extends Canvas {
+  constructor() {
+    super();
+
+    const sunOptions = {
+      mass: 20000,
+      size: 20,
+      position: { x: this.canvas.width/2, y: this.canvas.height/2 }
+    }
+
+    const planetOptions = {
+      position: { x: this.canvas.width/2 + 200, y: this.canvas.height/2 },
+      speed: 10,
+      direction: -Math.PI/2
+    }
+
+    this.sun = new Particle(sunOptions);
+    this.planet = new Particle(planetOptions);
+  }
+
+  bindAll() {
+    [ 'draw', 'render', 'init']
+      .forEach( fn => this[fn] = this[fn].bind(this));
+  }
+
+  draw() {
+		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+		
+    this.planet.gravitateTo(this.sun);
+    this.planet.update();
+
+    this.sun.drawParticle(this.context);
+    this.planet.drawParticle(this.context);
+    
+  }
+  
+  render() {
+    this.draw();
+    requestAnimationFrame(this.render);
+  }
+
+  init() {
+    this.bindAll();
+    this.render();
+  }
 }
 
-const planetOptions = {
-  position: { x: width/2 + 200, y: height/2 },
-  speed: 10,
-  direction: -Math.PI/2
-}
+const a = new Planets();
 
-const sun = new Particle(sunOptions);
-const planet = new Particle(planetOptions);
+a.init();
