@@ -320,7 +320,8 @@ var Particle = /*#__PURE__*/function (_Canvas) {
         y: 0
       },
       direction: options.direction || 0,
-      size: options.size || 10
+      size: options.size || 10,
+      mass: options.mass || 1
     };
     _this.position = new _vector.Vector(_this.options.position.x, _this.options.position.y);
     _this.velocity = new _vector.Vector(0, 0);
@@ -354,6 +355,27 @@ var Particle = /*#__PURE__*/function (_Canvas) {
     key: "accelerate",
     value: function accelerate(acc) {
       this.velocity.addTo(acc);
+    }
+  }, {
+    key: "angleTo",
+    value: function angleTo(p2) {
+      return Math.atan2(p2.position.y - this.position.y, p2.position.x - this.position.x);
+    }
+  }, {
+    key: "distanceTo",
+    value: function distanceTo(p2) {
+      var dx = p2.position.x - this.position.x;
+      var dy = p2.position.y - this.position.y;
+      return Mat.sqrt(dx * dx, dy * dy);
+    }
+  }, {
+    key: "gravitateTo",
+    value: function gravitateTo(p2) {
+      var gravity = new _vector.Vector(0, 0);
+      var distance = this.distanceTo(p2);
+      gravity.setLength(p2.mass / (distance * distance));
+      gravity.setAngle(this.angleTo(p2));
+      this.velocity.addTo(gravity);
     }
   }, {
     key: "render",
@@ -434,15 +456,23 @@ var _particle = require("./particle");
 
 var _vector = require("./vector");
 
-var shipOptions = {
-  thrust: {
-    x: 0,
-    y: 0
-  },
-  size: 5
+var sunOptions = {
+  mass: 20000,
+  positon: {
+    x: width / 2,
+    y: height / 2
+  }
 };
-var ship = new _particle.Particle(shipOptions);
-ship.init();
+var planetOptions = {
+  position: {
+    x: width / 2 + 200,
+    y: height / 2
+  },
+  speed: 10,
+  direction: -Math.PI / 2
+};
+var sun = new _particle.Particle(sunOptions);
+var planet = new _particle.Particle(planetOptions);
 },{"./particle":"particle.js","./vector":"vector.js"}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -471,7 +501,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52072" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61517" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

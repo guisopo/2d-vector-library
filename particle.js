@@ -11,7 +11,8 @@ class Particle extends Canvas {
       gravity: options.gravity || 0,
       thrust: options.thrust || {x: 0, y: 0},
       direction: options.direction || 0,
-      size: options.size || 10
+      size: options.size || 10,
+      mass: options.mass || 1
     }
   
     this.position = new Vector(this.options.position.x, this.options.position.y);
@@ -35,6 +36,26 @@ class Particle extends Canvas {
 
   accelerate(acc) {
     this.velocity.addTo(acc);
+  }
+
+  angleTo(p2) {
+    return Math.atan2(p2.position.y - this.position.y, p2.position.x - this.position.x);
+  }
+
+  distanceTo(p2) {
+    const dx = p2.position.x - this.position.x; 
+    const dy = p2.position.y - this.position.y;
+    return Mat.sqrt(dx * dx, dy * dy);
+  }
+
+  gravitateTo(p2) {
+    const gravity = new Vector(0, 0);
+    const distance = this.distanceTo(p2);
+
+    gravity.setLength(p2.mass / (distance * distance));
+    gravity.setAngle(this.angleTo(p2));
+    
+    this.velocity.addTo(gravity);
   }
 
   render() {
