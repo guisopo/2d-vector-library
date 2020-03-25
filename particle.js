@@ -3,13 +3,14 @@ import { Vector } from './vector';
 class Particle {
   constructor(options = {}) {
 
-    this.position = options.position || {x: 120, y: 100},
-    this.speed = options.speed || 0,
-    this.gravity = options.gravity || 0,
-    this.thrust = options.thrust || {x: 0, y: 0},
-    this.direction = options.direction || 0,
-    this.size = options.size || 10,
-    this.mass = options.mass || 1
+    this.position = options.position || {x: 120, y: 100};
+    this.speed = options.speed || 0;
+    this.gravity = options.gravity || 0;
+    this.thrust = options.thrust || {x: 0, y: 0};
+    this.direction = options.direction || 0;
+    this.size = options.size || 10;
+    this.mass = options.mass || 1;
+    this.particleColor = options.particleColor || '#000000';
   
     this.position = new Vector(this.position.x, this.position.y);
     this.velocity = new Vector(0, 0);
@@ -25,6 +26,7 @@ class Particle {
   }
 
   drawParticle(context) {
+    context.fillStyle= this.particleColor;
     context.beginPath();
     context.arc(this.position.x, this.position.y, this.size, 0, Math.PI * 2, false);
     context.fill();

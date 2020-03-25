@@ -297,10 +297,17 @@ var Particle = /*#__PURE__*/function () {
     this.position = options.position || {
       x: 120,
       y: 100
-    }, this.speed = options.speed || 0, this.gravity = options.gravity || 0, this.thrust = options.thrust || {
+    };
+    this.speed = options.speed || 0;
+    this.gravity = options.gravity || 0;
+    this.thrust = options.thrust || {
       x: 0,
       y: 0
-    }, this.direction = options.direction || 0, this.size = options.size || 10, this.mass = options.mass || 1;
+    };
+    this.direction = options.direction || 0;
+    this.size = options.size || 10;
+    this.mass = options.mass || 1;
+    this.particleColor = options.particleColor || '#000000';
     this.position = new _vector.Vector(this.position.x, this.position.y);
     this.velocity = new _vector.Vector(0, 0);
     this.velocity.setLength(this.speed);
@@ -321,6 +328,7 @@ var Particle = /*#__PURE__*/function () {
   }, {
     key: "drawParticle",
     value: function drawParticle(context) {
+      context.fillStyle = this.particleColor;
       context.beginPath();
       context.arc(this.position.x, this.position.y, this.size, 0, Math.PI * 2, false);
       context.fill();
@@ -368,12 +376,40 @@ var Particle = /*#__PURE__*/function () {
 }();
 
 exports.Particle = Particle;
-},{"./vector":"vector.js"}],"index.js":[function(require,module,exports) {
+},{"./vector":"vector.js"}],"formulas.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.norm = norm;
+exports.lerp = lerp;
+exports.map = map;
+exports.clamp = clamp;
+
+function norm(value, min, max) {
+  // Takes a value from a range and returns a value from 0 to 1
+  return value - min / max - min;
+}
+
+function lerp(norm, min, max) {
+  // Takes a normalized value and returns the value within a range
+  return (max - min) * norm + min;
+}
+
+function map(value, sourceMin, sourceMax, destMin, destMax) {}
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+},{}],"index.js":[function(require,module,exports) {
 "use strict";
 
 var _canvas = require("./canvas");
 
 var _particle = require("./particle");
+
+var _formulas = require("./formulas");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -393,37 +429,32 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-var Planets = /*#__PURE__*/function (_Canvas) {
-  _inherits(Planets, _Canvas);
+var ClampExample = /*#__PURE__*/function (_Canvas) {
+  _inherits(ClampExample, _Canvas);
 
-  function Planets() {
+  function ClampExample() {
     var _this;
 
-    _classCallCheck(this, Planets);
+    _classCallCheck(this, ClampExample);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Planets).call(this));
-    var sunOptions = {
-      mass: 20000,
-      size: 20,
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(ClampExample).call(this));
+    _this.rectangle = {
+      x: _this.canvas.width / 2 - 200,
+      y: _this.canvas.height / 2 - 150,
+      width: 400,
+      height: 300
+    };
+    _this.particle = new _particle.Particle({
       position: {
         x: _this.canvas.width / 2,
         y: _this.canvas.height / 2
-      }
-    };
-    var planetOptions = {
-      position: {
-        x: _this.canvas.width / 2 + 200,
-        y: _this.canvas.height / 2
       },
-      speed: 10,
-      direction: -Math.PI / 2
-    };
-    _this.sun = new _particle.Particle(sunOptions);
-    _this.planet = new _particle.Particle(planetOptions);
+      particleColor: '#fdf498'
+    });
     return _this;
   }
 
-  _createClass(Planets, [{
+  _createClass(ClampExample, [{
     key: "bindAll",
     value: function bindAll() {
       var _this2 = this;
@@ -435,11 +466,14 @@ var Planets = /*#__PURE__*/function (_Canvas) {
   }, {
     key: "draw",
     value: function draw() {
-      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      this.planet.gravitateTo(this.sun);
-      this.planet.update();
-      this.sun.drawParticle(this.context);
-      this.planet.drawParticle(this.context);
+      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height); // Set canvas background color
+
+      this.context.fillStyle = '#fdf498';
+      this.context.fillRect(0, 0, this.canvas.width, this.canvas.height); // Set rectangle background color
+
+      this.context.fillStyle = '#f37736';
+      this.context.fillRect(this.rectangle.x - 10, this.rectangle.y - 10, this.rectangle.width + 20, this.rectangle.height + 20);
+      this.particle.drawParticle(this.context);
     }
   }, {
     key: "render",
@@ -449,7 +483,15 @@ var Planets = /*#__PURE__*/function (_Canvas) {
     }
   }, {
     key: "addEventListeners",
-    value: function addEventListeners() {}
+    value: function addEventListeners() {
+      var _this3 = this;
+
+      document.body.addEventListener('mousemove', function (e) {
+        // Clamp particle position to rectangle area
+        _this3.particle.position.x = (0, _formulas.clamp)(e.clientX, _this3.rectangle.x, _this3.rectangle.x + _this3.rectangle.width);
+        _this3.particle.position.y = (0, _formulas.clamp)(e.clientY, _this3.rectangle.y, _this3.rectangle.y + _this3.rectangle.height);
+      });
+    }
   }, {
     key: "init",
     value: function init() {
@@ -459,12 +501,12 @@ var Planets = /*#__PURE__*/function (_Canvas) {
     }
   }]);
 
-  return Planets;
+  return ClampExample;
 }(_canvas.Canvas);
 
-var a = new Planets();
-a.init();
-},{"./canvas":"canvas.js","./particle":"particle.js"}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+var recClamp = new ClampExample();
+recClamp.init();
+},{"./canvas":"canvas.js","./particle":"particle.js","./formulas":"formulas.js"}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -492,7 +534,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63224" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63996" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
