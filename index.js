@@ -1,23 +1,26 @@
 import { Canvas } from './canvas';
 import { Particle } from './particle';
-import { clamp } from './formulas';
 
-class ClampExample extends Canvas {
+class SolarSystem extends Canvas {
   constructor() {
     super();
 
-    this.rectangle = {
-      x: this.canvas.width / 2 - 200,
-      y: this.canvas.height / 2 - 150,
-      width: 400,
-      height: 300
+    const sunOptions = {
+      mass: 20000,
+      size: 20,
+      particleColor: '#ffff00',
+      position: { x: this.canvas.width/2, y: this.canvas.height/2 }
     }
 
-    this.particle = new Particle({
-      position: { x: this.canvas.width / 2, y: this.canvas.height / 2},
-      particleColor: '#fdf498'
-    });
+    const planetOptions = {
+      position: { x: this.canvas.width/2 + 200, y: this.canvas.height/2 },
+      size: 5,
+      speed: 10,
+      direction: -Math.PI / 2
+    }
 
+    this.sun = new Particle(sunOptions);
+    this.planet = new Particle(planetOptions);
   }
 
   bindAll() {
@@ -27,17 +30,12 @@ class ClampExample extends Canvas {
 
   draw() {
 		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+		
+    this.planet.gravitateTo(this.sun);
+    this.planet.update();
 
-    // Set canvas background color
-    this.context.fillStyle='#fdf498';
-    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    
-    // Set rectangle background color
-    this.context.fillStyle='#f37736';
-    this.context.fillRect(this.rectangle.x - 10, this.rectangle.y - 10, this.rectangle.width + 20, this.rectangle.height + 20);
-
-    this.particle.drawParticle(this.context);
-
+    this.sun.drawParticle(this.context);
+    this.planet.drawParticle(this.context);
   }
   
   render() {
@@ -46,11 +44,7 @@ class ClampExample extends Canvas {
   }
 
   addEventListeners() {
-   document.body.addEventListener('mousemove', (e)=> {
-     // Clamp particle position to rectangle area
-    this.particle.position.x = clamp(e.clientX, this.rectangle.x, this.rectangle.x + this.rectangle.width);
-    this.particle.position.y = clamp(e.clientY, this.rectangle.y, this.rectangle.y + this.rectangle.height);
-   })
+   
   }
 
   init() {
@@ -60,6 +54,6 @@ class ClampExample extends Canvas {
   }
 }
 
-const recClamp = new ClampExample();
+const sS = new SolarSystem();
 
-recClamp.init();
+sS.init();

@@ -1,5 +1,3 @@
-import { Vector } from './vector';
-
 class Particle {
   constructor(options = {}) {
 
@@ -7,14 +5,16 @@ class Particle {
     this.particleColor = options.particleColor || '#000000';
     this.size = options.size || 10;
     this.mass = options.mass || 1;
+
     this.direction = options.direction || 0;
     this.speed = options.speed || 0;
+    
     this.gravity = options.gravity || 0;
     this.friction = options.friction || 1;
     this.bounce = options.bounce || -1;
-  
-    this.vx = Math.cos(this.direcion) * this.speed;
-    this.vy = Math.cos(this.direcion) * this.speed;
+
+    this.vx = Math.cos(this.direction) * this.speed;
+    this.vy = Math.sin(this.direction) * this.speed;
   }
 
   bindAll() {
@@ -23,15 +23,15 @@ class Particle {
   }
 
   drawParticle(context) {
-    context.fillStyle= this.particleColor;
+    context.fillStyle = this.particleColor;
     context.beginPath();
     context.arc(this.position.x, this.position.y, this.size, 0, Math.PI * 2, false);
     context.fill();
   }
 
   accelerate(ax, ay) {
-    this.vx += (ax);
-    this.vy += (ay);
+    this.vx += ax;
+    this.vy += ay;
   }
 
   angleTo(p2) {
@@ -45,15 +45,14 @@ class Particle {
   }
 
   gravitateTo(p2) {
-    const dx = this.position.x - p2.position.x;
-    const dy = this.position.y - p2.position.y;
+    const dx = p2.position.x - this.position.x;
+    const dy = p2.position.y - this.position.y;
 
     const distance = Math.sqrt(dx * dx + dy * dy);
-
     const force = p2.mass / (distance * distance);
-    
-    const ax = (dx / distance) * force;
-    const ay = (dy / distance) * force;
+
+    const ax = dx / distance * force;
+    const ay = dy / distance * force;
 
     this.vx += ax;
     this.vy += ay;
