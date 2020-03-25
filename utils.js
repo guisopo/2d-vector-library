@@ -21,3 +21,11 @@ export function distance(p0, p1) {
   const dy = p1.y - p0.y;
   return Math.sqrt(dx * dx + dy * dy);
 }
+
+export function randomRange(min, max) {
+  return min + Math.random() * (max - min);
+}
+
+export function randomInt(min, max) {
+  return Math.floor(min + Math.random() * (max - min + 1));
+}
