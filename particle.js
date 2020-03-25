@@ -7,6 +7,7 @@ class Particle {
     this.speed = options.speed || 0;
     this.gravity = options.gravity || 0;
     this.thrust = options.thrust || {x: 0, y: 0};
+    this.friction = options.friction || 1;
     this.direction = options.direction || 0;
     this.size = options.size || 10;
     this.mass = options.mass || 1;
@@ -57,6 +58,7 @@ class Particle {
   }
 
   update() {
+    this.velocity.multiplyBy(this.friction);
     this.position.addTo(this.velocity);
   }
 

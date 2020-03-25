@@ -304,6 +304,7 @@ var Particle = /*#__PURE__*/function () {
       x: 0,
       y: 0
     };
+    this.friction = options.friction || 1;
     this.direction = options.direction || 0;
     this.size = options.size || 10;
     this.mass = options.mass || 1;
@@ -362,6 +363,7 @@ var Particle = /*#__PURE__*/function () {
   }, {
     key: "update",
     value: function update() {
+      this.velocity.multiplyBy(this.friction);
       this.position.addTo(this.velocity);
     }
   }, {
