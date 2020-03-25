@@ -29,3 +29,11 @@ export function randomRange(min, max) {
 export function randomInt(min, max) {
   return Math.floor(min + Math.random() * (max - min + 1));
 }
+
+export function degreesToRadians(degrees) {
+  return degrees / 180 * Math.PI;
+}
+
+export function radiansToDegrees(radians) {
+  return radians * 180 / Math.PI;
+}
