@@ -15,3 +15,9 @@ export function map(value, sourceMin, sourceMax, destMin, destMax) {
 export function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
+
+export function distance(p0, p1) {
+  const dx = p1.x - p0.x;
+  const dy = p1.y - p0.y;
+  return Math.sqrt(dx * dx + dy * dy);
+}
