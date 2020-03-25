@@ -3,22 +3,18 @@ import { Vector } from './vector';
 class Particle {
   constructor(options = {}) {
 
-    this.position = options.position || {x: 120, y: 100};
-    this.speed = options.speed || 0;
-    this.gravity = options.gravity || 0;
-    this.thrust = options.thrust || {x: 0, y: 0};
-    this.friction = options.friction || 1;
-    this.direction = options.direction || 0;
+    this.position = options.position || {x: 0, y: 0};
+    this.particleColor = options.particleColor || '#000000';
     this.size = options.size || 10;
     this.mass = options.mass || 1;
-    this.particleColor = options.particleColor || '#000000';
+    this.direction = options.direction || 0;
+    this.speed = options.speed || 0;
+    this.gravity = options.gravity || 0;
+    this.friction = options.friction || 1;
+    this.bounce = options.bounce || -1;
   
-    this.position = new Vector(this.position.x, this.position.y);
-    this.velocity = new Vector(0, 0);
-    this.velocity.setLength(this.speed);
-    this.velocity.setAngle(this.direction);
-    this.gravity = new Vector(0, this.gravity);
-    this.thrust = new Vector(this.thrust.x, this.thrust.y);
+    this.vx = Math.cos(this.direcion) * this.speed;
+    this.vy = Math.cos(this.direcion) * this.speed;
   }
 
   bindAll() {
@@ -33,8 +29,9 @@ class Particle {
     context.fill();
   }
 
-  accelerate(acc) {
-    this.velocity.addTo(acc);
+  accelerate(ax, ay) {
+    this.vx += (ax);
+    this.vy += (ay);
   }
 
   angleTo(p2) {
@@ -48,18 +45,28 @@ class Particle {
   }
 
   gravitateTo(p2) {
-    const gravity = new Vector(0, 0);
-    const distance = this.distanceTo(p2);
+    const dx = this.position.x - p2.position.x;
+    const dy = this.position.y - p2.position.y;
 
-    gravity.setLength(p2.mass / (distance * distance));
-    gravity.setAngle(this.angleTo(p2));
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    const force = p2.mass / (distance * distance);
     
-    this.velocity.addTo(gravity);
+    const ax = (dx / distance) * force;
+    const ay = (dy / distance) * force;
+
+    this.vx += ax;
+    this.vy += ay;
   }
 
   update() {
-    this.velocity.multiplyBy(this.friction);
-    this.position.addTo(this.velocity);
+    this.vx *= this.friction;
+    this.vy *= this.friction;
+
+    this.vy += this.gravity;
+
+    this.position.x += this.vx;
+    this.position.y += this.vy;
   }
 
   init() {
