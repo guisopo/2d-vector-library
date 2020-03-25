@@ -264,12 +264,95 @@ var Particle = /*#__PURE__*/function () {
 }();
 
 exports.Particle = Particle;
+},{}],"utils.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.roundNearest = exports.roundToPlaces = exports.radiansToDegrees = exports.degreesToRadians = exports.randomInt = exports.randomRange = exports.distance = exports.clamp = exports.map = exports.lerp = exports.norm = void 0;
+
+// Takes a value from a range and returns a value from 0 to 1
+var norm = function norm(value, min, max) {
+  return value - min / max - min;
+}; // Takes a normalized value and returns the value within a range
+
+
+exports.norm = norm;
+
+var lerp = function lerp(norm, min, max) {
+  return (max - min) * norm + min;
+}; // Maps a value from one range into a value to another range
+
+
+exports.lerp = lerp;
+
+var map = function map(value, sourceMin, sourceMax, destMin, destMax) {
+  return (destMax - destMin) * (value - sourceMin / sourceMax - sourceMin) + destMin;
+}; // Limits the value between a range
+
+
+exports.map = map;
+
+var clamp = function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}; // Calculate distance between two points
+
+
+exports.clamp = clamp;
+
+var distance = function distance(p0, p1) {
+  var dx = p1.x - p0.x;
+  var dy = p1.y - p0.y;
+  return Math.sqrt(dx * dx + dy * dy);
+};
+
+exports.distance = distance;
+
+var randomRange = function randomRange(min, max) {
+  return min + Math.random() * (max - min);
+};
+
+exports.randomRange = randomRange;
+
+var randomInt = function randomInt(min, max) {
+  return Math.floor(min + Math.random() * (max - min + 1));
+};
+
+exports.randomInt = randomInt;
+
+var degreesToRadians = function degreesToRadians(degrees) {
+  return degrees / 180 * Math.PI;
+};
+
+exports.degreesToRadians = degreesToRadians;
+
+var radiansToDegrees = function radiansToDegrees(radians) {
+  return radians * 180 / Math.PI;
+};
+
+exports.radiansToDegrees = radiansToDegrees;
+
+var roundToPlaces = function roundToPlaces(value, places) {
+  var mult = Math.pow(10, places);
+  return Math.round(value * mult) / mult;
+};
+
+exports.roundToPlaces = roundToPlaces;
+
+var roundNearest = function roundNearest(value, nearest) {
+  return Math.round(value / nearest) * nearest;
+};
+
+exports.roundNearest = roundNearest;
 },{}],"index.js":[function(require,module,exports) {
 "use strict";
 
 var _canvas = require("./canvas");
 
 var _particle = require("./particle");
+
+var _utils = require("./utils");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -289,39 +372,28 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-var SolarSystem = /*#__PURE__*/function (_Canvas) {
-  _inherits(SolarSystem, _Canvas);
+var SnapGrid = /*#__PURE__*/function (_Canvas) {
+  _inherits(SnapGrid, _Canvas);
 
-  function SolarSystem() {
+  function SnapGrid() {
     var _this;
 
-    _classCallCheck(this, SolarSystem);
+    _classCallCheck(this, SnapGrid);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(SolarSystem).call(this));
-    var sunOptions = {
-      mass: 20000,
-      size: 20,
-      particleColor: '#ffff00',
-      position: {
-        x: _this.canvas.width / 2,
-        y: _this.canvas.height / 2
-      }
-    };
-    var planetOptions = {
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(SnapGrid).call(this));
+    var cursorOptions = {
       position: {
         x: _this.canvas.width / 2 + 200,
         y: _this.canvas.height / 2
       },
-      size: 5,
-      speed: 10,
-      direction: -Math.PI / 2
+      size: 5
     };
-    _this.sun = new _particle.Particle(sunOptions);
-    _this.planet = new _particle.Particle(planetOptions);
+    _this.cursor = new _particle.Particle(cursorOptions);
+    _this.gridSize = 40;
     return _this;
   }
 
-  _createClass(SolarSystem, [{
+  _createClass(SnapGrid, [{
     key: "bindAll",
     value: function bindAll() {
       var _this2 = this;
@@ -334,10 +406,21 @@ var SolarSystem = /*#__PURE__*/function (_Canvas) {
     key: "draw",
     value: function draw() {
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      this.planet.gravitateTo(this.sun);
-      this.planet.update();
-      this.sun.drawParticle(this.context);
-      this.planet.drawParticle(this.context);
+      this.context.beginPath();
+      this.context.strokeStyle = '#eaeaea';
+
+      for (var x = 0; x <= this.canvas.width; x += this.gridSize) {
+        this.context.moveTo(x, 0);
+        this.context.lineTo(x, this.canvas.width);
+      }
+
+      for (var y = 0; y <= this.canvas.height; y += this.gridSize) {
+        this.context.moveTo(0, y);
+        this.context.lineTo(this.canvas.width, y);
+      }
+
+      this.context.stroke();
+      this.cursor.drawParticle(this.context);
     }
   }, {
     key: "render",
@@ -347,7 +430,14 @@ var SolarSystem = /*#__PURE__*/function (_Canvas) {
     }
   }, {
     key: "addEventListeners",
-    value: function addEventListeners() {}
+    value: function addEventListeners() {
+      var _this3 = this;
+
+      document.body.addEventListener('mousemove', function (e) {
+        _this3.cursor.position.x = (0, _utils.roundNearest)(e.clientX, _this3.gridSize);
+        _this3.cursor.position.y = (0, _utils.roundNearest)(e.clientY, _this3.gridSize);
+      });
+    }
   }, {
     key: "init",
     value: function init() {
@@ -357,12 +447,12 @@ var SolarSystem = /*#__PURE__*/function (_Canvas) {
     }
   }]);
 
-  return SolarSystem;
+  return SnapGrid;
 }(_canvas.Canvas);
 
-var sS = new SolarSystem();
+var sS = new SnapGrid();
 sS.init();
-},{"./canvas":"canvas.js","./particle":"particle.js"}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./canvas":"canvas.js","./particle":"particle.js","./utils":"utils.js"}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;

@@ -56,7 +56,3 @@ class SnapGrid extends Canvas {
     this.render();
   }
 }
-
-const sS = new SnapGrid();
-
-sS.init();
