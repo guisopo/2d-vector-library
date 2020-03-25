@@ -1,39 +1,33 @@
-export function norm(value, min, max) {
-  // Takes a value from a range and returns a value from 0 to 1
-  return value - min / max - min;
-}
+// Takes a value from a range and returns a value from 0 to 1
+export const norm = (value, min, max) => value - min / max - min;
 
-export function lerp(norm, min, max) {
-  // Takes a normalized value and returns the value within a range
-  return (max - min) * norm + min;
-}
+// Takes a normalized value and returns the value within a range
+export const lerp = (norm, min, max) => (max - min) * norm + min;
 
-export function map(value, sourceMin, sourceMax, destMin, destMax) {
-  
-}
+// Maps a value from one range into a value to another range
+export const map = (value, sourceMin, sourceMax, destMin, destMax) => (destMax - destMin) * (value - sourceMin / sourceMax - sourceMin) + destMin;
 
-export function clamp(value, min, max) {
-  return Math.min(Math.max(value, min), max);
-}
+// Limits the value between a range
+export const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
-export function distance(p0, p1) {
+// Calculate distance between two points
+export const distance = (p0, p1) => {
   const dx = p1.x - p0.x;
   const dy = p1.y - p0.y;
   return Math.sqrt(dx * dx + dy * dy);
 }
 
-export function randomRange(min, max) {
-  return min + Math.random() * (max - min);
+export const randomRange = (min, max) => min + Math.random() * (max - min);
+
+export const randomInt = (min, max) => Math.floor(min + Math.random() * (max - min + 1));
+
+export const degreesToRadians = (degrees) => degrees / 180 * Math.PI;
+
+export const radiansToDegrees = (radians) => radians * 180 / Math.PI;
+
+export const roundToPlaces = (value, places) => {
+  const mult = Math.pow(10, places);
+  return Math.round(value * mult) / mult;
 }
 
-export function randomInt(min, max) {
-  return Math.floor(min + Math.random() * (max - min + 1));
-}
-
-export function degreesToRadians(degrees) {
-  return degrees / 180 * Math.PI;
-}
-
-export function radiansToDegrees(radians) {
-  return radians * 180 / Math.PI;
-}
+export const roundNearest = (value, nearest) => Math.round(value / nearest) * nearest;

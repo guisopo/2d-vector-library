@@ -8,13 +8,15 @@ class SolarSystem extends Canvas {
     const sunOptions = {
       mass: 20000,
       size: 20,
+      particleColor: '#ffff00',
       position: { x: this.canvas.width/2, y: this.canvas.height/2 }
     }
 
     const planetOptions = {
       position: { x: this.canvas.width/2 + 200, y: this.canvas.height/2 },
+      size: 5,
       speed: 10,
-      direction: -Math.PI/2
+      direction: -Math.PI / 2
     }
 
     this.sun = new Particle(sunOptions);
