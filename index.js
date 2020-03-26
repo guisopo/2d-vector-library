@@ -8,11 +8,12 @@ class SnapGrid extends Canvas {
 
     const cursorOptions = {
       position: { x: this.canvas.width/2 + 200, y: this.canvas.height/2 },
-      size: 5,
+      size: 10,
     }
 
     this.cursor = new Particle(cursorOptions);
     this.gridSize = 40;
+    document.body.style.cursor = 'none';
   }
 
   bindAll() {

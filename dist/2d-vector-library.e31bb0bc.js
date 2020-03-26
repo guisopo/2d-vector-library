@@ -386,10 +386,11 @@ var SnapGrid = /*#__PURE__*/function (_Canvas) {
         x: _this.canvas.width / 2 + 200,
         y: _this.canvas.height / 2
       },
-      size: 5
+      size: 10
     };
     _this.cursor = new _particle.Particle(cursorOptions);
     _this.gridSize = 40;
+    document.body.style.cursor = 'none';
     return _this;
   }
 
