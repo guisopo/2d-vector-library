@@ -192,6 +192,7 @@ var Particle = /*#__PURE__*/function () {
     this.gravity = options.gravity || 0;
     this.friction = options.friction || 1;
     this.bounce = options.bounce || -1;
+    this.springs = [];
     this.vx = Math.cos(this.direction) * this.speed;
     this.vy = Math.sin(this.direction) * this.speed;
   }
@@ -212,6 +213,53 @@ var Particle = /*#__PURE__*/function () {
       context.beginPath();
       context.arc(this.position.x, this.position.y, this.size, 0, Math.PI * 2, false);
       context.fill();
+    }
+  }, {
+    key: "addSpring",
+    value: function addSpring(point, k) {
+      var length = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+      this.removeSpring(point);
+      this.springs.push({
+        point: point,
+        k: k,
+        length: length
+      });
+    }
+  }, {
+    key: "removeSpring",
+    value: function removeSpring(point) {
+      if (this.springs.length > 0) {
+        for (var i = 0; i < this.springs.length; i++) {
+          if (point === this.springs[i].point) {
+            this.springs.splice(i, 1);
+            return;
+          }
+        }
+      }
+    }
+  }, {
+    key: "getSpeed",
+    value: function getSpeed() {
+      return Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+    }
+  }, {
+    key: "setSpeed",
+    value: function setSpeed(speed) {
+      var heading = this.getHeading();
+      this.vx = Math.cos(heading) * speed;
+      this.vy = Math.sin(heading) * speed;
+    }
+  }, {
+    key: "getHeading",
+    value: function getHeading() {
+      return Math.atan2(this.vy, this.vx);
+    }
+  }, {
+    key: "setHeading",
+    value: function setHeading(heading) {
+      var speed = this.getSpeed();
+      this.vx = Math.cos(heading) * speed;
+      this.vy = Math.sin(heading) * speed;
     }
   }, {
     key: "accelerate",
@@ -244,8 +292,27 @@ var Particle = /*#__PURE__*/function () {
       this.vy += ay;
     }
   }, {
+    key: "springTo",
+    value: function springTo(p2, k) {
+      var length = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+      var dx = p2.position.x - this.position.x;
+      var dy = p2.position.y - this.position.y;
+      var distance = Math.sqrt(dx * dx + dy * dy);
+      var springForce = (distance - length) * k;
+      this.vx += dx / distance * springForce;
+      this.vy += dy / distance * springForce;
+    }
+  }, {
+    key: "handleSprings",
+    value: function handleSprings() {
+      for (var i = 0; i < this.springs.length; i++) {
+        this.springTo(this.springs[i].point, this.springs[i].k, this.springs[i].length);
+      }
+    }
+  }, {
     key: "update",
     value: function update() {
+      this.handleSprings();
       this.vx *= this.friction;
       this.vy *= this.friction;
       this.vy += this.gravity;
@@ -264,95 +331,12 @@ var Particle = /*#__PURE__*/function () {
 }();
 
 exports.Particle = Particle;
-},{}],"utils.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.roundNearest = exports.roundToPlaces = exports.radiansToDegrees = exports.degreesToRadians = exports.randomInt = exports.randomRange = exports.distance = exports.clamp = exports.map = exports.lerp = exports.norm = void 0;
-
-// Takes a value from a range and returns a value from 0 to 1
-var norm = function norm(value, min, max) {
-  return value - min / max - min;
-}; // Takes a normalized value and returns the value within a range
-
-
-exports.norm = norm;
-
-var lerp = function lerp(norm, min, max) {
-  return (max - min) * norm + min;
-}; // Maps a value from one range into a value to another range
-
-
-exports.lerp = lerp;
-
-var map = function map(value, sourceMin, sourceMax, destMin, destMax) {
-  return (destMax - destMin) * (value - sourceMin / sourceMax - sourceMin) + destMin;
-}; // Limits the value between a range
-
-
-exports.map = map;
-
-var clamp = function clamp(value, min, max) {
-  return Math.min(Math.max(value, min), max);
-}; // Calculate distance between two points
-
-
-exports.clamp = clamp;
-
-var distance = function distance(p0, p1) {
-  var dx = p1.x - p0.x;
-  var dy = p1.y - p0.y;
-  return Math.sqrt(dx * dx + dy * dy);
-};
-
-exports.distance = distance;
-
-var randomRange = function randomRange(min, max) {
-  return min + Math.random() * (max - min);
-};
-
-exports.randomRange = randomRange;
-
-var randomInt = function randomInt(min, max) {
-  return Math.floor(min + Math.random() * (max - min + 1));
-};
-
-exports.randomInt = randomInt;
-
-var degreesToRadians = function degreesToRadians(degrees) {
-  return degrees / 180 * Math.PI;
-};
-
-exports.degreesToRadians = degreesToRadians;
-
-var radiansToDegrees = function radiansToDegrees(radians) {
-  return radians * 180 / Math.PI;
-};
-
-exports.radiansToDegrees = radiansToDegrees;
-
-var roundToPlaces = function roundToPlaces(value, places) {
-  var mult = Math.pow(10, places);
-  return Math.round(value * mult) / mult;
-};
-
-exports.roundToPlaces = roundToPlaces;
-
-var roundNearest = function roundNearest(value, nearest) {
-  return Math.round(value / nearest) * nearest;
-};
-
-exports.roundNearest = roundNearest;
 },{}],"index.js":[function(require,module,exports) {
 "use strict";
 
 var _canvas = require("./canvas");
 
 var _particle = require("./particle");
-
-var _utils = require("./utils");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -372,29 +356,41 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-var SnapGrid = /*#__PURE__*/function (_Canvas) {
-  _inherits(SnapGrid, _Canvas);
+var SpringCursor = /*#__PURE__*/function (_Canvas) {
+  _inherits(SpringCursor, _Canvas);
 
-  function SnapGrid() {
+  function SpringCursor(sizeCursor, sizeWeight, k, friction) {
     var _this;
 
-    _classCallCheck(this, SnapGrid);
+    var exclude = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(SnapGrid).call(this));
-    var cursorOptions = {
+    _classCallCheck(this, SpringCursor);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(SpringCursor).call(this));
+    _this.cursor = new _particle.Particle({
+      size: sizeCursor,
       position: {
-        x: _this.canvas.width / 2 + 200,
+        x: _this.canvas.width / 2 + 100,
+        y: _this.canvas.height / 2 + 100
+      }
+    });
+    _this.weight = new _particle.Particle({
+      size: sizeWeight,
+      position: {
+        x: _this.canvas.width / 2,
         y: _this.canvas.height / 2
       },
-      size: 10
-    };
-    _this.cursor = new _particle.Particle(cursorOptions);
-    _this.gridSize = 40;
+      friction: friction
+    });
+    _this.exclude = exclude;
+
+    _this.weight.addSpring(_this.cursor, k);
+
     document.body.style.cursor = 'none';
     return _this;
   }
 
-  _createClass(SnapGrid, [{
+  _createClass(SpringCursor, [{
     key: "bindAll",
     value: function bindAll() {
       var _this2 = this;
@@ -407,20 +403,9 @@ var SnapGrid = /*#__PURE__*/function (_Canvas) {
     key: "draw",
     value: function draw() {
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      this.context.beginPath();
-      this.context.strokeStyle = '#eaeaea';
-
-      for (var x = 0; x <= this.canvas.width; x += this.gridSize) {
-        this.context.moveTo(x, 0);
-        this.context.lineTo(x, this.canvas.width);
-      }
-
-      for (var y = 0; y <= this.canvas.height; y += this.gridSize) {
-        this.context.moveTo(0, y);
-        this.context.lineTo(this.canvas.width, y);
-      }
-
-      this.context.stroke();
+      this.exclude ? this.context.globalCompositeOperation = 'xor' : '';
+      this.weight.update();
+      this.weight.drawParticle(this.context);
       this.cursor.drawParticle(this.context);
     }
   }, {
@@ -435,8 +420,8 @@ var SnapGrid = /*#__PURE__*/function (_Canvas) {
       var _this3 = this;
 
       document.body.addEventListener('mousemove', function (e) {
-        _this3.cursor.position.x = (0, _utils.roundNearest)(e.clientX, _this3.gridSize);
-        _this3.cursor.position.y = (0, _utils.roundNearest)(e.clientY, _this3.gridSize);
+        _this3.cursor.position.x = e.clientX;
+        _this3.cursor.position.y = e.clientY;
       });
     }
   }, {
@@ -448,12 +433,17 @@ var SnapGrid = /*#__PURE__*/function (_Canvas) {
     }
   }]);
 
-  return SnapGrid;
+  return SpringCursor;
 }(_canvas.Canvas);
 
-var sS = new SnapGrid();
-sS.init();
-},{"./canvas":"canvas.js","./particle":"particle.js","./utils":"utils.js"}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+var sizeCursor = 7;
+var sizeWeight = 20;
+var k = 0.04;
+var friction = 0.8;
+var exclude = true;
+var cursor = new SpringCursor(sizeCursor, sizeWeight, k, friction, exclude);
+cursor.init();
+},{"./canvas":"canvas.js","./particle":"particle.js"}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -481,7 +471,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53284" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54603" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

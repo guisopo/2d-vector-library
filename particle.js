@@ -33,18 +33,20 @@ class Particle {
 
   addSpring(point, k, length = 0) {
     this.removeSpring(point);
-    this.springs.push[{
+    this.springs.push({
       point: point,
       k: k,
       length: length
-    }]
+    });
   }
 
   removeSpring(point) {
-    for(let i = 0; i <= this.springs.length; i++) {
-      if(point === this.springs[i].point) {
-        this.springs.splice(i, 1);
-        return;
+    if(this.springs.length > 0) {
+      for(let i = 0; i < this.springs.length; i++) {
+        if(point === this.springs[i].point) {
+          this.springs.splice(i, 1);
+          return;
+        }
       }
     }
   }
@@ -99,8 +101,8 @@ class Particle {
   }
 
   springTo(p2, k, length = 0) {
-    const dx = p2.x - this.x;
-    const dy = p2.y - this.y;
+    const dx = p2.position.x - this.position.x;
+    const dy = p2.position.y - this.position.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
     const springForce = (distance - length) * k;
     this.vx += dx / distance * springForce;
@@ -108,8 +110,8 @@ class Particle {
   }
 
   handleSprings() {
-    for(let i = 0; i = this.springs.length; i++) {
-      this.springTo(this.spring[i].point, this.spring[i].k, this.spring[i].length);
+    for(let i = 0; i < this.springs.length; i++) {
+      this.springTo(this.springs[i].point, this.springs[i].k, this.springs[i].length);
     }
   }
 
@@ -120,7 +122,7 @@ class Particle {
     this.vy *= this.friction;
 
     this.vy += this.gravity;
-
+    
     this.position.x += this.vx;
     this.position.y += this.vy;
   }
