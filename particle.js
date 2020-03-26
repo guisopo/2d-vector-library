@@ -13,6 +13,8 @@ class Particle {
     this.friction = options.friction || 1;
     this.bounce = options.bounce || -1;
 
+    this.springs = [];
+
     this.vx = Math.cos(this.direction) * this.speed;
     this.vy = Math.sin(this.direction) * this.speed;
   }
@@ -27,6 +29,24 @@ class Particle {
     context.beginPath();
     context.arc(this.position.x, this.position.y, this.size, 0, Math.PI * 2, false);
     context.fill();
+  }
+
+  addSpring(point, k, length = 0) {
+    this.removeSpring(point);
+    this.springs.push[{
+      point: point,
+      k: k,
+      length: length
+    }]
+  }
+
+  removeSpring(point) {
+    for(let i = 0; i <= this.springs.length; i++) {
+      if(point === this.springs[i].point) {
+        this.springs.splice(i, 1);
+        return;
+      }
+    }
   }
 
   getSpeed() {
@@ -78,7 +98,24 @@ class Particle {
     this.vy += ay;
   }
 
+  springTo(p2, k, length = 0) {
+    const dx = p2.x - this.x;
+    const dy = p2.y - this.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    const springForce = (distance - length) * k;
+    this.vx += dx / distance * springForce;
+    this.vy += dy / distance * springForce;
+  }
+
+  handleSprings() {
+    for(let i = 0; i = this.springs.length; i++) {
+      this.springTo(this.spring[i].point, this.spring[i].k, this.spring[i].length);
+    }
+  }
+
   update() {
+    this.handleSprings();
+
     this.vx *= this.friction;
     this.vy *= this.friction;
 
