@@ -43,7 +43,7 @@ class Particle {
     return Math.atan2(this.vy, this.vx);
   }
 
-  setHeading(heading) {
+  setHeading(heading) { 
     const speed = this.getSpeed();
     this.vx = Math.cos(heading) * speed;
     this.vy = Math.sin(heading) * speed;
