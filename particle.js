@@ -32,12 +32,12 @@ class Particle {
     context.fill();
   }
 
-  addGravitation(p) {
-    this.removeGravitation(p);
-    this.gravitation.push(p);
+  addGravitation(point) {
+    this.removeGravitation(point);
+    this.gravitations.push(point);
   }
 
-  removeGravitation() {
+  removeGravitation(point) {
     if(this.gravitations.length > 0) {
       for(let i = 0; i < this.gravitations.length; i++) {
         if(point === this.gravitations[i].point) {
