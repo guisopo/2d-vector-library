@@ -14,6 +14,7 @@ class Particle {
     this.bounce = options.bounce || -1;
 
     this.springs = [];
+    this.gravitations = [];
 
     this.vx = Math.cos(this.direction) * this.speed;
     this.vy = Math.sin(this.direction) * this.speed;
@@ -29,6 +30,22 @@ class Particle {
     context.beginPath();
     context.arc(this.position.x, this.position.y, this.size, 0, Math.PI * 2, false);
     context.fill();
+  }
+
+  addGravitation(p) {
+    this.removeGravitation(p);
+    this.gravitation.push(p);
+  }
+
+  removeGravitation() {
+    if(this.gravitations.length > 0) {
+      for(let i = 0; i < this.gravitations.length; i++) {
+        if(point === this.gravitations[i].point) {
+          this.gravitations.splice(i, 1);
+          return;
+        }
+      }
+    }
   }
 
   addSpring(point, k, length = 0) {
@@ -109,6 +126,12 @@ class Particle {
     this.vy += dy / distance * springForce;
   }
 
+  handleGravitations() {
+    for(let i = 0; i < this.gravitations.length; i++) {
+      this.gravitateTo(this.gravitations[i]);
+    }
+  }
+
   handleSprings() {
     for(let i = 0; i < this.springs.length; i++) {
       this.springTo(this.springs[i].point, this.springs[i].k, this.springs[i].length);
@@ -117,6 +140,7 @@ class Particle {
 
   update() {
     this.handleSprings();
+    this.handleGravitations();
 
     this.vx *= this.friction;
     this.vy *= this.friction;

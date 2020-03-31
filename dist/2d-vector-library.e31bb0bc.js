@@ -193,6 +193,7 @@ var Particle = /*#__PURE__*/function () {
     this.friction = options.friction || 1;
     this.bounce = options.bounce || -1;
     this.springs = [];
+    this.gravitations = [];
     this.vx = Math.cos(this.direction) * this.speed;
     this.vy = Math.sin(this.direction) * this.speed;
   }
@@ -213,6 +214,24 @@ var Particle = /*#__PURE__*/function () {
       context.beginPath();
       context.arc(this.position.x, this.position.y, this.size, 0, Math.PI * 2, false);
       context.fill();
+    }
+  }, {
+    key: "addGravitation",
+    value: function addGravitation(p) {
+      this.removeGravitation(p);
+      this.gravitation.push(p);
+    }
+  }, {
+    key: "removeGravitation",
+    value: function removeGravitation() {
+      if (this.gravitations.length > 0) {
+        for (var i = 0; i < this.gravitations.length; i++) {
+          if (point === this.gravitations[i].point) {
+            this.gravitations.splice(i, 1);
+            return;
+          }
+        }
+      }
     }
   }, {
     key: "addSpring",
@@ -303,6 +322,13 @@ var Particle = /*#__PURE__*/function () {
       this.vy += dy / distance * springForce;
     }
   }, {
+    key: "handleGravitations",
+    value: function handleGravitations() {
+      for (var i = 0; i < this.gravitations.length; i++) {
+        this.gravitateTo(this.gravitations[i]);
+      }
+    }
+  }, {
     key: "handleSprings",
     value: function handleSprings() {
       for (var i = 0; i < this.springs.length; i++) {
@@ -313,6 +339,7 @@ var Particle = /*#__PURE__*/function () {
     key: "update",
     value: function update() {
       this.handleSprings();
+      this.handleGravitations();
       this.vx *= this.friction;
       this.vy *= this.friction;
       this.vy += this.gravity;
@@ -346,9 +373,13 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _createSuper(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
@@ -359,6 +390,8 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 var SpringCursor = /*#__PURE__*/function (_Canvas) {
   _inherits(SpringCursor, _Canvas);
 
+  var _super = _createSuper(SpringCursor);
+
   function SpringCursor(sizeCursor, sizeWeight, k, friction) {
     var _this;
 
@@ -366,7 +399,7 @@ var SpringCursor = /*#__PURE__*/function (_Canvas) {
 
     _classCallCheck(this, SpringCursor);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(SpringCursor).call(this));
+    _this = _super.call(this);
     _this.cursor = new _particle.Particle({
       size: sizeCursor,
       position: {
@@ -471,7 +504,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54603" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56630" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
