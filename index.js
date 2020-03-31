@@ -8,13 +8,13 @@ class multiGravity extends Canvas {
 
     this.sun1 = new Particle( {
       size: 20,
-      mass: 5000,
-      position: {x: 200, y: 300}
+      mass: 10000,
+      position: {x: 300, y: 200}
     });
 
     this.sun2 = new Particle({
       size: 10,
-      mass: 3000,
+      mass: 20000,
       position: {x: this.canvas.width, y: this.canvas.height},
     });
 
@@ -24,7 +24,7 @@ class multiGravity extends Canvas {
     };
 
     this.particles = [];
-    this.numParticles = 10;
+    this.numParticles = 100;
     document.body.style.cursor = 'none';
   }
 
@@ -39,7 +39,7 @@ class multiGravity extends Canvas {
         position: { x: this.emiter.x, y: this.emiter.y },
         size: 3,
         speed: randomRange(7, 8),
-        direction: Math.PI/2 + randomRange(-.1, .1)
+        direction: Math.PI / 2 + randomRange(-0.1, 0.1)
       });
 
       particle.addGravitation(this.sun1);
@@ -53,7 +53,6 @@ class multiGravity extends Canvas {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     
     this.sun1.drawParticle(this.context);
-    this.sun2.update();
     this.sun2.drawParticle(this.context);
 
     this.particles.forEach(particle => {
@@ -71,8 +70,8 @@ class multiGravity extends Canvas {
 
       particle.position.x = this.emiter.x;
       particle.position.y = this.emiter.y;
-      particle.setSpeed = randomRange(7, 8);
-      particle.setHeading = Math.PI/2 + randomRange(-0.1, 0.1);
+      particle.setSpeed(randomRange(7, 8));
+      particle.setHeading(Math.PI/2 + randomRange(-0.1, 0.1));
     }
   }
   

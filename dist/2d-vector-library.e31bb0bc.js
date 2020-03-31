@@ -223,15 +223,23 @@ var Particle = /*#__PURE__*/function () {
     }
   }, {
     key: "removeGravitation",
-    value: function removeGravitation(point) {
-      if (this.gravitations.length > 0) {
-        for (var i = 0; i < this.gravitations.length; i++) {
-          if (point === this.gravitations[i].point) {
-            this.gravitations.splice(i, 1);
-            return;
-          }
+    value: function removeGravitation(p) {
+      var _this2 = this;
+
+      this.gravitations.forEach(function (gravitation) {
+        if (p === gravitation.p) {
+          _this2.gravitations.splice(_this2.gravitations.indexOf(p), 1);
+
+          return;
         }
-      }
+      }); // if(this.gravitations.length > 0) {
+      //   for(let i = 0; i < this.gravitations.length; i++) {
+      //     if(point === this.gravitations[i].point) {
+      //       this.gravitations.splice(i, 1);
+      //       return;
+      //     }
+      //   }
+      // }
     }
   }, {
     key: "addSpring",
@@ -247,14 +255,22 @@ var Particle = /*#__PURE__*/function () {
   }, {
     key: "removeSpring",
     value: function removeSpring(point) {
-      if (this.springs.length > 0) {
-        for (var i = 0; i < this.springs.length; i++) {
-          if (point === this.springs[i].point) {
-            this.springs.splice(i, 1);
-            return;
-          }
+      var _this3 = this;
+
+      this.springs.forEach(function (spring) {
+        if (point === spring.point) {
+          _this3.springs.splice(_this3.springs.indexOf(point), 1);
+
+          return;
         }
-      }
+      }); // if(this.springs.length > 0) {
+      //   for(let i = 0; i < this.springs.length; i++) {
+      //     if(point === this.springs[i].point) {
+      //       this.springs.splice(i, 1);
+      //       return;
+      //     }
+      //   }
+      // }
     }
   }, {
     key: "getSpeed",
@@ -324,16 +340,24 @@ var Particle = /*#__PURE__*/function () {
   }, {
     key: "handleGravitations",
     value: function handleGravitations() {
-      for (var i = 0; i < this.gravitations.length; i++) {
-        this.gravitateTo(this.gravitations[i]);
-      }
+      var _this4 = this;
+
+      this.gravitations.forEach(function (gravitation) {
+        _this4.gravitateTo(gravitation);
+      }); // for(let i = 0; i < this.gravitations.length; i++) {
+      //   this.gravitateTo(this.gravitations[i]);
+      // }
     }
   }, {
     key: "handleSprings",
     value: function handleSprings() {
-      for (var i = 0; i < this.springs.length; i++) {
-        this.springTo(this.springs[i].point, this.springs[i].k, this.springs[i].length);
-      }
+      var _this5 = this;
+
+      this.springs.forEach(function (spring) {
+        _this5.springTo(spring.point, spring.k, spring.length);
+      }); // for(let i = 0; i < this.springs.length; i++) {
+      //   this.springTo(this.springs[i].point, this.springs[i].k, this.springs[i].length);
+      // }
     }
   }, {
     key: "update",
@@ -483,15 +507,15 @@ var multiGravity = /*#__PURE__*/function (_Canvas) {
     _this = _super.call(this);
     _this.sun1 = new _particle.Particle({
       size: 20,
-      mass: 5000,
+      mass: 10000,
       position: {
-        x: 200,
-        y: 300
+        x: 300,
+        y: 200
       }
     });
     _this.sun2 = new _particle.Particle({
       size: 10,
-      mass: 3000,
+      mass: 20000,
       position: {
         x: _this.canvas.width,
         y: _this.canvas.height
@@ -502,7 +526,7 @@ var multiGravity = /*#__PURE__*/function (_Canvas) {
       y: 0
     };
     _this.particles = [];
-    _this.numParticles = 10;
+    _this.numParticles = 100;
     document.body.style.cursor = 'none';
     return _this;
   }
@@ -527,7 +551,7 @@ var multiGravity = /*#__PURE__*/function (_Canvas) {
           },
           size: 3,
           speed: (0, _utils.randomRange)(7, 8),
-          direction: Math.PI / 2 + (0, _utils.randomRange)(-.1, .1)
+          direction: Math.PI / 2 + (0, _utils.randomRange)(-0.1, 0.1)
         });
         particle.addGravitation(this.sun1);
         particle.addGravitation(this.sun2);
@@ -541,7 +565,6 @@ var multiGravity = /*#__PURE__*/function (_Canvas) {
 
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
       this.sun1.drawParticle(this.context);
-      this.sun2.update();
       this.sun2.drawParticle(this.context);
       this.particles.forEach(function (particle) {
         particle.update();
@@ -556,8 +579,8 @@ var multiGravity = /*#__PURE__*/function (_Canvas) {
       if (particle.position.x > this.canvas.width || particle.position.x < 0 || particle.position.y > this.canvas.height || particle.position.y < 0) {
         particle.position.x = this.emiter.x;
         particle.position.y = this.emiter.y;
-        particle.setSpeed = (0, _utils.randomRange)(7, 8);
-        particle.setHeading = Math.PI / 2 + (0, _utils.randomRange)(-0.1, 0.1);
+        particle.setSpeed((0, _utils.randomRange)(7, 8));
+        particle.setHeading(Math.PI / 2 + (0, _utils.randomRange)(-0.1, 0.1));
       }
     }
   }, {
@@ -619,7 +642,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56630" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60109" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
