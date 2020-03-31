@@ -37,15 +37,21 @@ class Particle {
     this.gravitations.push(point);
   }
 
-  removeGravitation(point) {
-    if(this.gravitations.length > 0) {
-      for(let i = 0; i < this.gravitations.length; i++) {
-        if(point === this.gravitations[i].point) {
-          this.gravitations.splice(i, 1);
-          return;
-        }
+  removeGravitation(p) {
+    this.gravitations.forEach(gravitation => {
+      if(p === gravitation.p) {
+        this.gravitations.splice(this.gravitations.indexOf(p), 1);
+        return;
       }
-    }
+    });
+    // if(this.gravitations.length > 0) {
+    //   for(let i = 0; i < this.gravitations.length; i++) {
+    //     if(point === this.gravitations[i].point) {
+    //       this.gravitations.splice(i, 1);
+    //       return;
+    //     }
+    //   }
+    // }
   }
 
   addSpring(point, k, length = 0) {
@@ -58,14 +64,20 @@ class Particle {
   }
 
   removeSpring(point) {
-    if(this.springs.length > 0) {
-      for(let i = 0; i < this.springs.length; i++) {
-        if(point === this.springs[i].point) {
-          this.springs.splice(i, 1);
-          return;
-        }
+    this.springs.forEach(spring => {
+      if(point === spring.point) {
+        this.springs.splice(this.springs.indexOf(point), 1);
+        return;
       }
-    }
+    });
+    // if(this.springs.length > 0) {
+    //   for(let i = 0; i < this.springs.length; i++) {
+    //     if(point === this.springs[i].point) {
+    //       this.springs.splice(i, 1);
+    //       return;
+    //     }
+    //   }
+    // }
   }
 
   getSpeed() {
@@ -127,15 +139,21 @@ class Particle {
   }
 
   handleGravitations() {
-    for(let i = 0; i < this.gravitations.length; i++) {
-      this.gravitateTo(this.gravitations[i]);
-    }
+    this.gravitations.forEach(gravitation => {
+      this.gravitateTo(gravitation);
+    });
+    // for(let i = 0; i < this.gravitations.length; i++) {
+    //   this.gravitateTo(this.gravitations[i]);
+    // }
   }
 
   handleSprings() {
-    for(let i = 0; i < this.springs.length; i++) {
-      this.springTo(this.springs[i].point, this.springs[i].k, this.springs[i].length);
-    }
+    this.springs.forEach(spring => {
+      this.springTo(spring.point, spring.k, spring.length);
+    });
+    // for(let i = 0; i < this.springs.length; i++) {
+    //   this.springTo(this.springs[i].point, this.springs[i].k, this.springs[i].length);
+    // }
   }
 
   update() {
