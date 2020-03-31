@@ -1,25 +1,30 @@
 import { Canvas } from './canvas';
 import { Particle } from './particle';
+import { randomRange } from './utils';
 
-class SpringCursor extends Canvas {
-  constructor(sizeCursor, sizeWeight, k, friction, exclude = false) {
+class multiGravity extends Canvas {
+  constructor() {
     super();
 
-    this.cursor = new Particle( {
-      size: sizeCursor,
-      position: {x: this.canvas.width / 2 + 100, y: this.canvas.height / 2 + 100}
+    this.sun1 = new Particle( {
+      size: 20,
+      mass: 5000,
+      position: {x: 200, y: 300}
     });
 
-    this.weight = new Particle({
-      size: sizeWeight,
-      position: {x: this.canvas.width / 2, y: this.canvas.height / 2},
-      friction: friction
+    this.sun2 = new Particle({
+      size: 10,
+      mass: 3000,
+      position: {x: this.canvas.width, y: this.canvas.height},
     });
 
-    this.exclude = exclude;
+    this.emiter = {
+      x: 100,
+      y: 0
+    };
 
-    this.weight.addSpring(this.cursor, k);
-
+    this.particles = [];
+    this.numParticles = 10;
     document.body.style.cursor = 'none';
   }
 
@@ -28,15 +33,47 @@ class SpringCursor extends Canvas {
       .forEach( fn => this[fn] = this[fn].bind(this));
   }
 
+  createParticles() {
+    for (let i = 0; i < this.numParticles; i++) {
+      const particle = new Particle({
+        position: { x: this.emiter.x, y: this.emiter.y },
+        size: 3,
+        speed: randomRange(7, 8),
+        direction: Math.PI/2 + randomRange(-.1, .1)
+      });
+
+      particle.addGravitation(this.sun1);
+      particle.addGravitation(this.sun2);
+      
+      this.particles.push(particle);
+    }
+  }
+
   draw() {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     
-    this.exclude ? this.context.globalCompositeOperation='xor' : '';
-    
-    this.weight.update();
-    
-    this.weight.drawParticle(this.context);
-    this.cursor.drawParticle(this.context);
+    this.sun1.drawParticle(this.context);
+    this.sun2.update();
+    this.sun2.drawParticle(this.context);
+
+    this.particles.forEach(particle => {
+      particle.update();
+      particle.drawParticle(this.context);
+      this.startAgain(particle);
+    });
+  }
+
+  startAgain(particle) {
+    if(particle.position.x > this.canvas.width ||
+       particle.position.x < 0 ||
+       particle.position.y > this.canvas.height ||
+       particle.position.y < 0) {
+
+      particle.position.x = this.emiter.x;
+      particle.position.y = this.emiter.y;
+      particle.setSpeed = randomRange(7, 8);
+      particle.setHeading = Math.PI/2 + randomRange(-0.1, 0.1);
+    }
   }
   
   render() {
@@ -46,24 +83,19 @@ class SpringCursor extends Canvas {
 
   addEventListeners() {
     document.body.addEventListener('mousemove', (e) => {
-      this.cursor.position.x = e.clientX;
-      this.cursor.position.y = e.clientY;
+      this.sun2.position.x = e.clientX;
+      this.sun2.position.y = e.clientY;
     });
   }
 
   init() {
     this.bindAll();
     this.addEventListeners();
+    this.createParticles();
     this.render();
   }
 }
 
-const sizeCursor = 7;
-const sizeWeight = 20;
-const k = 0.04;
-const friction = 0.8;
-const exclude = true;
 
-const cursor = new SpringCursor(sizeCursor, sizeWeight, k, friction, exclude);
-
-cursor.init();
+const a = new multiGravity();
+a.init();

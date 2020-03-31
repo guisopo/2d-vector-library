@@ -217,13 +217,13 @@ var Particle = /*#__PURE__*/function () {
     }
   }, {
     key: "addGravitation",
-    value: function addGravitation(p) {
-      this.removeGravitation(p);
-      this.gravitation.push(p);
+    value: function addGravitation(point) {
+      this.removeGravitation(point);
+      this.gravitations.push(point);
     }
   }, {
     key: "removeGravitation",
-    value: function removeGravitation() {
+    value: function removeGravitation(point) {
       if (this.gravitations.length > 0) {
         for (var i = 0; i < this.gravitations.length; i++) {
           if (point === this.gravitations[i].point) {
@@ -358,12 +358,95 @@ var Particle = /*#__PURE__*/function () {
 }();
 
 exports.Particle = Particle;
+},{}],"utils.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.roundNearest = exports.roundToPlaces = exports.radiansToDegrees = exports.degreesToRadians = exports.randomInt = exports.randomRange = exports.distance = exports.clamp = exports.map = exports.lerp = exports.norm = void 0;
+
+// Takes a value from a range and returns a value from 0 to 1
+var norm = function norm(value, min, max) {
+  return value - min / max - min;
+}; // Takes a normalized value and returns the value within a range
+
+
+exports.norm = norm;
+
+var lerp = function lerp(norm, min, max) {
+  return (max - min) * norm + min;
+}; // Maps a value from one range into a value to another range
+
+
+exports.lerp = lerp;
+
+var map = function map(value, sourceMin, sourceMax, destMin, destMax) {
+  return (destMax - destMin) * (value - sourceMin / sourceMax - sourceMin) + destMin;
+}; // Limits the value between a range
+
+
+exports.map = map;
+
+var clamp = function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}; // Calculate distance between two points
+
+
+exports.clamp = clamp;
+
+var distance = function distance(p0, p1) {
+  var dx = p1.x - p0.x;
+  var dy = p1.y - p0.y;
+  return Math.sqrt(dx * dx + dy * dy);
+};
+
+exports.distance = distance;
+
+var randomRange = function randomRange(min, max) {
+  return min + Math.random() * (max - min);
+};
+
+exports.randomRange = randomRange;
+
+var randomInt = function randomInt(min, max) {
+  return Math.floor(min + Math.random() * (max - min + 1));
+};
+
+exports.randomInt = randomInt;
+
+var degreesToRadians = function degreesToRadians(degrees) {
+  return degrees / 180 * Math.PI;
+};
+
+exports.degreesToRadians = degreesToRadians;
+
+var radiansToDegrees = function radiansToDegrees(radians) {
+  return radians * 180 / Math.PI;
+};
+
+exports.radiansToDegrees = radiansToDegrees;
+
+var roundToPlaces = function roundToPlaces(value, places) {
+  var mult = Math.pow(10, places);
+  return Math.round(value * mult) / mult;
+};
+
+exports.roundToPlaces = roundToPlaces;
+
+var roundNearest = function roundNearest(value, nearest) {
+  return Math.round(value / nearest) * nearest;
+};
+
+exports.roundNearest = roundNearest;
 },{}],"index.js":[function(require,module,exports) {
 "use strict";
 
 var _canvas = require("./canvas");
 
 var _particle = require("./particle");
+
+var _utils = require("./utils");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -387,43 +470,44 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-var SpringCursor = /*#__PURE__*/function (_Canvas) {
-  _inherits(SpringCursor, _Canvas);
+var multiGravity = /*#__PURE__*/function (_Canvas) {
+  _inherits(multiGravity, _Canvas);
 
-  var _super = _createSuper(SpringCursor);
+  var _super = _createSuper(multiGravity);
 
-  function SpringCursor(sizeCursor, sizeWeight, k, friction) {
+  function multiGravity() {
     var _this;
 
-    var exclude = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
-
-    _classCallCheck(this, SpringCursor);
+    _classCallCheck(this, multiGravity);
 
     _this = _super.call(this);
-    _this.cursor = new _particle.Particle({
-      size: sizeCursor,
+    _this.sun1 = new _particle.Particle({
+      size: 20,
+      mass: 5000,
       position: {
-        x: _this.canvas.width / 2 + 100,
-        y: _this.canvas.height / 2 + 100
+        x: 200,
+        y: 300
       }
     });
-    _this.weight = new _particle.Particle({
-      size: sizeWeight,
+    _this.sun2 = new _particle.Particle({
+      size: 10,
+      mass: 3000,
       position: {
-        x: _this.canvas.width / 2,
-        y: _this.canvas.height / 2
-      },
-      friction: friction
+        x: _this.canvas.width,
+        y: _this.canvas.height
+      }
     });
-    _this.exclude = exclude;
-
-    _this.weight.addSpring(_this.cursor, k);
-
+    _this.emiter = {
+      x: 100,
+      y: 0
+    };
+    _this.particles = [];
+    _this.numParticles = 10;
     document.body.style.cursor = 'none';
     return _this;
   }
 
-  _createClass(SpringCursor, [{
+  _createClass(multiGravity, [{
     key: "bindAll",
     value: function bindAll() {
       var _this2 = this;
@@ -433,13 +517,48 @@ var SpringCursor = /*#__PURE__*/function (_Canvas) {
       });
     }
   }, {
+    key: "createParticles",
+    value: function createParticles() {
+      for (var i = 0; i < this.numParticles; i++) {
+        var particle = new _particle.Particle({
+          position: {
+            x: this.emiter.x,
+            y: this.emiter.y
+          },
+          size: 3,
+          speed: (0, _utils.randomRange)(7, 8),
+          direction: Math.PI / 2 + (0, _utils.randomRange)(-.1, .1)
+        });
+        particle.addGravitation(this.sun1);
+        particle.addGravitation(this.sun2);
+        this.particles.push(particle);
+      }
+    }
+  }, {
     key: "draw",
     value: function draw() {
+      var _this3 = this;
+
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      this.exclude ? this.context.globalCompositeOperation = 'xor' : '';
-      this.weight.update();
-      this.weight.drawParticle(this.context);
-      this.cursor.drawParticle(this.context);
+      this.sun1.drawParticle(this.context);
+      this.sun2.update();
+      this.sun2.drawParticle(this.context);
+      this.particles.forEach(function (particle) {
+        particle.update();
+        particle.drawParticle(_this3.context);
+
+        _this3.startAgain(particle);
+      });
+    }
+  }, {
+    key: "startAgain",
+    value: function startAgain(particle) {
+      if (particle.position.x > this.canvas.width || particle.position.x < 0 || particle.position.y > this.canvas.height || particle.position.y < 0) {
+        particle.position.x = this.emiter.x;
+        particle.position.y = this.emiter.y;
+        particle.setSpeed = (0, _utils.randomRange)(7, 8);
+        particle.setHeading = Math.PI / 2 + (0, _utils.randomRange)(-0.1, 0.1);
+      }
     }
   }, {
     key: "render",
@@ -450,11 +569,11 @@ var SpringCursor = /*#__PURE__*/function (_Canvas) {
   }, {
     key: "addEventListeners",
     value: function addEventListeners() {
-      var _this3 = this;
+      var _this4 = this;
 
       document.body.addEventListener('mousemove', function (e) {
-        _this3.cursor.position.x = e.clientX;
-        _this3.cursor.position.y = e.clientY;
+        _this4.sun2.position.x = e.clientX;
+        _this4.sun2.position.y = e.clientY;
       });
     }
   }, {
@@ -462,21 +581,17 @@ var SpringCursor = /*#__PURE__*/function (_Canvas) {
     value: function init() {
       this.bindAll();
       this.addEventListeners();
+      this.createParticles();
       this.render();
     }
   }]);
 
-  return SpringCursor;
+  return multiGravity;
 }(_canvas.Canvas);
 
-var sizeCursor = 7;
-var sizeWeight = 20;
-var k = 0.04;
-var friction = 0.8;
-var exclude = true;
-var cursor = new SpringCursor(sizeCursor, sizeWeight, k, friction, exclude);
-cursor.init();
-},{"./canvas":"canvas.js","./particle":"particle.js"}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+var a = new multiGravity();
+a.init();
+},{"./canvas":"canvas.js","./particle":"particle.js","./utils":"utils.js"}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
