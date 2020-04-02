@@ -160,317 +160,84 @@ var Canvas = /*#__PURE__*/function () {
 }();
 
 exports.Canvas = Canvas;
-},{}],"particle.js":[function(require,module,exports) {
+},{}],"perlin-noise.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Particle = void 0;
+exports.noise = noise;
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+// Kas Thomas: http://asserttrue.blogspot.com/2011/12/perlin-noise-in-javascript_31.html
+// This is a port of Ken Perlin's Java code. The
+// original Java code is at http://cs.nyu.edu/%7Eperlin/noise/.
+// Note that in this version, a number from 0 to 1 is returned.
+function noise(x, y, z) {
+  var p = new Array(512);
+  var permutation = [151, 160, 137, 91, 90, 15, 131, 13, 201, 95, 96, 53, 194, 233, 7, 225, 140, 36, 103, 30, 69, 142, 8, 99, 37, 240, 21, 10, 23, 190, 6, 148, 247, 120, 234, 75, 0, 26, 197, 62, 94, 252, 219, 203, 117, 35, 11, 32, 57, 177, 33, 88, 237, 149, 56, 87, 174, 20, 125, 136, 171, 168, 68, 175, 74, 165, 71, 134, 139, 48, 27, 166, 77, 146, 158, 231, 83, 111, 229, 122, 60, 211, 133, 230, 220, 105, 92, 41, 55, 46, 245, 40, 244, 102, 143, 54, 65, 25, 63, 161, 1, 216, 80, 73, 209, 76, 132, 187, 208, 89, 18, 169, 200, 196, 135, 130, 116, 188, 159, 86, 164, 100, 109, 198, 173, 186, 3, 64, 52, 217, 226, 250, 124, 123, 5, 202, 38, 147, 118, 126, 255, 82, 85, 212, 207, 206, 59, 227, 47, 16, 58, 17, 182, 189, 28, 42, 223, 183, 170, 213, 119, 248, 152, 2, 44, 154, 163, 70, 221, 153, 101, 155, 167, 43, 172, 9, 129, 22, 39, 253, 19, 98, 108, 110, 79, 113, 224, 232, 178, 185, 112, 104, 218, 246, 97, 228, 251, 34, 242, 193, 238, 210, 144, 12, 191, 179, 162, 241, 81, 51, 145, 235, 249, 14, 239, 107, 49, 192, 214, 31, 181, 199, 106, 157, 184, 84, 204, 176, 115, 121, 50, 45, 127, 4, 150, 254, 138, 236, 205, 93, 222, 114, 67, 29, 24, 72, 243, 141, 128, 195, 78, 66, 215, 61, 156, 180];
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var Particle = /*#__PURE__*/function () {
-  function Particle() {
-    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    _classCallCheck(this, Particle);
-
-    this.position = options.position || {
-      x: 0,
-      y: 0
-    };
-    this.particleColor = options.particleColor || '#000000';
-    this.size = options.size || 10;
-    this.mass = options.mass || 1;
-    this.direction = options.direction || 0;
-    this.speed = options.speed || 0;
-    this.gravity = options.gravity || 0;
-    this.friction = options.friction || 1;
-    this.bounce = options.bounce || -1;
-    this.springs = [];
-    this.gravitations = [];
-    this.vx = Math.cos(this.direction) * this.speed;
-    this.vy = Math.sin(this.direction) * this.speed;
+  for (var i = 0; i < 256; i++) {
+    p[256 + i] = p[i] = permutation[i];
   }
 
-  _createClass(Particle, [{
-    key: "bindAll",
-    value: function bindAll() {
-      var _this = this;
+  var X = Math.floor(x) & 255,
+      // FIND UNIT CUBE THAT
+  Y = Math.floor(y) & 255,
+      // CONTAINS POINT.
+  Z = Math.floor(z) & 255;
+  x -= Math.floor(x); // FIND RELATIVE X,Y,Z
 
-      ['addEventListeners', 'render', 'drawParticle', 'init'].forEach(function (fn) {
-        return _this[fn] = _this[fn].bind(_this);
-      });
-    }
-  }, {
-    key: "drawParticle",
-    value: function drawParticle(context) {
-      context.fillStyle = this.particleColor;
-      context.beginPath();
-      context.arc(this.position.x, this.position.y, this.size, 0, Math.PI * 2, false);
-      context.fill();
-    }
-  }, {
-    key: "addGravitation",
-    value: function addGravitation(point) {
-      this.removeGravitation(point);
-      this.gravitations.push(point);
-    }
-  }, {
-    key: "removeGravitation",
-    value: function removeGravitation(p) {
-      var _this2 = this;
+  y -= Math.floor(y); // OF POINT IN CUBE.
 
-      this.gravitations.forEach(function (gravitation) {
-        if (p === gravitation.p) {
-          _this2.gravitations.splice(_this2.gravitations.indexOf(p), 1);
+  z -= Math.floor(z);
+  var u = fade(x),
+      // COMPUTE FADE CURVES
+  v = fade(y),
+      // FOR EACH OF X,Y,Z.
+  w = fade(z);
+  var A = p[X] + Y,
+      AA = p[A] + Z,
+      AB = p[A + 1] + Z,
+      // HASH COORDINATES OF
+  B = p[X + 1] + Y,
+      BA = p[B] + Z,
+      BB = p[B + 1] + Z; // THE 8 CUBE CORNERS,
 
-          return;
-        }
-      }); // if(this.gravitations.length > 0) {
-      //   for(let i = 0; i < this.gravitations.length; i++) {
-      //     if(point === this.gravitations[i].point) {
-      //       this.gravitations.splice(i, 1);
-      //       return;
-      //     }
-      //   }
-      // }
-    }
-  }, {
-    key: "addSpring",
-    value: function addSpring(point, k) {
-      var length = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-      this.removeSpring(point);
-      this.springs.push({
-        point: point,
-        k: k,
-        length: length
-      });
-    }
-  }, {
-    key: "removeSpring",
-    value: function removeSpring(point) {
-      var _this3 = this;
+  return scale(lerp(w, lerp(v, lerp(u, grad(p[AA], x, y, z), // AND ADD
+  grad(p[BA], x - 1, y, z)), // BLENDED
+  lerp(u, grad(p[AB], x, y - 1, z), // RESULTS
+  grad(p[BB], x - 1, y - 1, z))), // FROM  8
+  lerp(v, lerp(u, grad(p[AA + 1], x, y, z - 1), // CORNERS
+  grad(p[BA + 1], x - 1, y, z - 1)), // OF CUBE
+  lerp(u, grad(p[AB + 1], x, y - 1, z - 1), grad(p[BB + 1], x - 1, y - 1, z - 1)))));
+}
 
-      this.springs.forEach(function (spring) {
-        if (point === spring.point) {
-          _this3.springs.splice(_this3.springs.indexOf(point), 1);
+function fade(t) {
+  return t * t * t * (t * (t * 6 - 15) + 10);
+}
 
-          return;
-        }
-      }); // if(this.springs.length > 0) {
-      //   for(let i = 0; i < this.springs.length; i++) {
-      //     if(point === this.springs[i].point) {
-      //       this.springs.splice(i, 1);
-      //       return;
-      //     }
-      //   }
-      // }
-    }
-  }, {
-    key: "getSpeed",
-    value: function getSpeed() {
-      return Math.sqrt(this.vx * this.vx + this.vy * this.vy);
-    }
-  }, {
-    key: "setSpeed",
-    value: function setSpeed(speed) {
-      var heading = this.getHeading();
-      this.vx = Math.cos(heading) * speed;
-      this.vy = Math.sin(heading) * speed;
-    }
-  }, {
-    key: "getHeading",
-    value: function getHeading() {
-      return Math.atan2(this.vy, this.vx);
-    }
-  }, {
-    key: "setHeading",
-    value: function setHeading(heading) {
-      var speed = this.getSpeed();
-      this.vx = Math.cos(heading) * speed;
-      this.vy = Math.sin(heading) * speed;
-    }
-  }, {
-    key: "accelerate",
-    value: function accelerate(ax, ay) {
-      this.vx += ax;
-      this.vy += ay;
-    }
-  }, {
-    key: "angleTo",
-    value: function angleTo(p2) {
-      return Math.atan2(p2.position.y - this.position.y, p2.position.x - this.position.x);
-    }
-  }, {
-    key: "distanceTo",
-    value: function distanceTo(p2) {
-      var dx = p2.position.x - this.position.x;
-      var dy = p2.position.y - this.position.y;
-      return Math.sqrt(dx * dx + dy * dy);
-    }
-  }, {
-    key: "gravitateTo",
-    value: function gravitateTo(p2) {
-      var dx = p2.position.x - this.position.x;
-      var dy = p2.position.y - this.position.y;
-      var distance = Math.sqrt(dx * dx + dy * dy);
-      var force = p2.mass / (distance * distance);
-      var ax = dx / distance * force;
-      var ay = dy / distance * force;
-      this.vx += ax;
-      this.vy += ay;
-    }
-  }, {
-    key: "springTo",
-    value: function springTo(p2, k) {
-      var length = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-      var dx = p2.position.x - this.position.x;
-      var dy = p2.position.y - this.position.y;
-      var distance = Math.sqrt(dx * dx + dy * dy);
-      var springForce = (distance - length) * k;
-      this.vx += dx / distance * springForce;
-      this.vy += dy / distance * springForce;
-    }
-  }, {
-    key: "handleGravitations",
-    value: function handleGravitations() {
-      var _this4 = this;
+function lerp(t, a, b) {
+  return a + t * (b - a);
+}
 
-      this.gravitations.forEach(function (gravitation) {
-        _this4.gravitateTo(gravitation);
-      }); // for(let i = 0; i < this.gravitations.length; i++) {
-      //   this.gravitateTo(this.gravitations[i]);
-      // }
-    }
-  }, {
-    key: "handleSprings",
-    value: function handleSprings() {
-      var _this5 = this;
+function grad(hash, x, y, z) {
+  var h = hash & 15; // CONVERT LO 4 BITS OF HASH CODE
 
-      this.springs.forEach(function (spring) {
-        _this5.springTo(spring.point, spring.k, spring.length);
-      }); // for(let i = 0; i < this.springs.length; i++) {
-      //   this.springTo(this.springs[i].point, this.springs[i].k, this.springs[i].length);
-      // }
-    }
-  }, {
-    key: "update",
-    value: function update() {
-      this.handleSprings();
-      this.handleGravitations();
-      this.vx *= this.friction;
-      this.vy *= this.friction;
-      this.vy += this.gravity;
-      this.position.x += this.vx;
-      this.position.y += this.vy;
-    }
-  }, {
-    key: "init",
-    value: function init() {
-      this.bindAll();
-      this.addEventListeners();
-    }
-  }]);
+  var u = h < 8 ? x : y,
+      // INTO 12 GRADIENT DIRECTIONS.
+  v = h < 4 ? y : h == 12 || h == 14 ? x : z;
+  return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
+}
 
-  return Particle;
-}();
-
-exports.Particle = Particle;
-},{}],"utils.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.roundNearest = exports.roundToPlaces = exports.radiansToDegrees = exports.degreesToRadians = exports.randomInt = exports.randomRange = exports.distance = exports.clamp = exports.map = exports.lerp = exports.norm = void 0;
-
-// Takes a value from a range and returns a value from 0 to 1
-var norm = function norm(value, min, max) {
-  return value - min / max - min;
-}; // Takes a normalized value and returns the value within a range
-
-
-exports.norm = norm;
-
-var lerp = function lerp(norm, min, max) {
-  return (max - min) * norm + min;
-}; // Maps a value from one range into a value to another range
-
-
-exports.lerp = lerp;
-
-var map = function map(value, sourceMin, sourceMax, destMin, destMax) {
-  return (destMax - destMin) * (value - sourceMin / sourceMax - sourceMin) + destMin;
-}; // Limits the value between a range
-
-
-exports.map = map;
-
-var clamp = function clamp(value, min, max) {
-  return Math.min(Math.max(value, min), max);
-}; // Calculate distance between two points
-
-
-exports.clamp = clamp;
-
-var distance = function distance(p0, p1) {
-  var dx = p1.x - p0.x;
-  var dy = p1.y - p0.y;
-  return Math.sqrt(dx * dx + dy * dy);
-};
-
-exports.distance = distance;
-
-var randomRange = function randomRange(min, max) {
-  return min + Math.random() * (max - min);
-};
-
-exports.randomRange = randomRange;
-
-var randomInt = function randomInt(min, max) {
-  return Math.floor(min + Math.random() * (max - min + 1));
-};
-
-exports.randomInt = randomInt;
-
-var degreesToRadians = function degreesToRadians(degrees) {
-  return degrees / 180 * Math.PI;
-};
-
-exports.degreesToRadians = degreesToRadians;
-
-var radiansToDegrees = function radiansToDegrees(radians) {
-  return radians * 180 / Math.PI;
-};
-
-exports.radiansToDegrees = radiansToDegrees;
-
-var roundToPlaces = function roundToPlaces(value, places) {
-  var mult = Math.pow(10, places);
-  return Math.round(value * mult) / mult;
-};
-
-exports.roundToPlaces = roundToPlaces;
-
-var roundNearest = function roundNearest(value, nearest) {
-  return Math.round(value / nearest) * nearest;
-};
-
-exports.roundNearest = roundNearest;
+function scale(n) {
+  return (1 + n) / 2;
+}
 },{}],"index.js":[function(require,module,exports) {
 "use strict";
 
 var _canvas = require("./canvas");
 
-var _particle = require("./particle");
-
-var _utils = require("./utils");
+var _perlinNoise = require("./perlin-noise");
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -494,127 +261,92 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-var multiGravity = /*#__PURE__*/function (_Canvas) {
-  _inherits(multiGravity, _Canvas);
+var noiseBubles = /*#__PURE__*/function (_Canvas) {
+  _inherits(noiseBubles, _Canvas);
 
-  var _super = _createSuper(multiGravity);
+  var _super = _createSuper(noiseBubles);
 
-  function multiGravity() {
+  function noiseBubles() {
     var _this;
 
-    _classCallCheck(this, multiGravity);
+    _classCallCheck(this, noiseBubles);
 
     _this = _super.call(this);
-    _this.sun1 = new _particle.Particle({
-      size: 20,
-      mass: 10000,
-      position: {
-        x: 300,
-        y: 200
-      }
-    });
-    _this.sun2 = new _particle.Particle({
-      size: 10,
-      mass: 20000,
-      position: {
-        x: _this.canvas.width,
-        y: _this.canvas.height
-      }
-    });
-    _this.emiter = {
-      x: 100,
-      y: 0
-    };
-    _this.particles = [];
-    _this.numParticles = 100;
-    document.body.style.cursor = 'none';
+    _this.x;
+    _this.y; // this.particle = new Particle(this.width/2, this.height/2, 0, 0, 0);
+
+    _this.radius = 100;
+    _this.time = 0;
+    _this.number = 100;
+    _this.updateRender = _this.render.bind(_assertThisInitialized(_this));
+    requestAnimationFrame(_this.updateRender);
     return _this;
   }
 
-  _createClass(multiGravity, [{
-    key: "bindAll",
-    value: function bindAll() {
-      var _this2 = this;
-
-      ['draw', 'render', 'addEventListeners', 'init'].forEach(function (fn) {
-        return _this2[fn] = _this2[fn].bind(_this2);
-      });
-    }
-  }, {
-    key: "createParticles",
-    value: function createParticles() {
-      for (var i = 0; i < this.numParticles; i++) {
-        var particle = new _particle.Particle({
-          position: {
-            x: this.emiter.x,
-            y: this.emiter.y
-          },
-          size: 3,
-          speed: (0, _utils.randomRange)(7, 8),
-          direction: Math.PI / 2 + (0, _utils.randomRange)(-0.1, 0.1)
-        });
-        particle.addGravitation(this.sun1);
-        particle.addGravitation(this.sun2);
-        this.particles.push(particle);
-      }
-    }
-  }, {
+  _createClass(noiseBubles, [{
     key: "draw",
     value: function draw() {
-      var _this3 = this;
-
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      this.sun1.drawParticle(this.context);
-      this.sun2.drawParticle(this.context);
-      this.particles.forEach(function (particle) {
-        particle.update();
-        particle.drawParticle(_this3.context);
+      this.context.save();
+      this.context.translate(this.canvas.width / 2, this.canvas.height / 2);
+      this.context.fillStyle = '#FF0000';
+      this.context.beginPath();
 
-        _this3.startAgain(particle);
-      });
-    }
-  }, {
-    key: "startAgain",
-    value: function startAgain(particle) {
-      if (particle.position.x > this.canvas.width || particle.position.x < 0 || particle.position.y > this.canvas.height || particle.position.y < 0) {
-        particle.position.x = this.emiter.x;
-        particle.position.y = this.emiter.y;
-        particle.setSpeed((0, _utils.randomRange)(7, 8));
-        particle.setHeading(Math.PI / 2 + (0, _utils.randomRange)(-0.1, 0.1));
+      for (var i = 0; i < this.number; i++) {
+        var angle = i * Math.PI * 2 / this.number; // this.x = this.radius * Math.sin(angle) + 10 * noise(i/10, this.time/10, 0);
+        // this.y = this.radius * Math.cos(angle) + 10 * noise(i/10, this.time/10, 0);
+        // this.x = this.radius * Math.sin(angle) + 7   * noise(this.radius * Math.sin(angle), this.time/10, 0);
+        // this.y = this.radius * Math.cos(angle) + 7   * noise(this.radius * Math.cos(angle), this.time/10, 0);
+
+        this.x = this.radius * Math.sin(angle) + 40 * (0, _perlinNoise.noise)(Math.sin(angle), this.time / 100, 0);
+        this.y = this.radius * Math.cos(angle) + 40 * (0, _perlinNoise.noise)(Math.cos(angle), this.time / 100, 0);
+        this.context.lineTo(this.x, this.y);
       }
+
+      this.context.closePath();
+      this.context.fill();
+      this.context.fillStyle = '#000000';
+      this.context.beginPath();
+
+      for (var _i = 0; _i < this.number; _i++) {
+        var _angle = _i * Math.PI * 2 / this.number;
+
+        this.x = this.radius * Math.sin(_angle) + 40 * (0, _perlinNoise.noise)(Math.sin(_angle) + this.time / 100, this.time / 100, 0);
+        this.y = this.radius * Math.cos(_angle) + 40 * (0, _perlinNoise.noise)(Math.cos(_angle) + this.time / 100, this.time / 100, 0);
+        this.context.lineTo(this.x, this.y);
+      }
+
+      this.context.closePath();
+      this.context.fill();
+      this.context.fillStyle = '#00FF00';
+      this.context.beginPath();
+
+      for (var _i2 = 0; _i2 < this.number; _i2++) {
+        var _angle2 = _i2 * Math.PI * 2 / this.number;
+
+        this.x = (this.radius - 5) * Math.sin(_angle2) + 40 * (0, _perlinNoise.noise)(Math.sin(_angle2) + 2 * this.time / 100, this.time / 100, 0);
+        this.y = (this.radius - 5) * Math.cos(_angle2) + 40 * (0, _perlinNoise.noise)(Math.cos(_angle2) + 3 * this.time / 100, this.time / 100, 0);
+        this.context.lineTo(this.x, this.y);
+      }
+
+      this.context.closePath();
+      this.context.fill();
+      this.context.restore();
     }
   }, {
     key: "render",
     value: function render() {
       this.draw();
-      requestAnimationFrame(this.render);
-    }
-  }, {
-    key: "addEventListeners",
-    value: function addEventListeners() {
-      var _this4 = this;
-
-      document.body.addEventListener('mousemove', function (e) {
-        _this4.sun2.position.x = e.clientX;
-        _this4.sun2.position.y = e.clientY;
-      });
-    }
-  }, {
-    key: "init",
-    value: function init() {
-      this.bindAll();
-      this.addEventListeners();
-      this.createParticles();
-      this.render();
+      this.time += 1;
+      requestAnimationFrame(this.updateRender);
     }
   }]);
 
-  return multiGravity;
+  return noiseBubles;
 }(_canvas.Canvas);
 
-var a = new multiGravity();
-a.init();
-},{"./canvas":"canvas.js","./particle":"particle.js","./utils":"utils.js"}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+var a = new noiseBubles(); // a.render();
+},{"./canvas":"canvas.js","./perlin-noise":"perlin-noise.js"}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -642,7 +374,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61853" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62160" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

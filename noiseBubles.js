@@ -74,4 +74,3 @@ class noiseBubles extends Canvas {
 
 
 const a = new noiseBubles();
-// a.render();
