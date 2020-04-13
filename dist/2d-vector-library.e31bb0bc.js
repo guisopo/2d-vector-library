@@ -418,7 +418,7 @@ exports.Canvas = Canvas;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.ParticlesGrid = void 0;
+exports.dotsNet = void 0;
 
 var _particle = require("./particle.js");
 
@@ -446,58 +446,56 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-var ParticlesGrid = /*#__PURE__*/function (_Canvas) {
-  _inherits(ParticlesGrid, _Canvas);
+var dotsNet = /*#__PURE__*/function (_Canvas) {
+  _inherits(dotsNet, _Canvas);
 
-  var _super = _createSuper(ParticlesGrid);
+  var _super = _createSuper(dotsNet);
 
-  function ParticlesGrid() {
+  function dotsNet() {
     var _this;
 
-    _classCallCheck(this, ParticlesGrid);
+    _classCallCheck(this, dotsNet);
 
     _this = _super.call(this);
-    _this.particlesRadius = 3;
-    _this.particlesFriction = 0.9;
-    _this.k = 0.02;
-    _this.numberParticles = 20;
-    _this.marginH = _this.canvas.width / _this.numberParticles;
-    _this.marginV = _this.canvas.height / _this.numberParticles;
     _this.particles = [];
-    _this.target = new _particle.Particle();
-    _this.target.radius = 100;
 
     _this.init();
 
     return _this;
   }
 
-  _createClass(ParticlesGrid, [{
+  _createClass(dotsNet, [{
     key: "bindAll",
     value: function bindAll() {
       var _this2 = this;
 
-      ['render', 'addEvents', 'init'].forEach(function (fn) {
+      ['render', 'addEvents', 'init', 'drawLine'].forEach(function (fn) {
         return _this2[fn] = _this2[fn].bind(_this2);
       });
     }
   }, {
     key: "createParticles",
-    value: function createParticles(radius, friction, k) {
-      for (var i = 0; i < this.numberParticles; i++) {
-        for (var j = 0; j < this.numberParticles; j++) {
-          var p = new _particle.Particle({
-            position: {
-              x: i * this.marginH + this.marginH / 2,
-              y: j * this.marginV + this.marginV / 2
-            },
-            size: radius,
-            friction: friction
-          });
-          p.setSpringTarget(p.position.x, p.position.y, k);
-          this.particles.push(p);
-        }
+    value: function createParticles() {
+      for (var i = 0; i < 800; i++) {
+        this.particles.push(new _particle.Particle({
+          position: {
+            x: Math.random() * this.canvas.width,
+            y: Math.random() * this.canvas.height
+          },
+          size: 3,
+          speed: Math.random() * 2 - 1,
+          direction: Math.random() * 360 / 180 * Math.PI
+        }));
       }
+    }
+  }, {
+    key: "drawLine",
+    value: function drawLine(context, particleA, particleB, distance) {
+      context.lineWidth = 1 - distance / 100;
+      context.beginPath();
+      context.moveTo(particleA.position.x, particleA.position.y);
+      context.lineTo(particleB.position.x, particleB.position.y);
+      context.stroke();
     }
   }, {
     key: "render",
@@ -506,45 +504,40 @@ var ParticlesGrid = /*#__PURE__*/function (_Canvas) {
 
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
       this.particles.forEach(function (particle) {
-        particle.think(_this3.target, _this3.target.radius);
-        particle.update();
         particle.drawParticle(_this3.context);
+        particle.update();
       });
-      this.target.update();
-      this.target.drawParticle(this.context);
+
+      for (var i = 0; i < this.particles.length - 1; i++) {
+        var particleA = this.particles[i];
+
+        for (var j = i + 1; j < this.particles.length; j++) {
+          var particleB = this.particles[j];
+          var distance = particleB.distanceTo(particleA);
+          distance < 100 ? this.drawLine(this.context, particleA, particleB, distance) : '';
+        }
+      }
+
       requestAnimationFrame(this.render);
     }
   }, {
     key: "addEvents",
-    value: function addEvents() {
-      var _this4 = this;
-
-      document.body.addEventListener('mousemove', function (e) {
-        _this4.target.position.x = e.clientX;
-        _this4.target.position.y = e.clientY;
-      });
-      document.body.addEventListener('mousedown', function () {
-        return _this4.target.radius = _this4.target.radius * 3;
-      });
-      document.body.addEventListener('mouseup', function () {
-        return _this4.target.radius = _this4.target.radius / 3;
-      });
-    }
+    value: function addEvents() {}
   }, {
     key: "init",
     value: function init() {
       this.bindAll();
       this.addEvents();
-      this.createParticles(this.particlesRadius, this.particlesFriction, this.k);
+      this.createParticles();
       this.render();
     }
   }]);
 
-  return ParticlesGrid;
+  return dotsNet;
 }(_canvas.Canvas);
 
-exports.ParticlesGrid = ParticlesGrid;
-var a = new ParticlesGrid();
+exports.dotsNet = dotsNet;
+var a = new dotsNet();
 },{"./particle.js":"particle.js","./canvas.js":"canvas.js"}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -573,7 +566,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49882" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53133" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
