@@ -166,14 +166,6 @@ var Particle = /*#__PURE__*/function () {
       });
     }
   }, {
-    key: "drawParticle",
-    value: function drawParticle(context) {
-      context.fillStyle = this.particleColor;
-      context.beginPath();
-      context.arc(this.position.x, this.position.y, this.size, 0, Math.PI * 2, false);
-      context.fill();
-    }
-  }, {
     key: "getSpeed",
     value: function getSpeed() {
       return Math.sqrt(this.vx * this.vx + this.vy * this.vy);
@@ -310,8 +302,8 @@ var Particle = /*#__PURE__*/function () {
   }, {
     key: "springFrom",
     value: function springFrom(springPoint, k, springLength) {
-      var dx = springPoint.x - this.x,
-          dy = springPoint.y - this.y,
+      var dx = springPoint.position.x - this.position.x,
+          dy = springPoint.position.y - this.position.y,
           distance = Math.sqrt(dx * dx + dy * dy),
           springForce = (distance - springLength || 0) * k;
 
@@ -322,22 +314,22 @@ var Particle = /*#__PURE__*/function () {
   }, {
     key: "springBack",
     value: function springBack(k) {
-      var dx = -(this.x - this.originalX),
-          dy = -(this.y - this.originalY);
+      var dx = -(this.position.x - this.originalX),
+          dy = -(this.position.y - this.originalY);
       this.vx += dx * k, this.vy += dy * k;
     }
   }, {
     key: "think",
     value: function think(p2, dp2) {
-      var dx = this.x - p2.x,
-          dy = this.y - p2.y,
+      var dx = this.position.x - p2.position.x,
+          dy = this.position.y - p2.position.y,
           distance = Math.sqrt(dx * dx + dy * dy);
 
       if (distance < dp2) {
-        var tx = p2.x + dx / distance * dp2,
-            ty = p2.y + dy / distance * dp2;
-        this.vx += tx - this.x;
-        this.vy += ty - this.y;
+        var tx = p2.position.x + dx / distance * dp2,
+            ty = p2.position.y + dy / distance * dp2;
+        this.vx += tx - this.position.x;
+        this.vy += ty - this.position.y;
       }
     }
   }, {
@@ -347,8 +339,8 @@ var Particle = /*#__PURE__*/function () {
       this.handleGravitations();
 
       if (this.hasSpringTarget) {
-        this.vx += (this.springTargetX - this.x) * this.springTargetK;
-        this.vy += (this.springTargetY - this.y) * this.springTargetK;
+        this.vx += (this.springTargetX - this.position.x) * this.springTargetK;
+        this.vy += (this.springTargetY - this.position.y) * this.springTargetK;
       }
 
       this.vx *= this.friction;
@@ -356,6 +348,14 @@ var Particle = /*#__PURE__*/function () {
       this.vy += this.gravity;
       this.position.x += this.vx;
       this.position.y += this.vy;
+    }
+  }, {
+    key: "drawParticle",
+    value: function drawParticle(context) {
+      context.fillStyle = this.particleColor;
+      context.beginPath();
+      context.arc(this.position.x, this.position.y, this.size, 0, Math.PI * 2, false);
+      context.fill();
     }
   }, {
     key: "init",
@@ -454,65 +454,31 @@ var ParticlesGrid = /*#__PURE__*/function (_Canvas) {
   function ParticlesGrid() {
     var _this;
 
-    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
     _classCallCheck(this, ParticlesGrid);
 
     _this = _super.call(this);
-    var _options$numberPartic = options.numberParticles,
-        numberParticles = _options$numberPartic === void 0 ? 20 : _options$numberPartic,
-        _options$particlesRad = options.particlesRadius,
-        particlesRadius = _options$particlesRad === void 0 ? 3 : _options$particlesRad,
-        _options$particlesFri = options.particlesFriction,
-        particlesFriction = _options$particlesFri === void 0 ? 0.9 : _options$particlesFri,
-        _options$k = options.k,
-        k = _options$k === void 0 ? 0.02 : _options$k,
-        _options$targetRadius = options.targetRadius,
-        targetRadius = _options$targetRadius === void 0 ? 100 : _options$targetRadius;
-    _this.dx = 0;
-    _this.dy = 0;
-    _this.numberParticles = numberParticles;
+    _this.particlesRadius = 3;
+    _this.particlesFriction = 0.9;
+    _this.k = 0.02;
+    _this.numberParticles = 20;
     _this.marginH = _this.canvas.width / _this.numberParticles;
     _this.marginV = _this.canvas.height / _this.numberParticles;
     _this.particles = [];
     _this.target = new _particle.Particle();
-    _this.target.radius = targetRadius;
+    _this.target.radius = 100;
 
-    _this.createParticles(particlesRadius, particlesFriction, k);
-
-    _this.updateRender = _this.render.bind(_assertThisInitialized(_this)); // requestAnimationFrame(this.updateRender);
-
-    _this.render();
-
-    _this.onMouseMove(_this.target);
-
-    _this.onMouseDown(_this.target);
-
-    _this.onMouseUp(_this.target);
+    _this.init();
 
     return _this;
   }
 
   _createClass(ParticlesGrid, [{
-    key: "onMouseMove",
-    value: function onMouseMove(target) {
-      document.body.addEventListener('mousemove', function (event) {
-        target.x = event.clientX;
-        target.y = event.clientY;
-      });
-    }
-  }, {
-    key: "onMouseDown",
-    value: function onMouseDown(target) {
-      document.body.addEventListener('mousedown', function () {
-        target.radius = target.radius * 3;
-      });
-    }
-  }, {
-    key: "onMouseUp",
-    value: function onMouseUp(target) {
-      document.body.addEventListener('mouseup', function () {
-        target.radius = target.radius / 3;
+    key: "bindAll",
+    value: function bindAll() {
+      var _this2 = this;
+
+      ['render', 'addEvents', 'init'].forEach(function (fn) {
+        return _this2[fn] = _this2[fn].bind(_this2);
       });
     }
   }, {
@@ -528,29 +494,49 @@ var ParticlesGrid = /*#__PURE__*/function (_Canvas) {
             size: radius,
             friction: friction
           });
-          p.i = i + j;
-          p.setSpringTarget(p.x, p.y, k);
+          p.setSpringTarget(p.position.x, p.position.y, k);
           this.particles.push(p);
         }
       }
     }
   }, {
-    key: "draw",
-    value: function draw() {
-      var _this2 = this;
+    key: "render",
+    value: function render() {
+      var _this3 = this;
 
-      this.context.clearRect(0, 0, this.width, this.height);
+      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
       this.particles.forEach(function (particle) {
-        particle.i += 0.05;
-        particle.think(_this2.target, _this2.target.radius);
+        particle.think(_this3.target, _this3.target.radius);
         particle.update();
-        particle.drawParticle(_this2.context);
+        particle.drawParticle(_this3.context);
+      });
+      this.target.update();
+      this.target.drawParticle(this.context);
+      requestAnimationFrame(this.render);
+    }
+  }, {
+    key: "addEvents",
+    value: function addEvents() {
+      var _this4 = this;
+
+      document.body.addEventListener('mousemove', function (e) {
+        _this4.target.position.x = e.clientX;
+        _this4.target.position.y = e.clientY;
+      });
+      document.body.addEventListener('mousedown', function () {
+        return _this4.target.radius = _this4.target.radius * 3;
+      });
+      document.body.addEventListener('mouseup', function () {
+        return _this4.target.radius = _this4.target.radius / 3;
       });
     }
   }, {
-    key: "render",
-    value: function render() {
-      this.draw(); // requestAnimationFrame(this.updateRender);
+    key: "init",
+    value: function init() {
+      this.bindAll();
+      this.addEvents();
+      this.createParticles(this.particlesRadius, this.particlesFriction, this.k);
+      this.render();
     }
   }]);
 
@@ -587,7 +573,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49426" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49882" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

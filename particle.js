@@ -30,13 +30,6 @@ class Particle {
       .forEach( fn => this[fn] = this[fn].bind(this));
   }
 
-  drawParticle(context) {
-    context.fillStyle = this.particleColor;
-    context.beginPath();
-    context.arc(this.position.x, this.position.y, this.size, 0, Math.PI * 2, false);
-    context.fill();
-  }
-
   getSpeed() {
     return Math.sqrt(this.vx * this.vx + this.vy * this.vy);
   }
@@ -147,8 +140,8 @@ class Particle {
   }
 
   springFrom(springPoint, k, springLength) {
-    let dx = springPoint.x - this.x,
-        dy = springPoint.y - this.y,
+    let dx = springPoint.position.x - this.position.x,
+        dy = springPoint.position.y - this.position.y,
         distance = Math.sqrt(dx * dx + dy * dy),
         springForce = (distance - springLength || 0) * k;
     if(distance < springLength) {
@@ -158,22 +151,22 @@ class Particle {
   }
 
   springBack(k) {
-    let dx = -(this.x - this.originalX),
-        dy = -(this.y - this.originalY);
+    let dx = -(this.position.x - this.originalX),
+        dy = -(this.position.y - this.originalY);
     this.vx += dx * k,
     this.vy += dy * k;
   }
 
   think(p2, dp2) {
-    let dx = this.x - p2.x,
-        dy = this.y - p2.y,
+    let dx = this.position.x - p2.position.x,
+        dy = this.position.y - p2.position.y,
         distance = Math.sqrt(dx * dx + dy * dy);
 
     if(distance < dp2) {
-      let tx = p2.x + dx / distance * dp2,
-          ty = p2.y + dy / distance * dp2;
-      this.vx += tx - this.x;
-      this.vy += ty - this.y;
+      let tx = p2.position.x + dx / distance * dp2,
+          ty = p2.position.y + dy / distance * dp2;
+      this.vx += tx - this.position.x;
+      this.vy += ty - this.position.y;
     }
   }
 
@@ -182,10 +175,10 @@ class Particle {
     this.handleGravitations();
 
     if (this.hasSpringTarget) {
-      this.vx += (this.springTargetX - this.x) * this.springTargetK;
-      this.vy += (this.springTargetY - this.y) * this.springTargetK;
+      this.vx += (this.springTargetX - this.position.x) * this.springTargetK;
+      this.vy += (this.springTargetY - this.position.y) * this.springTargetK;
     }
-
+    
     this.vx *= this.friction;
     this.vy *= this.friction;
 
@@ -193,6 +186,13 @@ class Particle {
     
     this.position.x += this.vx;
     this.position.y += this.vy;
+  }
+
+  drawParticle(context) {
+    context.fillStyle = this.particleColor;
+    context.beginPath();
+    context.arc(this.position.x, this.position.y, this.size, 0, Math.PI * 2, false);
+    context.fill();
   }
 
   init() {

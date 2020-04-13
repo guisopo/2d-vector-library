@@ -47,7 +47,6 @@ export class ParticlesGrid extends Canvas {
       particle.update();
       particle.drawParticle(this.context);
     });
-    
     this.target.update();
     this.target.drawParticle(this.context);
 
