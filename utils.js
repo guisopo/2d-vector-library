@@ -21,6 +21,16 @@ export const randomRange = (min, max) => min + Math.random() * (max - min);
 
 export const randomInt = (min, max) => Math.floor(min + Math.random() * (max - min + 1));
 
+// Returns a normalize range of random values
+export const randomDist = (min, max, iterations) => {
+  let total = 0
+
+  for (let i = 0; i < iterations; i++) {
+    total += min + Math.random() * (max - min);
+  }
+  return total/iterations;
+}
+
 export const degreesToRadians = (degrees) => degrees / 180 * Math.PI;
 
 export const radiansToDegrees = (radians) => radians * 180 / Math.PI;
