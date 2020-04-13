@@ -18,6 +18,11 @@ class Particle {
 
     this.vx = Math.cos(this.direction) * this.speed;
     this.vy = Math.sin(this.direction) * this.speed;
+
+    this.springTargetX = null,
+    this.springTargetY = null,
+    this.springTargetK = null,
+    this.hasSpringTarget = false;
   }
 
   bindAll() {
@@ -30,54 +35,6 @@ class Particle {
     context.beginPath();
     context.arc(this.position.x, this.position.y, this.size, 0, Math.PI * 2, false);
     context.fill();
-  }
-
-  addGravitation(point) {
-    this.removeGravitation(point);
-    this.gravitations.push(point);
-  }
-
-  removeGravitation(p) {
-    this.gravitations.forEach(gravitation => {
-      if(p === gravitation.p) {
-        this.gravitations.splice(this.gravitations.indexOf(p), 1);
-        return;
-      }
-    });
-    // if(this.gravitations.length > 0) {
-    //   for(let i = 0; i < this.gravitations.length; i++) {
-    //     if(point === this.gravitations[i].point) {
-    //       this.gravitations.splice(i, 1);
-    //       return;
-    //     }
-    //   }
-    // }
-  }
-
-  addSpring(point, k, length = 0) {
-    this.removeSpring(point);
-    this.springs.push({
-      point: point,
-      k: k,
-      length: length
-    });
-  }
-
-  removeSpring(point) {
-    this.springs.forEach(spring => {
-      if(point === spring.point) {
-        this.springs.splice(this.springs.indexOf(point), 1);
-        return;
-      }
-    });
-    // if(this.springs.length > 0) {
-    //   for(let i = 0; i < this.springs.length; i++) {
-    //     if(point === this.springs[i].point) {
-    //       this.springs.splice(i, 1);
-    //       return;
-    //     }
-    //   }
-    // }
   }
 
   getSpeed() {
@@ -115,6 +72,26 @@ class Particle {
     return Math.sqrt(dx * dx + dy * dy);
   }
 
+  addGravitation(point) {
+    this.removeGravitation(point);
+    this.gravitations.push(point);
+  }
+
+  removeGravitation(p) {
+    this.gravitations.forEach(gravitation => {
+      if(p === gravitation.p) {
+        this.gravitations.splice(this.gravitations.indexOf(p), 1);
+        return;
+      }
+    });
+  }
+
+  handleGravitations() {
+    this.gravitations.forEach(gravitation => {
+      this.gravitateTo(gravitation);
+    });
+  }
+
   gravitateTo(p2) {
     const dx = p2.position.x - this.position.x;
     const dy = p2.position.y - this.position.y;
@@ -129,36 +106,85 @@ class Particle {
     this.vy += ay;
   }
 
-  springTo(p2, k, length = 0) {
-    const dx = p2.position.x - this.position.x;
-    const dy = p2.position.y - this.position.y;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    const springForce = (distance - length) * k;
-    this.vx += dx / distance * springForce;
-    this.vy += dy / distance * springForce;
+  setSpringTarget(x, y, k) {
+    this.springTargetX = x;
+    this.springTargetY = y;
+    this.springTargetK = k || 0.02;
+    this.hasSpringTarget = true;
   }
 
-  handleGravitations() {
-    this.gravitations.forEach(gravitation => {
-      this.gravitateTo(gravitation);
+  addSpring(point, k, length = 0) {
+    this.removeSpring(point);
+    this.springs.push({
+      point: point,
+      k: k,
+      length: length
     });
-    // for(let i = 0; i < this.gravitations.length; i++) {
-    //   this.gravitateTo(this.gravitations[i]);
-    // }
+  }
+
+  removeSpring(point) {
+    this.springs.forEach(spring => {
+      if(point === spring.point) {
+        this.springs.splice(this.springs.indexOf(point), 1);
+        return;
+      }
+    });
   }
 
   handleSprings() {
     this.springs.forEach(spring => {
       this.springTo(spring.point, spring.k, spring.length);
     });
-    // for(let i = 0; i < this.springs.length; i++) {
-    //   this.springTo(this.springs[i].point, this.springs[i].k, this.springs[i].length);
-    // }
+  }
+
+  springTo(p2, k, springLength = 0) {
+    const dx = p2.position.x - this.position.x;
+    const dy = p2.position.y - this.position.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    const springForce = (distance - springLength) * k;
+    this.vx += dx / distance * springForce;
+    this.vy += dy / distance * springForce;
+  }
+
+  springFrom(springPoint, k, springLength) {
+    let dx = springPoint.x - this.x,
+        dy = springPoint.y - this.y,
+        distance = Math.sqrt(dx * dx + dy * dy),
+        springForce = (distance - springLength || 0) * k;
+    if(distance < springLength) {
+      this.vx += dx / distance * springForce,
+      this.vy += dy / distance * springForce;
+    }
+  }
+
+  springBack(k) {
+    let dx = -(this.x - this.originalX),
+        dy = -(this.y - this.originalY);
+    this.vx += dx * k,
+    this.vy += dy * k;
+  }
+
+  think(p2, dp2) {
+    let dx = this.x - p2.x,
+        dy = this.y - p2.y,
+        distance = Math.sqrt(dx * dx + dy * dy);
+
+    if(distance < dp2) {
+      let tx = p2.x + dx / distance * dp2,
+          ty = p2.y + dy / distance * dp2;
+      this.vx += tx - this.x;
+      this.vy += ty - this.y;
+    }
   }
 
   update() {
     this.handleSprings();
     this.handleGravitations();
+
+    if (this.hasSpringTarget) {
+      this.vx += (this.springTargetX - this.x) * this.springTargetK;
+      this.vy += (this.springTargetY - this.y) * this.springTargetK;
+    }
 
     this.vx *= this.friction;
     this.vy *= this.friction;

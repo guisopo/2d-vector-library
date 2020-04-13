@@ -117,9 +117,449 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"index.js":[function(require,module,exports) {
+})({"particle.js":[function(require,module,exports) {
+"use strict";
 
-},{}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Particle = void 0;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Particle = /*#__PURE__*/function () {
+  function Particle() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    _classCallCheck(this, Particle);
+
+    this.position = options.position || {
+      x: 0,
+      y: 0
+    };
+    this.particleColor = options.particleColor || '#000000';
+    this.size = options.size || 10;
+    this.mass = options.mass || 1;
+    this.direction = options.direction || 0;
+    this.speed = options.speed || 0;
+    this.gravity = options.gravity || 0;
+    this.friction = options.friction || 1;
+    this.bounce = options.bounce || -1;
+    this.springs = [];
+    this.gravitations = [];
+    this.vx = Math.cos(this.direction) * this.speed;
+    this.vy = Math.sin(this.direction) * this.speed;
+    this.springTargetX = null, this.springTargetY = null, this.springTargetK = null, this.hasSpringTarget = false;
+  }
+
+  _createClass(Particle, [{
+    key: "bindAll",
+    value: function bindAll() {
+      var _this = this;
+
+      ['addEventListeners', 'render', 'drawParticle', 'init'].forEach(function (fn) {
+        return _this[fn] = _this[fn].bind(_this);
+      });
+    }
+  }, {
+    key: "drawParticle",
+    value: function drawParticle(context) {
+      context.fillStyle = this.particleColor;
+      context.beginPath();
+      context.arc(this.position.x, this.position.y, this.size, 0, Math.PI * 2, false);
+      context.fill();
+    }
+  }, {
+    key: "getSpeed",
+    value: function getSpeed() {
+      return Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+    }
+  }, {
+    key: "setSpeed",
+    value: function setSpeed(speed) {
+      var heading = this.getHeading();
+      this.vx = Math.cos(heading) * speed;
+      this.vy = Math.sin(heading) * speed;
+    }
+  }, {
+    key: "getHeading",
+    value: function getHeading() {
+      return Math.atan2(this.vy, this.vx);
+    }
+  }, {
+    key: "setHeading",
+    value: function setHeading(heading) {
+      var speed = this.getSpeed();
+      this.vx = Math.cos(heading) * speed;
+      this.vy = Math.sin(heading) * speed;
+    }
+  }, {
+    key: "accelerate",
+    value: function accelerate(ax, ay) {
+      this.vx += ax;
+      this.vy += ay;
+    }
+  }, {
+    key: "angleTo",
+    value: function angleTo(p2) {
+      return Math.atan2(p2.position.y - this.position.y, p2.position.x - this.position.x);
+    }
+  }, {
+    key: "distanceTo",
+    value: function distanceTo(p2) {
+      var dx = p2.position.x - this.position.x;
+      var dy = p2.position.y - this.position.y;
+      return Math.sqrt(dx * dx + dy * dy);
+    }
+  }, {
+    key: "addGravitation",
+    value: function addGravitation(point) {
+      this.removeGravitation(point);
+      this.gravitations.push(point);
+    }
+  }, {
+    key: "removeGravitation",
+    value: function removeGravitation(p) {
+      var _this2 = this;
+
+      this.gravitations.forEach(function (gravitation) {
+        if (p === gravitation.p) {
+          _this2.gravitations.splice(_this2.gravitations.indexOf(p), 1);
+
+          return;
+        }
+      });
+    }
+  }, {
+    key: "handleGravitations",
+    value: function handleGravitations() {
+      var _this3 = this;
+
+      this.gravitations.forEach(function (gravitation) {
+        _this3.gravitateTo(gravitation);
+      });
+    }
+  }, {
+    key: "gravitateTo",
+    value: function gravitateTo(p2) {
+      var dx = p2.position.x - this.position.x;
+      var dy = p2.position.y - this.position.y;
+      var distance = Math.sqrt(dx * dx + dy * dy);
+      var force = p2.mass / (distance * distance);
+      var ax = dx / distance * force;
+      var ay = dy / distance * force;
+      this.vx += ax;
+      this.vy += ay;
+    }
+  }, {
+    key: "setSpringTarget",
+    value: function setSpringTarget(x, y, k) {
+      this.springTargetX = x;
+      this.springTargetY = y;
+      this.springTargetK = k || 0.02;
+      this.hasSpringTarget = true;
+    }
+  }, {
+    key: "addSpring",
+    value: function addSpring(point, k) {
+      var length = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+      this.removeSpring(point);
+      this.springs.push({
+        point: point,
+        k: k,
+        length: length
+      });
+    }
+  }, {
+    key: "removeSpring",
+    value: function removeSpring(point) {
+      var _this4 = this;
+
+      this.springs.forEach(function (spring) {
+        if (point === spring.point) {
+          _this4.springs.splice(_this4.springs.indexOf(point), 1);
+
+          return;
+        }
+      });
+    }
+  }, {
+    key: "handleSprings",
+    value: function handleSprings() {
+      var _this5 = this;
+
+      this.springs.forEach(function (spring) {
+        _this5.springTo(spring.point, spring.k, spring.length);
+      });
+    }
+  }, {
+    key: "springTo",
+    value: function springTo(p2, k) {
+      var springLength = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+      var dx = p2.position.x - this.position.x;
+      var dy = p2.position.y - this.position.y;
+      var distance = Math.sqrt(dx * dx + dy * dy);
+      var springForce = (distance - springLength) * k;
+      this.vx += dx / distance * springForce;
+      this.vy += dy / distance * springForce;
+    }
+  }, {
+    key: "springFrom",
+    value: function springFrom(springPoint, k, springLength) {
+      var dx = springPoint.x - this.x,
+          dy = springPoint.y - this.y,
+          distance = Math.sqrt(dx * dx + dy * dy),
+          springForce = (distance - springLength || 0) * k;
+
+      if (distance < springLength) {
+        this.vx += dx / distance * springForce, this.vy += dy / distance * springForce;
+      }
+    }
+  }, {
+    key: "springBack",
+    value: function springBack(k) {
+      var dx = -(this.x - this.originalX),
+          dy = -(this.y - this.originalY);
+      this.vx += dx * k, this.vy += dy * k;
+    }
+  }, {
+    key: "think",
+    value: function think(p2, dp2) {
+      var dx = this.x - p2.x,
+          dy = this.y - p2.y,
+          distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < dp2) {
+        var tx = p2.x + dx / distance * dp2,
+            ty = p2.y + dy / distance * dp2;
+        this.vx += tx - this.x;
+        this.vy += ty - this.y;
+      }
+    }
+  }, {
+    key: "update",
+    value: function update() {
+      this.handleSprings();
+      this.handleGravitations();
+
+      if (this.hasSpringTarget) {
+        this.vx += (this.springTargetX - this.x) * this.springTargetK;
+        this.vy += (this.springTargetY - this.y) * this.springTargetK;
+      }
+
+      this.vx *= this.friction;
+      this.vy *= this.friction;
+      this.vy += this.gravity;
+      this.position.x += this.vx;
+      this.position.y += this.vy;
+    }
+  }, {
+    key: "init",
+    value: function init() {
+      this.bindAll();
+      this.addEventListeners();
+    }
+  }]);
+
+  return Particle;
+}();
+
+exports.Particle = Particle;
+},{}],"canvas.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Canvas = void 0;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Canvas = /*#__PURE__*/function () {
+  function Canvas() {
+    var _this = this;
+
+    _classCallCheck(this, Canvas);
+
+    this.canvas = document.getElementById('canvas');
+    this.context = this.canvas.getContext('2d'); // this.dpr = window.devicePixelRatio || 1;
+
+    this.dpr = 1;
+    this.setCanvas();
+    window.addEventListener('resize', function () {
+      return _this.setCanvas();
+    });
+  }
+
+  _createClass(Canvas, [{
+    key: "setCanvas",
+    value: function setCanvas() {
+      this.canvas.width = window.innerWidth * this.dpr;
+      this.canvas.height = window.innerHeight * this.dpr;
+      this.context.scale(this.dpr, this.dpr);
+    }
+  }]);
+
+  return Canvas;
+}();
+
+exports.Canvas = Canvas;
+},{}],"index.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.ParticlesGrid = void 0;
+
+var _particle = require("./particle.js");
+
+var _canvas = require("./canvas.js");
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _createSuper(Derived) { return function () { var Super = _getPrototypeOf(Derived), result; if (_isNativeReflectConstruct()) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+var ParticlesGrid = /*#__PURE__*/function (_Canvas) {
+  _inherits(ParticlesGrid, _Canvas);
+
+  var _super = _createSuper(ParticlesGrid);
+
+  function ParticlesGrid() {
+    var _this;
+
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    _classCallCheck(this, ParticlesGrid);
+
+    _this = _super.call(this);
+    var _options$numberPartic = options.numberParticles,
+        numberParticles = _options$numberPartic === void 0 ? 20 : _options$numberPartic,
+        _options$particlesRad = options.particlesRadius,
+        particlesRadius = _options$particlesRad === void 0 ? 3 : _options$particlesRad,
+        _options$particlesFri = options.particlesFriction,
+        particlesFriction = _options$particlesFri === void 0 ? 0.9 : _options$particlesFri,
+        _options$k = options.k,
+        k = _options$k === void 0 ? 0.02 : _options$k,
+        _options$targetRadius = options.targetRadius,
+        targetRadius = _options$targetRadius === void 0 ? 100 : _options$targetRadius;
+    _this.dx = 0;
+    _this.dy = 0;
+    _this.numberParticles = numberParticles;
+    _this.marginH = _this.canvas.width / _this.numberParticles;
+    _this.marginV = _this.canvas.height / _this.numberParticles;
+    _this.particles = [];
+    _this.target = new _particle.Particle();
+    _this.target.radius = targetRadius;
+
+    _this.createParticles(particlesRadius, particlesFriction, k);
+
+    _this.updateRender = _this.render.bind(_assertThisInitialized(_this)); // requestAnimationFrame(this.updateRender);
+
+    _this.render();
+
+    _this.onMouseMove(_this.target);
+
+    _this.onMouseDown(_this.target);
+
+    _this.onMouseUp(_this.target);
+
+    return _this;
+  }
+
+  _createClass(ParticlesGrid, [{
+    key: "onMouseMove",
+    value: function onMouseMove(target) {
+      document.body.addEventListener('mousemove', function (event) {
+        target.x = event.clientX;
+        target.y = event.clientY;
+      });
+    }
+  }, {
+    key: "onMouseDown",
+    value: function onMouseDown(target) {
+      document.body.addEventListener('mousedown', function () {
+        target.radius = target.radius * 3;
+      });
+    }
+  }, {
+    key: "onMouseUp",
+    value: function onMouseUp(target) {
+      document.body.addEventListener('mouseup', function () {
+        target.radius = target.radius / 3;
+      });
+    }
+  }, {
+    key: "createParticles",
+    value: function createParticles(radius, friction, k) {
+      for (var i = 0; i < this.numberParticles; i++) {
+        for (var j = 0; j < this.numberParticles; j++) {
+          var p = new _particle.Particle({
+            position: {
+              x: i * this.marginH + this.marginH / 2,
+              y: j * this.marginV + this.marginV / 2
+            },
+            size: radius,
+            friction: friction
+          });
+          p.i = i + j;
+          p.setSpringTarget(p.x, p.y, k);
+          this.particles.push(p);
+        }
+      }
+    }
+  }, {
+    key: "draw",
+    value: function draw() {
+      var _this2 = this;
+
+      this.context.clearRect(0, 0, this.width, this.height);
+      this.particles.forEach(function (particle) {
+        particle.i += 0.05;
+        particle.think(_this2.target, _this2.target.radius);
+        particle.update();
+        particle.drawParticle(_this2.context);
+      });
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      this.draw(); // requestAnimationFrame(this.updateRender);
+    }
+  }]);
+
+  return ParticlesGrid;
+}(_canvas.Canvas);
+
+exports.ParticlesGrid = ParticlesGrid;
+var a = new ParticlesGrid();
+},{"./particle.js":"particle.js","./canvas.js":"canvas.js"}],"../../../.nvm/versions/node/v11.10.0/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -147,7 +587,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56946" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49426" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
